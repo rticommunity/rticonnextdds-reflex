@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\dd_extra.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dd2tuple.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\default_member_names.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\typecode_manip.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\safe_typecode.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\reflex.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\typecode_manip.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\bounded.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\common.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\dd_extra.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\dd_manip.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\dd_traits.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\dd2tuple.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\default_member_names.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\disc_union.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\dllexport.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\enable_if.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\memberwise.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\safe_enum.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\safe_typecode.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\tuple_iterator.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="headers">
+      <UniqueIdentifier>{18341b8b-e5c8-4622-894a-0791ce43aba6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources">
+      <UniqueIdentifier>{3dd3c9c7-cea5-446c-83bb-830778428a94}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

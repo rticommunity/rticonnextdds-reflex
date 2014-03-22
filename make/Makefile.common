@@ -1,0 +1,189 @@
+###############################################################################
+##         (c) Copyright, Real-Time Innovations, All rights reserved.        ##
+##                                                                           ##
+##         Permission to modify and use for internal purposes granted.       ##
+## This software is provided "as is", without warranty, express or implied.  ##
+##                                                                           ##
+###############################################################################
+
+# This Makefile contains the common rules to build for all the architectures.
+# It is included from the architecture-specific Makefile.
+# This Makefile requires the following variables:
+# - ARCH: Architecture to build (for example i86Linux2.6gcc4.1.1)
+#
+# Optional variables:
+# - DEBUG: If set to '1', it turns on debugging information
+# - SHAREDLIB: If set to '1', shared libraries will be used
+# - CXX: compiler name.
+# - CXXFLAGS: compiler flags: will be appended to $CXX command-line
+# - CXXLD: linker name.
+# - CXXLDFLAGS: linker flags: will be inserted at the beginning of CXXLD cmdline
+# - SYSLIBS: additional system libraries to append to the CXXLD command-line
+
+###############################################################################
+# Ensure this Makefile is invoked with the right variable set
+###############################################################################
+ifeq ($(ARCH), )
+all:
+	@echo "***************************************************************"
+	@echo "You cannot use this Makefile directly, instead use the"
+	@echo "architecture-specific Makefile. For example:"
+	@echo "         gmake -f make/Makefile.i86Linux2.6gcc4.1.1"
+	@echo "***************************************************************"
+	@false
+else
+###############################################################################
+# Ensure $NDDSHOME is defined
+###############################################################################
+ifeq ($(NDDSHOME), )
+all:
+	@echo "***************************************************************"
+	@echo "The environment variable 'NDDSHOME' is not set!"
+	@echo "To use this makefile you need to set NDDSHOME to the directory"
+	@echo "where you have RTI Connext installed."
+	@echo "***************************************************************"
+	@false
+else
+###############################################################################
+# Ensure $BOOSTHOME is defined
+###############################################################################
+ifeq ($(BOOSTHOME), )
+all:
+	@echo "***************************************************************"
+	@echo "The environment variable 'BOOSTHOME' is not set!"
+	@echo "To use this makefile you need to set BOOSTHOME to the directory"
+	@echo "where you have Boost Libraries installed."
+	@echo "***************************************************************"
+	@false
+endif
+endif
+endif
+
+
+# Define the sources and NDDS search path
+INCLUDES = -Iinclude -I$(NDDSHOME)/include             \
+           -I$(NDDSHOME)/include/ndds -I$(BOOSTHOME)
+
+REFLEXLIBRARY = reflex
+
+###############################################################################
+# Modify build flags for debug/release
+###############################################################################
+ifeq ($(DEBUG),1)
+  CXXFLAGS     += -g -O0 
+  ifeq ($(STATICLIB),1)
+    NDDSLIBS    = -lnddscppzd -lnddsczd -lnddscorezd 
+    REFLEXLIB      = -l$(REFLEXLIBRARY)zd
+    REFLEXLIBOUT   = lib$(REFLEXLIBRARY)zd.a
+    EXT         = zd
+    LIBEXT      = .a
+  else
+    NDDSLIBS    = -lnddscppd -lnddscd -lnddscored  
+    REFLEXLIB      = -l$(REFLEXLIBRARY)d
+    LINKFLAGS  += -fpic -shared
+    REFLEXLIBOUT   = lib$(REFLEXLIBRARY)d.so
+    EXT         = d
+    LIBEXT      = .so
+  endif
+else
+  CXXFLAGS     += -O2 -DBOOST_MPL_LIMIT_LIST_SIZE=20
+  ifeq ($(STATICLIB),1)
+    NDDSLIBS    = -lnddscppz -lnddscz -lnddscorez
+    REFLEXLIB      = -l$(REFLEXLIBRARY)z
+    REFLEXLIBOUT   = lib$(REFLEXLIBRARY)z.a
+    EXT         = z
+    LIBEXT      = .a
+  else
+    NDDSLIBS    = -lnddscpp -lnddsc -lnddscore
+    REFLEXLIB      = -l$(REFLEXLIBRARY)
+    LINKFLAGS  += -fpic -shared
+    REFLEXLIBOUT   = lib$(REFLEXLIBRARY).so
+    LIBEXT      = .so
+  endif
+endif
+
+LIBS = -L$(NDDSHOME)/lib/$(ARCH) -Lobjs/$(ARCH) $(NDDSLIBS) $(SYSLIBS) 
+
+
+SOURCES = src/dd2tuple.cxx                 \
+          src/typecode_manip.cxx           \
+          src/dd_extra.cxx                 \
+          src/reflex.cxx                   \
+          src/safe_typecode.cxx            \
+          src/default_member_names.cxx
+
+HEADERS = include/dd2tuple.h             \
+          include/dd_manip.h             \
+          include/typecode_manip.h       \
+          include/default_member_names.h \
+          include/dd_traits.h            \
+          include/enable_if.h            \
+          include/safe_typecode.h        \
+          include/safe_enum.h            \
+          include/disc_union.h           \
+          include/dd_extra.h             \
+          include/bounded.h              \
+          include/reflex.h               \
+          include/tuple_iterator.h
+
+TESTSRCS = test/reflex-test.cxx \
+           test/large_type.cxx \
+           test/many_members.cxx \
+           test/shape_type.cxx \
+           test/darkart.cxx
+
+TESTHEADERS = test/large_type.h \
+              test/shape_type.h \
+              test/many_members.h \
+              test/darkart.h
+
+TESTSRCS_NODIR = $(notdir $(TESTSRCS))
+TESTOBJS = $(TESTSRCS_NODIR:%.cxx=objs/$(ARCH)/%.o)
+
+DIRECTORIES   = objs.dir objs/$(ARCH).dir 
+SOURCES_NODIR = $(notdir $(SOURCES))
+OBJECTS       = $(SOURCES_NODIR:%.cxx=objs/$(ARCH)/%.o)
+
+###############################################################################
+# Build Rules
+###############################################################################
+$(ARCH): $(DIRECTORIES) $(OBJECTS) $(REFLEXLIBRARY:%=objs/$(ARCH)/%.o) \
+         $(REFLEXLIBRARY:%=objs/$(ARCH)/lib%$(EXT)$(LIBEXT).out)
+
+objs/$(ARCH)/lib%$(EXT).so.out: objs/$(ARCH)/%.o 
+	$(CXXLD) $(OBJECTS) $(LINKFLAGS) $(CXXLDFLAGS) -o $(@:%.out=%)  $(LIBS)
+
+objs/$(ARCH)/lib%$(EXT).a.out: objs/$(ARCH)/%.o 
+	ar rcs $(@:%.out=%) $(OBJECTS) 
+
+objs/$(ARCH)/%.o: src/%.cxx $(HEADERS)
+	$(CXX) $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+
+# Here is how we create those subdirectories automatically.
+%.dir : 
+	@echo "Checking directory $*"
+	@if [ ! -d $* ]; then \
+		echo "Making directory $*"; \
+		mkdir -p $* ; \
+	fi;
+
+test: objs/$(ARCH)/$(REFLEXLIBRARY)-test  
+
+objs/$(ARCH)/$(REFLEXLIBRARY)-test: $(TESTOBJS)  
+	$(CXXLD) $(CXXLDFLAGS) -o $@ $(REFLEXLIB) $(LIBS) $(TESTOBJS) 
+
+objs/$(ARCH)/%.o: test/%.cxx  
+	$(CXX) $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+###############################################################################
+# Clean target: removes the objs dir
+###############################################################################
+clean:
+	@rm -Rf objs/$(ARCH)
+	@echo "Successfully deleted object and executable files for architecture $(ARCH)"
+	@echo "To delete ALL the architectures and any generated file use target 'veryclean'"
+
+veryclean:
+	@rm -Rf objs
+	@echo "Deleted all executables, objects and generated files"

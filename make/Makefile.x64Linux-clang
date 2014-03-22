@@ -1,0 +1,40 @@
+###############################################################################
+##         (c) Copyright, Real-Time Innovations, All rights reserved.        ##
+##                                                                           ##
+##         Permission to modify and use for internal purposes granted.       ##
+## This software is provided "as is", without warranty, express or implied.  ##
+##                                                                           ##
+###############################################################################
+
+# Note:
+# - To use this Makefile, you must have the 'NDDSHOME' environment variable
+#   set to the location of RTI Connext.
+# 
+# - You need to invoke the make command from the root directory of this example.
+#
+# - To enable debugging information, set the Makefile variable 'DEBUG' to '1'.
+# Example:
+#   make -f <makefile> DEBUG=1
+
+# Defines required Make variables. They will be used in the Makefile.common
+# to define the rules to define the build process for this application.
+
+# if ndds==5.0.0+
+ARCH=x64Linux2.6gcc4.4.5
+
+#if ndds==5.1.0 and Linux kernel 3.x
+#ARCH=x64Linux3.xgcc4.6.3
+
+# Use clang 3.3 or better
+CXX = clang++
+CXXLD = clang++
+
+CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m64 -D HAVE_CXA_DEMANGLE=1 \
+           -fPIC -ftemplate-backtrace-limit=0 -Wno-return-type-c-linkage  \
+           -Wno-deprecated-register
+CXXLDFLAGS = -m64 -fPIC 
+SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
+
+# The rest of the rules are in the 'Makefile.common'
+include make/Makefile.common
+
