@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex", "reflex.vcxproj", "{7EECDE8A-125B-474B-8551-74D3D5739377}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-test", "reflex-test.vcxproj", "{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7EECDE8A-125B-474B-8551-74D3D5739377} = {7EECDE8A-125B-474B-8551-74D3D5739377}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug DLL|Win32 = Debug DLL|Win32
+		Debug|Win32 = Debug|Win32
+		Release DLL|Win32 = Release DLL|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Debug DLL|Win32.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Debug DLL|Win32.Build.0 = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Debug|Win32.Build.0 = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Release DLL|Win32.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Release DLL|Win32.Build.0 = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Release|Win32.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739377}.Release|Win32.Build.0 = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Debug DLL|Win32.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Debug DLL|Win32.Build.0 = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Debug|Win32.Build.0 = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Release DLL|Win32.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Release DLL|Win32.Build.0 = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Release|Win32.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

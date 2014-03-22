@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\test\darkart.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\large_type.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\shape_type.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\many_members.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\test\reflex-test.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\test\darkart.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test\large_type.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test\shape_type.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test\many_members.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="headers">
+      <UniqueIdentifier>{49d1216a-df89-4c17-89d4-1be574050e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources">
+      <UniqueIdentifier>{1634a2cf-0b75-4d30-93a5-24729b6a50e0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

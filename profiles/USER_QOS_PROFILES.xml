@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="/project/rtidds500/RTI/ndds.5.0.0/scripts/../resource/rtiddsgen/../qos_profiles_5.0.0/schema/rti_dds_qos_profiles.xsd"
+     version="5.0.0">
+    <qos_library name="reflex_Library">
+        <qos_profile name="reflex_Profile" is_default_qos="true">
+            <datawriter_qos>
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                    <max_blocking_time>
+                        <sec>60</sec>
+                    </max_blocking_time>
+                </reliability>                
+
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+
+                <protocol>
+                    <rtps_reliable_writer>
+                        <min_send_window_size>50</min_send_window_size>
+                        <max_send_window_size>50</max_send_window_size>
+                    </rtps_reliable_writer>
+                </protocol>
+		
+            </datawriter_qos>
+
+            <datareader_qos>
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+            </datareader_qos>
+
+            <participant_qos>
+                <participant_name>
+                    <name>Declarative Dynamic Data Tester</name>
+                </participant_name>
+                <transport_builtin>
+                    <mask>SHMEM</mask>
+                </transport_builtin>
+                  <resource_limits>
+                     <type_code_max_serialized_length>4096</type_code_max_serialized_length>
+                     <type_object_max_serialized_length>4096</type_object_max_serialized_length> 
+                  </resource_limits>
+            </participant_qos>
+        </qos_profile>
+    </qos_library>
+</dds>
