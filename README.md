@@ -11,7 +11,10 @@ a reflection API. There is no separate code generation step involved
 application-level datatypes in C++ and will happily map them 
 to equivalent DDS topic types.
 
-For more information see the [RefleX announcement](http://blogs.rti.com/2014/03/22/rti-reflex-reflection-based-type-modeling-for-dds-topics/).
+More reading:
+- [RefleX announcement](http://blogs.rti.com/2014/03/22/rti-reflex-reflection-based-type-modeling-for-dds-topics/)
+- [RefleX whitepaper](http://community.rti.com/paper/c-template-library-data-centric-type-modeling-dds-xtypes) 
+- [RefleX presentation](http://www.slideshare.net/SumantTambe/overloading-in-overdrive-a-generic-datacentric-library-for)
 
 ### Windows Build
 1. Use at least VS2013 preview
