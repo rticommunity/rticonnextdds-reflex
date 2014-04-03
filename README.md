@@ -1,7 +1,17 @@
 RTI RefleX
 ====================
 
-Reflection-based type modeling for DDS-XTypes. Current support for C++ only.
+Reflection-based Type Modeling for DDS Topics.
+
+RefleX is a short for Reflection for DDS-XTypes. The main objective of 
+this library is to create DDS-XTypes compliant type representations 
+directly from native C++ types. RefleX is declarative–i.e., it is not 
+a reflection API. There is no separate code generation step involved 
+(other than compilation). The RefleX library will take your 
+application-level datatypes in C++ and will happily map them 
+to equivalent DDS topic types.
+
+For more information see the [RefleX announcement](http://blogs.rti.com/2014/03/22/rti-reflex-reflection-based-type-modeling-for-dds-topics/).
 
 ### Windows Build
 1. Use at least VS2013 preview
