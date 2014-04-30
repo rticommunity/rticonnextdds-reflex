@@ -86,7 +86,7 @@ ifeq ($(DEBUG),1)
     LIBEXT      = .so
   endif
 else
-  CXXFLAGS     += -O2 -DBOOST_MPL_LIMIT_LIST_SIZE=20
+  CXXFLAGS     += -O3 -DBOOST_MPL_LIMIT_LIST_SIZE=20
   ifeq ($(STATICLIB),1)
     NDDSLIBS    = -lnddscppz -lnddscz -lnddscorez
     REFLEXLIB      = -l$(REFLEXLIBRARY)z
@@ -137,8 +137,23 @@ TESTHEADERS = test/large_type.h \
               test/many_members.h \
               test/darkart.h
 
+PERFSRCS = test/reflex-perf.cxx \
+           test/complex.cxx \
+           test/complexSupport.cxx \
+	   test/complexPlugin.cxx
+
+PERFHEADERS = test/complex.h \
+              test/complexSupport.h \
+	      test/complexPlugin.h
+
 TESTSRCS_NODIR = $(notdir $(TESTSRCS))
 TESTOBJS = $(TESTSRCS_NODIR:%.cxx=objs/$(ARCH)/%.o)
+
+PERFSRCS_NODIR = $(notdir $(PERFSRCS))
+PERFOBJS = $(PERFSRCS_NODIR:%.cxx=objs/$(ARCH)/%.o)
+
+PERFHEADERS_NODIR = $(notdir $(PERFHEADERS))
+PERFCODEGEN = $(PERFHEADERS_NODIR:%.h=test/%.cxx)
 
 DIRECTORIES   = objs.dir objs/$(ARCH).dir 
 SOURCES_NODIR = $(notdir $(SOURCES))
@@ -168,13 +183,20 @@ objs/$(ARCH)/%.o: src/%.cxx $(HEADERS)
 		mkdir -p $* ; \
 	fi;
 
-test: objs/$(ARCH)/$(REFLEXLIBRARY)-test  
+test: objs/$(ARCH)/$(REFLEXLIBRARY)-test  \
+      objs/$(ARCH)/$(REFLEXLIBRARY)-perf
 
 objs/$(ARCH)/$(REFLEXLIBRARY)-test: $(TESTOBJS)  
 	$(CXXLD) $(CXXLDFLAGS) -o $@ $(REFLEXLIB) $(LIBS) $(TESTOBJS) 
 
+objs/$(ARCH)/$(REFLEXLIBRARY)-perf: $(PERFCODEGEN) $(PERFOBJS) 
+	$(CXXLD) $(CXXLDFLAGS) -o $@ $(REFLEXLIB) $(LIBS) $(PERFOBJS) 
+
 objs/$(ARCH)/%.o: test/%.cxx  
 	$(CXX) $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+$(PERFCODEGEN): idl/complex.idl
+	$(NDDSHOME)/scripts/rtiddsgen -language C++ -namespace -d test/ idl/complex.idl
 
 ###############################################################################
 # Clean target: removes the objs dir
@@ -186,4 +208,5 @@ clean:
 
 veryclean:
 	@rm -Rf objs
+	@rm -Rf test/complex*
 	@echo "Deleted all executables, objects and generated files"
