@@ -1,0 +1,248 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/time.h>
+
+#include "complex.h"
+#include "complexSupport.h"
+#include "ndds/ndds_cpp.h"
+
+#include "ndds/ndds_namespace_cpp.h"
+
+#include "reflex.h"
+#include "darkart.h"
+
+using namespace DDS;
+
+/* Delete all entities */
+static int publisher_shutdown(
+    DomainParticipant *participant)
+{
+    ReturnCode_t retcode;
+    int status = 0;
+
+    if (participant != NULL) {
+        retcode = participant->delete_contained_entities();
+        if (retcode != RETCODE_OK) {
+            printf("delete_contained_entities error %d\n", retcode);
+            status = -1;
+        }
+
+        retcode = TheParticipantFactory->delete_participant(participant);
+        if (retcode != RETCODE_OK) {
+            printf("delete_participant error %d\n", retcode);
+            status = -1;
+        }
+    }
+
+    retcode = DomainParticipantFactory::finalize_instance();
+    if (retcode != RETCODE_OK) {
+        printf("finalize_instance error %d\n", retcode);
+        status = -1;
+    }
+    return status;
+}
+
+int operator - (const timeval & end, const timeval & start)
+{
+  return (end.tv_sec*1000+end.tv_usec/1000)-(start.tv_sec*1000+start.tv_usec/1000);
+}
+
+extern "C" int publisher_main(int domainId, int sample_count, DomainParticipant **part)
+{
+    DomainParticipant *participant = NULL;
+    Publisher *publisher = NULL;
+    Topic *topic = NULL;
+    DataWriter *writer = NULL;
+    darkart_gen::ChannelDataWriter * darkart_gen_Channel_writer = NULL;
+    darkart_gen::Channel *instance = NULL;
+    ReturnCode_t retcode;
+    InstanceHandle_t instance_handle = HANDLE_NIL;
+    const char *type_name = NULL;
+    int count = 0;  
+    Duration_t send_period = {0,5*1000*1000*100};
+
+    /* To customize participant QoS, use 
+       the configuration file USER_QOS_PROFILES.xml */
+    participant = TheParticipantFactory->create_participant(
+        domainId, PARTICIPANT_QOS_DEFAULT, 
+        NULL /* listener */, STATUS_MASK_NONE);
+    if (participant == NULL) {
+        printf("create_participant error\n");
+        publisher_shutdown(participant);
+        return -1;
+    }
+    *part = participant;
+
+    /* To customize publisher QoS, use 
+       the configuration file USER_QOS_PROFILES.xml */
+    publisher = participant->create_publisher(
+        PUBLISHER_QOS_DEFAULT, NULL /* listener */, STATUS_MASK_NONE);
+    if (publisher == NULL) {
+        printf("create_publisher error\n");
+        publisher_shutdown(participant);
+        return -1;
+    }
+
+    /* Register type before creating topic */
+    type_name = darkart_gen::ChannelTypeSupport::get_type_name();
+    retcode = darkart_gen::ChannelTypeSupport::register_type(
+        participant, type_name);
+    if (retcode != RETCODE_OK) {
+        printf("register_type error %d\n", retcode);
+        publisher_shutdown(participant);
+        return -1;
+    }
+
+    /* To customize topic QoS, use 
+       the configuration file USER_QOS_PROFILES.xml */
+    topic = participant->create_topic(
+        "darkart_gen::Channel",
+        type_name, TOPIC_QOS_DEFAULT, NULL /* listener */,
+        STATUS_MASK_NONE);
+    if (topic == NULL) {
+        printf("create_topic error\n");
+        publisher_shutdown(participant);
+        return -1;
+    }
+
+    /* To customize data writer QoS, use 
+       the configuration file USER_QOS_PROFILES.xml */
+    writer = publisher->create_datawriter(
+        topic, DATAWRITER_QOS_DEFAULT, NULL /* listener */,
+        STATUS_MASK_NONE);
+    if (writer == NULL) {
+        printf("create_datawriter error\n");
+        publisher_shutdown(participant);
+        return -1;
+    }
+    darkart_gen_Channel_writer = darkart_gen::ChannelDataWriter::narrow(writer);
+    if (darkart_gen_Channel_writer == NULL) {
+        printf("DataWriter narrow error\n");
+        publisher_shutdown(participant);
+        return -1;
+    }
+
+    /* Create data sample for writing */
+
+    instance = darkart_gen::ChannelTypeSupport::create_data();
+    
+    if (instance == NULL) {
+        printf("darkart_gen::ChannelTypeSupport::create_data error\n");
+        publisher_shutdown(participant);
+        return -1;
+    }
+
+    /* For a data type that has a key, if the same instance is going to be
+       written multiple times, initialize the key here
+       and register the keyed instance prior to writing */
+
+    instance->board_id = 0;
+    instance_handle = darkart_gen_Channel_writer->register_instance(*instance);
+
+    time_t seed;
+    seed = time(NULL);
+    srand(seed);
+
+    timeval start, end;
+    gettimeofday(&start, NULL);
+    for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
+
+        //printf("Writing darkart_gen::Channel, count %d\n", count);
+
+        instance->channel_num   = rand();
+        instance->channel_id    = rand();
+        instance->trigger_count = rand();
+        instance->sample_bits   = rand();
+        instance->sample_rate   = rand();
+        instance->trigger_index = rand();
+        instance->nsamps        = rand();
+        instance->saturated     = false;
+
+        sprintf(instance->label, "%d", rand());
+       
+        retcode = darkart_gen_Channel_writer->write(*instance, instance_handle);
+        if (retcode != RETCODE_OK) {
+            printf("write error %d\n", retcode);
+        }
+
+        //NDDSUtility::sleep(send_period);
+    }
+
+    gettimeofday(&end, NULL);
+    printf("Time taken (Codegen) = %d ms. sample_count = %d\n", end-start, sample_count);
+
+    const char * darkart_topic = "DarkartChannelTopic";
+    const char * channel_typename = "DarkartChannelType";
+    GenericDataWriter<darkart::Channel>
+          channel_reflex_writer(participant, darkart_topic, channel_typename);
+
+    char buffer[32];
+    darkart::Channel channel;
+
+    gettimeofday(&start, NULL);
+    for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
+
+        //printf("Writing %s, count %d\n", channel_typename, count);
+
+        channel.channel_num   = rand();
+        channel.channel_id    = rand();
+        channel.trigger_count = rand();
+        channel.sample_bits   = rand();
+        channel.sample_rate   = rand();
+        channel.trigger_index = rand();
+        channel.nsamps        = rand();
+        channel.saturated     = false;
+
+        sprintf(buffer, "%d", rand());
+        channel.label = buffer;
+
+        retcode = channel_reflex_writer.write(channel);
+        if (retcode != RETCODE_OK) {
+            printf("write error %d\n", retcode);
+        }
+
+        //NDDSUtility::sleep(send_period);
+    }
+
+    gettimeofday(&end, NULL);
+    printf("Time taken (RefleX) = %d ms. sample_count = %d\n", end-start, sample_count);
+
+/*
+    retcode = darkart_gen_Channel_writer->unregister_instance(
+        *instance, instance_handle);
+    if (retcode != RETCODE_OK) {
+        printf("unregister instance error %d\n", retcode);
+    }
+*/
+
+    /* Delete data sample */
+    retcode = darkart_gen::ChannelTypeSupport::delete_data(instance);
+    if (retcode != RETCODE_OK) {
+        printf("darkart_gen::ChannelTypeSupport::delete_data error %d\n", retcode);
+    }
+
+    return 0;
+}
+
+int main(int argc, char *argv[])
+{
+    int domainId = 0;
+    int sample_count = 0; /* infinite loop */
+
+    if (argc >= 2) {
+        domainId = atoi(argv[1]);
+    }
+    if (argc >= 3) {
+        sample_count = atoi(argv[2]);
+    }
+
+    /* Uncomment this to turn on additional logging
+    NDDSConfigLogger::get_instance()->
+        set_verbosity_by_category(NDDS_CONFIG_LOG_CATEGORY_API, 
+                                  NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
+    */
+    DomainParticipant *participant = NULL;
+    publisher_main(domainId, sample_count, &participant);
+    return publisher_shutdown(participant);
+}
