@@ -1,3 +1,13 @@
+/*********************************************************************************************
+(c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.    	                             
+RTI grants Licensee a license to use, modify, compile, and create derivative works 
+of the Software.  Licensee has the right to distribute object form only for use with RTI 
+products.  The Software is provided “as is”, with no warranty of any type, including 
+any warranty for fitness for any purpose. RTI is under no obligation to maintain or 
+support the Software.  RTI shall not be liable for any incidental or consequential 
+damages arising out of the use or inability to use the software.
+**********************************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -136,7 +146,8 @@ extern "C" int publisher_main(int domainId, int sample_count, DomainParticipant 
     /* For a data type that has a key, if the same instance is going to be
        written multiple times, initialize the key here
        and register the keyed instance prior to writing */
-
+    timeval start, end;
+/*
     instance->board_id = 0;
     instance_handle = darkart_gen_Channel_writer->register_instance(*instance);
 
@@ -144,7 +155,6 @@ extern "C" int publisher_main(int domainId, int sample_count, DomainParticipant 
     seed = time(NULL);
     srand(seed);
 
-    timeval start, end;
     gettimeofday(&start, NULL);
     for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
 
@@ -171,7 +181,7 @@ extern "C" int publisher_main(int domainId, int sample_count, DomainParticipant 
 
     gettimeofday(&end, NULL);
     printf("Time taken (Codegen) = %d ms. sample_count = %d\n", end-start, sample_count);
-
+*/
     const char * darkart_topic = "DarkartChannelTopic";
     const char * channel_typename = "DarkartChannelType";
     GenericDataWriter<darkart::Channel>
