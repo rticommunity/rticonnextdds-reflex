@@ -1,33 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\test\darkart.cxx">
+    <ClCompile Include="..\..\test\darkart.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\test\large_type.cxx">
+    <ClCompile Include="..\..\test\large_type.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\test\shape_type.cxx">
+    <ClCompile Include="..\..\test\shape_type.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\test\many_members.cxx">
+    <ClCompile Include="..\..\test\many_members.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\test\reflex-test.cxx">
+    <ClCompile Include="..\..\test\reflex-test.cxx">
       <Filter>sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\test\darkart.h">
+    <ClInclude Include="..\..\test\darkart.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\test\large_type.h">
+    <ClInclude Include="..\..\test\large_type.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\test\shape_type.h">
+    <ClInclude Include="..\..\test\shape_type.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\test\many_members.h">
+    <ClInclude Include="..\..\test\many_members.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

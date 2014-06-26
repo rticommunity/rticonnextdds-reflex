@@ -39,7 +39,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
       <AdditionalDependencies>reflexd.lib;nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2013;$(NDDSHOME)\lib\i86Win32VS2010</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2013;$(NDDSHOME)\lib\i86Win32VS2012</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ClCompile>
@@ -54,21 +54,21 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>reflex.lib;nddscpp.lib;nddsc.lib;nddscore.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2013;$(NDDSHOME)\lib\i86Win32VS2010</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2013;$(NDDSHOME)\lib\i86Win32VS2012</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\test\darkart.h" />
-    <ClInclude Include="..\test\large_type.h" />
-    <ClInclude Include="..\test\many_members.h" />
-    <ClInclude Include="..\test\shape_type.h" />
+    <ClInclude Include="..\..\test\darkart.h" />
+    <ClInclude Include="..\..\test\large_type.h" />
+    <ClInclude Include="..\..\test\many_members.h" />
+    <ClInclude Include="..\..\test\shape_type.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\test\darkart.cxx" />
-    <ClCompile Include="..\test\large_type.cxx" />
-    <ClCompile Include="..\test\many_members.cxx" />
-    <ClCompile Include="..\test\reflex-test.cxx" />
-    <ClCompile Include="..\test\shape_type.cxx" />
+    <ClCompile Include="..\..\test\darkart.cxx" />
+    <ClCompile Include="..\..\test\large_type.cxx" />
+    <ClCompile Include="..\..\test\many_members.cxx" />
+    <ClCompile Include="..\..\test\reflex-test.cxx" />
+    <ClCompile Include="..\..\test\shape_type.cxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

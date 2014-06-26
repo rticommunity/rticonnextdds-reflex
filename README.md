@@ -17,10 +17,11 @@ More reading:
 - [RefleX presentation](http://www.slideshare.net/SumantTambe/overloading-in-overdrive-a-generic-datacentric-library-for)
 
 ### Windows Build
-1. Use at least VS2013 preview
-2. Set REFLEXHOME, BOOSTHOME (1.46+), and NDDSHOME (5.0.0+)
+1. Use Visual Studio 2013 
+2. Set REFLEXHOME, BOOSTHOME (1.46+), and NDDSHOME (5.1.0+)
 3. Set PATH=%PATH%;%REFLEXHOME%\objs\i86Win32VS2013;%NDDSHOME%\lib\i86Win32VS2012
-4. Open win32\reflex-vs2013.sln
+4. Run %NDDSHOME%\scripts\rtiddsgen -language C++ -namespace -d test idl\complex.idl
+5. Open win32\reflex-vs2013.sln
 
 ### Linux Build
 1. Recommended compilers: g++ 4.8, clang 3.3 or better

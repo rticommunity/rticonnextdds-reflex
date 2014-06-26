@@ -85,7 +85,7 @@ namespace darkart
     int      trigger_index; //sample at which trigger occurred
     int             nsamps; //number of samples in the waveform
     bool         saturated; //did the signal hit the max or min range of the digitizer?
-    double GetVerticalRange() const { return ((uint64_t)1<<sample_bits) - 1; }
+    uint64_t GetVerticalRange() const { return ((uint64_t) 1 << sample_bits) - 1; }
   };
   typedef std::vector<Channel> ChannelInfo;
 

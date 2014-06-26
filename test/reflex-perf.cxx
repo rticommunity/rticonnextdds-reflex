@@ -11,7 +11,7 @@ damages arising out of the use or inability to use the software.
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <sys/time.h>
+#include <time.h>
 
 #include "complex.h"
 #include "complexSupport.h"
@@ -21,6 +21,7 @@ damages arising out of the use or inability to use the software.
 
 #include "reflex.h"
 #include "darkart.h"
+#include "gettimeofday.h"
 
 using namespace DDS;
 
@@ -58,7 +59,7 @@ int operator - (const timeval & end, const timeval & start)
   return (end.tv_sec*1000+end.tv_usec/1000)-(start.tv_sec*1000+start.tv_usec/1000);
 }
 
-extern "C" int publisher_main(int domainId, int sample_count, DomainParticipant **part)
+extern "C" int publisher_main(bool noreflex, int domainId, int sample_count, DomainParticipant **part)
 {
     DomainParticipant *participant = NULL;
     Publisher *publisher = NULL;
@@ -147,90 +148,83 @@ extern "C" int publisher_main(int domainId, int sample_count, DomainParticipant 
        written multiple times, initialize the key here
        and register the keyed instance prior to writing */
     timeval start, end;
-/*
-    instance->board_id = 0;
-    instance_handle = darkart_gen_Channel_writer->register_instance(*instance);
-
     time_t seed;
     seed = time(NULL);
-    srand(seed);
+    srand((unsigned int) seed);
 
     gettimeofday(&start, NULL);
-    for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
+
+    if (noreflex)
+    {
+      instance->board_id = 0;
+      instance_handle = darkart_gen_Channel_writer->register_instance(*instance);
+
+      for (count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
         //printf("Writing darkart_gen::Channel, count %d\n", count);
 
-        instance->channel_num   = rand();
-        instance->channel_id    = rand();
+        instance->channel_num = rand();
+        instance->channel_id = rand();
         instance->trigger_count = rand();
-        instance->sample_bits   = rand();
-        instance->sample_rate   = rand();
+        instance->sample_bits = rand();
+        instance->sample_rate = rand();
         instance->trigger_index = rand();
-        instance->nsamps        = rand();
-        instance->saturated     = false;
+        instance->nsamps = rand();
+        instance->saturated = false;
 
-        sprintf(instance->label, "%d", rand());
-       
+        sprintf_s(instance->label, 256, "%d", rand());
+
         retcode = darkart_gen_Channel_writer->write(*instance, instance_handle);
         if (retcode != RETCODE_OK) {
-            printf("write error %d\n", retcode);
+          printf("write error %d\n", retcode);
         }
 
         //NDDSUtility::sleep(send_period);
+      }
+      
+      /* Delete data sample */
+      retcode = darkart_gen::ChannelTypeSupport::delete_data(instance);
+      if (retcode != RETCODE_OK) {
+        printf("darkart_gen::ChannelTypeSupport::delete_data error %d\n", retcode);
+      }
     }
+    else 
+    {
+      const char * darkart_topic = "DarkartChannelTopic";
+      const char * channel_typename = "DarkartChannelType";
+      GenericDataWriter<darkart::Channel>
+        channel_reflex_writer(participant, darkart_topic, channel_typename);
 
-    gettimeofday(&end, NULL);
-    printf("Time taken (Codegen) = %d ms. sample_count = %d\n", end-start, sample_count);
-*/
-    const char * darkart_topic = "DarkartChannelTopic";
-    const char * channel_typename = "DarkartChannelType";
-    GenericDataWriter<darkart::Channel>
-          channel_reflex_writer(participant, darkart_topic, channel_typename);
+      char buffer[32];
+      darkart::Channel channel;
 
-    char buffer[32];
-    darkart::Channel channel;
-
-    gettimeofday(&start, NULL);
-    for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
+      gettimeofday(&start, NULL);
+      for (count = 0; (sample_count == 0) || (count < sample_count); ++count) {
 
         //printf("Writing %s, count %d\n", channel_typename, count);
 
-        channel.channel_num   = rand();
-        channel.channel_id    = rand();
+        channel.channel_num = rand();
+        channel.channel_id = rand();
         channel.trigger_count = rand();
-        channel.sample_bits   = rand();
-        channel.sample_rate   = rand();
+        channel.sample_bits = rand();
+        channel.sample_rate = rand();
         channel.trigger_index = rand();
-        channel.nsamps        = rand();
-        channel.saturated     = false;
+        channel.nsamps = rand();
+        channel.saturated = false;
 
-        sprintf(buffer, "%d", rand());
+        sprintf_s(buffer, "%d", rand());
         channel.label = buffer;
 
         retcode = channel_reflex_writer.write(channel);
         if (retcode != RETCODE_OK) {
-            printf("write error %d\n", retcode);
+          printf("write error %d\n", retcode);
         }
 
         //NDDSUtility::sleep(send_period);
+      }
     }
-
     gettimeofday(&end, NULL);
-    printf("Time taken (RefleX) = %d ms. sample_count = %d\n", end-start, sample_count);
-
-/*
-    retcode = darkart_gen_Channel_writer->unregister_instance(
-        *instance, instance_handle);
-    if (retcode != RETCODE_OK) {
-        printf("unregister instance error %d\n", retcode);
-    }
-*/
-
-    /* Delete data sample */
-    retcode = darkart_gen::ChannelTypeSupport::delete_data(instance);
-    if (retcode != RETCODE_OK) {
-        printf("darkart_gen::ChannelTypeSupport::delete_data error %d\n", retcode);
-    }
+    printf("Time taken = %d ms. sample_count = %d\n", end - start, sample_count);
 
     return 0;
 }
@@ -239,12 +233,19 @@ int main(int argc, char *argv[])
 {
     int domainId = 0;
     int sample_count = 0; /* infinite loop */
+    bool noreflex = false;
+
+    printf("Usage: reflex-perf [domain-id] [sample count] [noreflex]\n");
 
     if (argc >= 2) {
         domainId = atoi(argv[1]);
     }
     if (argc >= 3) {
-        sample_count = atoi(argv[2]);
+      sample_count = atoi(argv[2]);
+    }
+    if (argc >= 4) {
+      if (strcmp("noreflex", argv[3]) == 0)
+        noreflex = true;
     }
 
     /* Uncomment this to turn on additional logging
@@ -253,6 +254,6 @@ int main(int argc, char *argv[])
                                   NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
     */
     DomainParticipant *participant = NULL;
-    publisher_main(domainId, sample_count, &participant);
+    publisher_main(noreflex, domainId, sample_count, &participant);
     return publisher_shutdown(participant);
 }
