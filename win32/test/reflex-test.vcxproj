@@ -45,6 +45,8 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(REFLEXHOME)\include;$(BOOSTHOME);$(BOOSTHOME)\boost;$(NDDSHOME)\include;$(NDDSHOME)\include\ndds</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;_DEBUG;_CONSOLE;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

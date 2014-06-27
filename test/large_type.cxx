@@ -29,8 +29,15 @@ create_ddwriter(const char *type_name,
 
 void write_large_type(int domain_id) 
 {
-    MAX_STRING_SIZE = 999;
-    MAX_SEQ_SIZE = 9;
+    using reflex::MultiDimArray;
+    using reflex::octet_t;
+    using reflex::bounded;
+    using reflex::BoundedRange;
+    using reflex::Range;
+    using reflex::Sparse;
+
+    reflex::MAX_STRING_SIZE = 999;
+    reflex::MAX_SEQ_SIZE = 9;
 
     using std::vector;
     DDS_ReturnCode_t         rc;
@@ -51,13 +58,13 @@ void write_large_type(int domain_id)
     octet_t octet_var = 'A';
     long long ll = 0xFFFFFFF;
     std::string str("Hello World!");
-    bounded<std::string, 99> bstr(str);
+    reflex::bounded<std::string, 99> bstr(str);
 
     custom::TupleIntString tis 
       = std::make_tuple(99, std::make_tuple("$99.99"));
 
     vector<int32_t> vl(0, 55555);
-    bounded<vector<int32_t>, 77> bvl(vl);
+    reflex::bounded<vector<int32_t>, 77> bvl(vl);
 
     float float_arr[SIZE] = { 1.1f, 2.2f, 3.3f, 4.4f };
     std::list<float>       float_list(float_arr, float_arr + SIZE);
@@ -113,10 +120,13 @@ void write_large_type(int domain_id)
     TestUnion tu;
     tu = Case<UBoolString, green>(ubs); 
 #endif
-
+    
     MultiDimArray<int16_t,2,3>::type int_array = { { {0,0,0}, {5,5,5} } };
     std::list<MultiDimArray<int16_t,2,3>::type> lmda(2, int_array);
-    typedef Sparse<std::string, float, MultiDimArray<int16_t, 2, 3>::type> SparseSFA;
+    typedef reflex::Sparse<std::string, 
+                           float, 
+                           MultiDimArray<int16_t, 2, 3>::type
+                          > SparseSFA;
     SparseSFA sparse;
     std::get<0>(sparse.get_opt_tuple()) = std::string("Real-Time Innovations, Inc.");
     std::get<1>(sparse.get_opt_tuple()) = 1.10f;
@@ -124,8 +134,8 @@ void write_large_type(int domain_id)
     std::list<std::tuple<float, bool>> ltfb1(SIZE, std::make_tuple(5.55f, true));
     std::list<std::tuple<float, bool>> ltfb2(SIZE);
     //auto range = make_range(ltfb1);
-    auto range = make_range(ltfb1.begin(), ltfb1.end());
-    auto bounded_range = make_bounded_range<5>(vvtss.begin(), vvtss.end());
+    auto range = reflex::make_range(ltfb1.begin(), ltfb1.end());
+    auto bounded_range = reflex::make_bounded_range<5>(vvtss.begin(), vvtss.end());
     std::list<SparseSFA> lssfa(2, sparse);
     Zip::Map zip_map;
     zip_map.insert(std::make_pair("Fremont", 94555));
@@ -180,16 +190,18 @@ void write_large_type(int domain_id)
     /* 29 */  std::list<SparseSFA>,
     /* 30 */  std::map<std::string, unsigned> > TupleFull;
     
-    SafeTypeCode<DDS_TypeCode> stc(Tuple2Typecode<decltype(t1)>());
-    typedef remove_refs<decltype(t1)>::type Tuple;
+    reflex::SafeTypeCode<DDS_TypeCode> 
+      stc(reflex::Tuple2Typecode<decltype(t1)>());
+    
+    typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
 
     std::shared_ptr<DDSDynamicDataTypeSupport> 
       safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
-    print_IDL(stc.get(), 0);
+    reflex::print_IDL(stc.get(), 0);
     
-    SafeDynamicDataInstance ddi1(safe_typeSupport.get());
-    SafeDynamicDataInstance ddi2(safe_typeSupport.get());
+    reflex::SafeDynamicDataInstance ddi1(safe_typeSupport.get());
+    reflex::SafeDynamicDataInstance ddi2(safe_typeSupport.get());
 
     Tuple2DD(t1, *ddi1.get());
 
@@ -225,9 +237,13 @@ void write_large_type(int domain_id)
     ddi2.get()->print(stdout, 2);
 #endif
 
+    bool is_equal = 
+      ddi1.get()->equal(*ddi2.get()) ? true : false;
+    
     std::cout << "DynamicData::equal = " 
               << std::boolalpha 
-              << (bool) ddi1.get()->equal(*ddi2.get()) << std::endl;
+              << is_equal
+              << std::endl;
 
     assert(ddi1.get()->equal(*ddi2.get()));
 
@@ -242,7 +258,7 @@ void write_large_type(int domain_id)
       {
         rc = ddWriter->write(*ddi2.get(), DDS_HANDLE_NIL);
         if(rc != DDS_RETCODE_OK) {
-          std::cerr << "Write error = " << get_readable_retcode(rc) << std::endl;
+          std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
           break;
         }
         NDDSUtility::sleep(period);

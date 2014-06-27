@@ -14,62 +14,66 @@ damages arising out of the use or inability to use the software.
 #include <vector>
 #include <string>
 
-template <class T, size_t Bound>
-class bounded;
+namespace reflex {
 
-template <typename T, size_t Bound>
-class bounded
-{
-  T * ptr;
-  
-public:
-  bounded() : ptr(0) {}
+  template <class T, size_t Bound>
+  class bounded;
 
-  explicit bounded(T & t)
-    : ptr(&t)
-  {}
-  
-  bounded(const bounded & b)
-    : ptr(b.ptr)
-  {}
-
-  operator T & () const 
-  { 
-    if (ptr)
-      return *ptr;
-    else
-      throw 0;
-  } 
-
-  bounded & operator = (T & t)
+  template <typename T, size_t Bound>
+  class bounded
   {
-    ptr = &t;
-    return *this;
+    T * ptr;
+
+  public:
+    bounded() : ptr(0) {}
+
+    explicit bounded(T & t)
+      : ptr(&t)
+    {}
+
+    bounded(const bounded & b)
+      : ptr(b.ptr)
+    {}
+
+    operator T & () const
+    {
+      if (ptr)
+        return *ptr;
+      else
+        throw std::runtime_error("bounded<T>: Null pointer");
+    }
+
+    bounded & operator = (T & t)
+    {
+      ptr = &t;
+      return *this;
+    }
+  };
+
+  template <class Iter, size_t Bound>
+  class BoundedViewIterator : public Iter
+  {
+  public:
+    BoundedViewIterator()
+      : Iter()
+    {}
+
+    explicit BoundedViewIterator(Iter i)
+      : Iter(i)
+    {}
+
+    BoundedViewIterator(const BoundedViewIterator & bvi)
+      : Iter(bvi)
+    {}
+  };
+
+  template <size_t Bound, class Iter>
+  BoundedViewIterator<Iter, Bound> make_bounded_view_iterator(Iter iter)
+  {
+    return BoundedViewIterator<Iter, Bound>(iter);
   }
-};
 
-template <class Iter, size_t Bound>
-class BoundedViewIterator : public Iter
-{
-public:
-  BoundedViewIterator()
-    : Iter()
-  {}
-
-  explicit BoundedViewIterator(Iter i)
-    : Iter(i)
-  {}
-
-  BoundedViewIterator(const BoundedViewIterator & bvi)
-    : Iter(bvi)
-  {}
-};
-
-template <size_t Bound, class Iter>
-BoundedViewIterator<Iter, Bound> make_bounded_view_iterator(Iter iter)
-{
-  return BoundedViewIterator<Iter, Bound>(iter);
-}
+} // namespace reflex
 
 #endif // RTIREFLEX_BOUNDED_H
 

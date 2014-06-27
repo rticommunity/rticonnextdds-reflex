@@ -53,16 +53,15 @@ void write_darkart_type(unsigned domain_id)
                         DDS_STATUS_MASK_NONE);
 
   if (participant == NULL) {
-      std::cerr << "! Unable to create DDS domain participant" << std::endl;
-      throw 0;
+    throw std::runtime_error("write_darkart_type: Unable to create participant");
   }
 
   /* Option 1: Using darkart::TopLevel */
-  GenericDataWriter<darkart::TopLevel>
+  reflex::GenericDataWriter<darkart::TopLevel>
     top_level_writer(participant, "DarkartTopLevelTopic", "DarkartTopLevelType");
 
   std::cout << "Printing IDL\n";
-  print_IDL(top_level_writer.get_typecode(), 0);
+  reflex::print_IDL(top_level_writer.get_typecode(), 0);
 
   /* Option 2: using tuple */
   auto all = std::tie(vb, vc, event, sp, truth, vw);
@@ -74,30 +73,31 @@ void write_darkart_type(unsigned domain_id)
   // If they are =deleted, compiler error will arise.
   // darkart::AllTuple a = all; 
 
-  SafeTypeCode<DDS_TypeCode> stc(Tuple2Typecode<darkart::AllTuple>());
+  reflex::SafeTypeCode<DDS_TypeCode> 
+    stc(reflex::Tuple2Typecode<darkart::AllTuple>());
 
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
-  SafeDynamicDataInstance ddi1(safe_typeSupport.get());
-  FillDD(all, *ddi1.get());
+  reflex::SafeDynamicDataInstance ddi1(safe_typeSupport.get());
+  reflex::FillDD(all, *ddi1.get());
   std::cout << "Printing Data\n";
   ddi1.get()->print(stdout, 2);
 
-  GenericDataWriter<decltype(all)>
+  reflex::GenericDataWriter<decltype(all)>
     tuple_writer(participant, "DarkartTopic", "DarkartAllTupleType");
 
   for(;;)
   {
     rc = top_level_writer.write(toplevel);
     if(rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = " << get_readable_retcode(rc) << std::endl;
+      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
       break;
     }
 
     rc = tuple_writer.write(toplevel);
     if(rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = " << get_readable_retcode(rc) << std::endl;
+      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
       break;
     }
 

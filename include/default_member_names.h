@@ -23,148 +23,173 @@ damages arising out of the use or inability to use the software.
 
 #include "dd_extra.h"
 
-template <class Enum>
-struct EnumDef;
+namespace reflex {
 
-struct MemberInfo
-{
-   std::string name;
-   unsigned char value;
-   
-   MemberInfo() {}
+  namespace detail {
 
-   MemberInfo(std::string n,
-              unsigned char v)
-     : name(remove_parenthesis(n)), value(v)
-   {}
-};
+    template <class Enum>
+    struct EnumDef;
 
-struct DefaultMemberNames
-{
-  DllExport static const MemberInfo members [];
+    struct MemberInfo
+    {
+      std::string name;
+      unsigned char value;
 
-  DllExport static const char * basename(const char *);
-  DllExport static std::string type_name(const char * prefix);
-  DllExport static std::string demangle(const char* name);
-};
+      MemberInfo() {}
 
-template <class T>
-struct StructName 
-{ 
-  static std::string get() 
-  {
-    #ifdef HAVE_CXA_DEMANGLE
-      return DefaultMemberNames::demangle(typeid(T).name());
-    #else
-      return DefaultMemberNames::type_name("DefaultTypeName");
-    #endif
-  }
-};
+      MemberInfo(std::string n,
+        unsigned char v)
+        : name(remove_parenthesis(n)), value(v)
+      {}
+    };
 
-// specialize this trait for every user-defined type
-template <class T, unsigned I>
-struct MemberTraits
-{
-  static MemberInfo member_info() {
-    return DefaultMemberNames::members[I];
-  }
-};
+    struct DefaultMemberNames
+    {
+      DllExport static const MemberInfo members [];
 
-template <class First, class Second>
-struct MemberTraits<std::pair<First, Second>, 0>
-{
-  static MemberInfo member_info() {
-    return MemberInfo("first", DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
-  }
-};
+      DllExport static const char * basename(const char *);
+      DllExport static std::string type_name(const char * prefix);
+      DllExport static std::string demangle(const char* name);
+    };
 
-template <class First, class Second>
-struct MemberTraits<std::pair<First, Second>, 1>
-{
-  static MemberInfo member_info() {
-    return MemberInfo("second", DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
-  }
-};
+    template <class T>
+    struct StructName
+    {
+      static std::string get()
+      {
+#ifdef HAVE_CXA_DEMANGLE
+        return DefaultMemberNames::demangle(typeid(T).name());
+#else
+        return DefaultMemberNames::type_name("DefaultTypeName");
+#endif
+      }
+    };
 
-template <class... Args>
-struct Sparse;
+    // specialize this trait for every user-defined type
+    template <class T, unsigned I>
+    struct MemberTraits
+    {
+      static MemberInfo member_info() {
+        return DefaultMemberNames::members[I];
+      }
+    };
 
-template <class TagType, class... Cases>
-struct Union;
+    template <class First, class Second>
+    struct MemberTraits<std::pair<First, Second>, 0>
+    {
+      static MemberInfo member_info() {
+        return MemberInfo("first", DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
+      }
+    };
 
-template <class First, class Second>
-struct StructName<std::pair<First, Second>>
-{
-  static std::string get()
-  {
-    return DefaultMemberNames::type_name("DefaultPairTypeName");
-  }
-};
+    template <class First, class Second>
+    struct MemberTraits<std::pair<First, Second>, 1>
+    {
+      static MemberInfo member_info() {
+        return MemberInfo("second", DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
+      }
+    };
 
-template <class... Args>
-struct StructName<Sparse<Args...>>
-{
-  static std::string get()
-  {
-    return DefaultMemberNames::type_name("DefaultSparseTypeName");
-  }
-};
+  } // namespace detail
 
-template <class TagType, class... Cases>
-struct StructName<Union<TagType, Cases...>>
-{ 
-  static std::string get() 
-  {
-    return DefaultMemberNames::type_name("DefaultUnionName");
-  }
-};
+  template <class... Args>
+  struct Sparse;
 
-template <class... Args>
-struct StructName<std::tuple<Args...>>
-{ 
-  static std::string get() 
-  {
-    return DefaultMemberNames::type_name("DefaultTupleName");
-  }
-};
+  template <class TagType, class... Cases>
+  struct Union;
+
+  namespace detail {
+
+    template <class First, class Second>
+    struct StructName<std::pair<First, Second>>
+    {
+      static std::string get()
+      {
+        return DefaultMemberNames::type_name("DefaultPairTypeName");
+      }
+    };
+
+    template <class... Args>
+    struct StructName<::reflex::Sparse<Args...>>
+    {
+      static std::string get()
+      {
+        return DefaultMemberNames::type_name("DefaultSparseTypeName");
+      }
+    };
+
+    template <class TagType, class... Cases>
+    struct StructName<Union<TagType, Cases...>>
+    {
+      static std::string get()
+      {
+        return DefaultMemberNames::type_name("DefaultUnionName");
+      }
+    };
+
+    template <class... Args>
+    struct StructName<std::tuple<Args...>>
+    {
+      static std::string get()
+      {
+        return DefaultMemberNames::type_name("DefaultTupleName");
+      }
+    };
+
+  } // namespace detail
+
+} // namespace reflex
 
 #define ENUM_DEF(EnumType, Name, Size)        \
 template <>                                   \
-struct EnumDef<EnumType> {                    \
-  static const char *name() { return Name; }  \
+struct reflex::detail::EnumDef<EnumType>      \
+{                                             \
+  static const char *name() {                 \
+    return Name;                              \
+  }                                           \
+                                              \
   static const unsigned int size = Size;      \
                                               \
   template <unsigned Index>                   \
   struct EnumMember {                         \
-    static MemberInfo info();                 \
+    static reflex::detail::MemberInfo info(); \
   };                                          \
 };
 
-#define ENUM_MEMBER_DEF(EnumType, Index, Name, Ordinal)  \
-template<>                                               \
-inline MemberInfo                                        \
-EnumDef<EnumType>::EnumMember<Index>::info() {           \
-  return MemberInfo(Name,  Ordinal);                     \
+#define ENUM_MEMBER_DEF(EnumType, Index, Name, Ordinal)      \
+template<>                                                   \
+inline reflex::detail::MemberInfo                            \
+reflex::detail::EnumDef<EnumType>::EnumMember<Index>::info() \
+{                                                            \
+  return reflex::detail::MemberInfo(Name, Ordinal);          \
 }
 
 #define STRUCT_NAME_DEF_INTERNAL(FullyQualifiedType)            \
 template <>                                                     \
-struct StructName<FullyQualifiedType> {                         \
+struct reflex::detail::StructName<FullyQualifiedType>           \
+{                                                               \
   static std::string get()                                      \
-  { return DefaultMemberNames::basename(#FullyQualifiedType); } \
+  {                                                             \
+    return DefaultMemberNames::basename(#FullyQualifiedType);   \
+  }                                                             \
 };
 
 #define STRUCT_NAME_DEF_CUSTOM(FullyQualifiedType, Name)        \
 template <>                                                     \
-struct StructName<FullyQualifiedType> {                         \
-  static std::string get() { return Name; }                     \
+struct reflex::detail::StructName<FullyQualifiedType>           \
+{                                                               \
+  static std::string get() {                                    \
+    return Name;                                                \
+  }                                                             \
 };
 
 #define MEMBER_TRAITS_DEF_CUSTOM(FullyQualifiedType, I, Name, Flags)   \
 template <>                                                            \
-struct MemberTraits<FullyQualifiedType, I> {                           \
-  static MemberInfo member_info() {                                    \
-    return MemberInfo(Name, Flags);                                    \
+struct reflex::detail::MemberTraits<FullyQualifiedType, I>             \
+{                                                                      \
+  static reflex::detail::MemberInfo member_info()                      \
+  {                                                                    \
+    return reflex::detail::MemberInfo(Name, Flags);                    \
   }                                                                    \
 };
 
@@ -175,7 +200,7 @@ struct MemberTraits<FullyQualifiedType, I> {                           \
 
 #ifdef RTI_WIN32
   #define RTI_DUMMY(X) X
-  #define RTI_DUMMY_VAR   DDS_Octet RTI_DUMMY=_REQUIRED;
+  #define RTI_DUMMY_VAR   DDS_Octet RTI_DUMMY=_REQUIRED
 
   #define RTI_GET_NAME_FLAGS(Type, Name, ...)   \
     #Name, RTI_DUMMY ## __VA_ARGS__
@@ -203,12 +228,15 @@ struct MemberTraits<FullyQualifiedType, I> {                           \
 // Attr is either a pair or a triplet
 // RTI_GET_NAME_FLAGS macro eats the parenthesis around Attr.
 // RTI_DUMMY_VAR is used on for Win32 only
-#define RTI_MEMBER_INFO_INTERNAL(R,Data,I,Attr)     \
-template<>                                          \
-MemberInfo MemberTraits<Data, I>::member_info() {   \
-    RTI_DUMMY_VAR                                   \
-    return MemberInfo(RTI_GET_NAME_FLAGS Attr);     \
-}                                                   \
+#define RTI_MEMBER_INFO_INTERNAL(R,Data,I,Attr)        \
+template<>                                             \
+reflex::detail::MemberInfo                             \
+reflex::detail::MemberTraits<Data, I>::member_info()   \
+{                                                      \
+    RTI_DUMMY_VAR;                                     \
+    return reflex::detail::MemberInfo(                 \
+      RTI_GET_NAME_FLAGS Attr);                        \
+}                                                      \
 
 #define RTI_FILLER_0(...) ((__VA_ARGS__)) RTI_FILLER_1
 #define RTI_FILLER_1(...) ((__VA_ARGS__)) RTI_FILLER_0
@@ -263,31 +291,35 @@ MemberInfo MemberTraits<Data, I>::member_info() {   \
   BOOST_FUSION_ADAPT_STRUCT(Name,RTI_TRANSFORM_TRIPLETS_TO_PAIRS(Attributes))
 
 
-#define RTI_ENUM_MEMBER_INFO_INTERNAL(R,EnumType,Index,Attr)   \
-template<>                                                     \
-inline MemberInfo                                              \
-EnumDef<EnumType>::EnumMember<Index>::info() {                 \
-  return MemberInfo(RTI_GET_NAME_ORDINAL Attr);                \
+#define RTI_ENUM_MEMBER_INFO_INTERNAL(R,EnumType,Index,Attr)     \
+template<>                                                       \
+inline reflex::detail::MemberInfo                                \
+reflex::detail::EnumDef<EnumType>::EnumMember<Index>::info()     \
+{                                                                \
+  return reflex::detail::MemberInfo(RTI_GET_NAME_ORDINAL Attr);  \
 }
 
 
-#define RTI_ADAPT_ENUM(EnumType, Attributes)           \
-template <>                                            \
-struct EnumDef<EnumType>                               \
-{                                                      \
-  static const char *name()                            \
-  { return DefaultMemberNames::basename(#EnumType); }  \
-                                                       \
-  static const unsigned int size =                     \
-    BOOST_PP_SEQ_SIZE(RTI_PARENTHESIZE(Attributes));   \
-                                                       \
-  template <unsigned Index>                            \
-  struct EnumMember {                                  \
-    static MemberInfo info();                          \
-  };                                                   \
-};                                                     \
-BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL, \
-                        EnumType,                      \
+#define RTI_ADAPT_ENUM(EnumType, Attributes)            \
+template <>                                             \
+struct reflex::detail::EnumDef<EnumType>                \
+{                                                       \
+  static const char *name() {                           \
+    return                                              \
+      reflex::detail::DefaultMemberNames::basename      \
+       (#EnumType);                                     \
+  }                                                     \
+                                                        \
+  static const unsigned int size =                      \
+    BOOST_PP_SEQ_SIZE(RTI_PARENTHESIZE(Attributes));    \
+                                                        \
+  template <unsigned Index>                             \
+  struct EnumMember {                                   \
+    static reflex::detail::MemberInfo info();           \
+  };                                                    \
+};                                                      \
+BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL,  \
+                        EnumType,                       \
                         RTI_PARENTHESIZE(Attributes))
 
 

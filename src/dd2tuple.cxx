@@ -12,35 +12,40 @@ damages arising out of the use or inability to use the software.
 #include "ndds/ndds_cpp.h"
 #include "dd2tuple.h"
 
-SafeDynamicDataInstance::SafeDynamicDataInstance(
+namespace reflex {
+
+  SafeDynamicDataInstance::SafeDynamicDataInstance(
     DDSDynamicDataTypeSupport * typeSupport)
-	: typeSupport_(typeSupport),
-	  instance_(0)
-{ 
-  if(!typeSupport_) {
-    std::cerr << "NULL TypeSupport\n";
-    throw 0;
-  }
-  instance_ = typeSupport_->create_data();
-  if(!instance_) {
-    std::cerr << "DynamicDataTypeSupport::create_data failed\n";
-    throw 0;
-  }
-}
-
-SafeDynamicDataInstance::~SafeDynamicDataInstance() 
-{
-  if (instance_ != NULL) {
-    DDS_ReturnCode_t rc = typeSupport_->delete_data(instance_);
-    if (rc != DDS_RETCODE_OK) {
-	      std::cerr << "! Unable to delete instance data: " 
-                  << rc << std::endl;
+    : typeSupport_(typeSupport),
+    instance_(0)
+  {
+    if (!typeSupport_) 
+    {
+      throw std::runtime_error("SafeDynamicDataInstance: NULL typeSupport");
     }
-    instance_ = NULL;
+    instance_ = typeSupport_->create_data();
+    if (!instance_) 
+    {
+      throw std::runtime_error(
+        "SafeDynamicDataInstance: DynamicDataTypeSupport::create_data failed");
+    }
   }
-}
 
-DDS_DynamicData * SafeDynamicDataInstance::get() {
-  return instance_;
-}
+  SafeDynamicDataInstance::~SafeDynamicDataInstance()
+  {
+    if (instance_ != NULL) {
+      DDS_ReturnCode_t rc = typeSupport_->delete_data(instance_);
+      if (rc != DDS_RETCODE_OK) 
+      {
+        std::cerr << "~SafeDynamicDataInstance: Unable to delete instance data, error = "
+                  << get_readable_retcode(rc) << std::endl;
+      }
+      instance_ = NULL;
+    }
+  }
 
+  DDS_DynamicData * SafeDynamicDataInstance::get() {
+    return instance_;
+  }
+
+} // namespace reflex

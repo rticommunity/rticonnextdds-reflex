@@ -21,22 +21,22 @@ create_ddwriter(const char *type_name,
                 const char *topic_name,
                 DDSDynamicDataTypeSupport *type_support);
 
-class MyShapesListener : public GenericDataReaderListener<ShapeType>
+class MyShapesListener : public reflex::GenericDataReaderListener<ShapeType>
 {
 public:
-  void on_data_available(GenericDataReader<ShapeType> & dr) override
+  void on_data_available(reflex::GenericDataReader<ShapeType> & dr) override
   {
-    std::vector<Sample<ShapeType>> samples;
+    std::vector<reflex::Sample<ShapeType>> samples;
     dr.take(samples);
     for (auto &ss : samples)
     {
       if (ss.info().valid_data)
       {
-        std::cout << "Color = " << ss->color() << std::endl
-          << "x = " << ss->x() << std::endl
-          << "y = " << ss->y() << std::endl
-          << "shapesize = " << ss->shapesize() << std::endl
-          << std::endl;
+        std::cout << "Color = "     << ss->color()     << std::endl
+                  << "x = "         << ss->x()         << std::endl
+                  << "y = "         << ss->y()         << std::endl
+                  << "shapesize = " << ss->shapesize() << std::endl
+                  << std::endl;
       }
     }
   }
@@ -53,12 +53,11 @@ void read_shape_type(int domain_id)
     DDS_STATUS_MASK_NONE);
 
   if (participant == NULL) {
-    std::cerr << "! Unable to create DDS domain participant" << std::endl;
-    throw 0;
+    throw std::runtime_error("Unable to create participant");
   }
 
   MyShapesListener shapes_listener;
-  GenericDataReader<ShapeType>
+  reflex::GenericDataReader<ShapeType>
     shapes_data_reader(participant, &shapes_listener, "Square");
 
   std::cout << "Subscribed to Square\n";
@@ -95,13 +94,12 @@ void write_shape_type(int domain_id)
   DDSDataWriter *dataWriter         = NULL;
   DDSDynamicDataWriter *ddWriter    = NULL;
   DDS_DynamicDataTypeProperty_t props;
-  DDS_ExceptionCode_t ex;
   DDS_Duration_t period { 0, 100*1000*1000 };
 
-  MAX_SEQ_SIZE = 1024; // Unused in ShapeType
+  reflex::MAX_SEQ_SIZE = 1024; // Unused in ShapeType
 
   // For interoperability with the ShapesDemo MAX_STRING_SIZE must be 256
-  MAX_STRING_SIZE = 256; 
+  reflex::MAX_STRING_SIZE = 256;
 
   int32_t x = 0, y = 0, shapesize = 30;
   std::string color = "BLUE";
@@ -111,30 +109,33 @@ void write_shape_type(int domain_id)
   auto t1 = std::tie(color, x, y, shapesize);
   //auto t1 = ShapeType(color, x, y, shapesize);
 
-  typedef remove_refs<decltype(t1)>::type Tuple;
-  SafeTypeCode<DDS_TypeCode> stc(Tuple2Typecode<Tuple>());
+  typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
+  reflex::SafeTypeCode<DDS_TypeCode> stc(reflex::Tuple2Typecode<Tuple>());
 
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
   // print idl
-  print_IDL(stc.get(), 0);
+  reflex::print_IDL(stc.get(), 0);
   
-  SafeDynamicDataInstance ddi1(safe_typeSupport.get());
-  SafeDynamicDataInstance ddi2(safe_typeSupport.get());
+  reflex::SafeDynamicDataInstance ddi1(safe_typeSupport.get());
+  reflex::SafeDynamicDataInstance ddi2(safe_typeSupport.get());
 
   // multi-value assignment using tie
   std::tie(ddWriter, participant) = 
-    create_ddwriter(StructName<Tuple>::get().c_str(), topic_name, safe_typeSupport.get());
+    create_ddwriter(
+      reflex::detail::StructName<Tuple>::get().c_str(), 
+      topic_name, 
+      safe_typeSupport.get());
 
   if(ddWriter == NULL)
     return;
 
-  std::cout << "Writing " << StructName<Tuple>::get()
+  std::cout << "Writing " << reflex::detail::StructName<Tuple>::get()
             << " topic = " << topic_name
             << " (domain = " << domain_id << ")...\n";
 
-  srand(time(NULL));
+  srand((unsigned int) time(NULL));
 
   int x_max=200, y_max=200;
   int x_min=30, y_min=30;
@@ -160,18 +161,18 @@ void write_shape_type(int domain_id)
     copy(t1, x, y, color, shapesize);
 
     // write the values in a dynamic data instance.
-    Tuple2DD(t1, *ddi1.get());
+    reflex::Tuple2DD(t1, *ddi1.get());
 
     // print if you like
     // ddi1.get()->print(stdout, 2);
 
     // read the dynamic data instance back 
     // in a different tuple
-    DD2Tuple(*ddi1.get(), t2);
+    reflex::DD2Tuple(*ddi1.get(), t2);
 
     // write the second tuple again in a
     // different dynamic data instance.
-    Tuple2DD(t2, *ddi2.get());
+    reflex::Tuple2DD(t2, *ddi2.get());
 
     // print if you like
     // ddi2.get()->print(stdout, 2);
@@ -182,7 +183,7 @@ void write_shape_type(int domain_id)
     // write it for fun!
     rc = ddWriter->write(*ddi2.get(), DDS_HANDLE_NIL);
     if(rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = " << get_readable_retcode(rc) << std::endl;
+      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
       break;
     }
     NDDSUtility::sleep(period);
