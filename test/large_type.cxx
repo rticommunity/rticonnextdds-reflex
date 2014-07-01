@@ -42,10 +42,7 @@ void write_large_type(int domain_id)
     using std::vector;
     DDS_ReturnCode_t         rc;
     DDSDomainParticipant *   participant = NULL;
-    DDSTopic *               topic = NULL;
-    DDSDataWriter *dataWriter         = NULL;
-    DDSDynamicDataWriter *ddWriter    = NULL;
-    bool                     returnValue = false;
+    DDSDynamicDataWriter *ddWriter         = NULL;
     DDS_DynamicDataTypeProperty_t props;
     DDS_ExceptionCode_t ex;
     DDS_Duration_t period { 0, 1000*1000*1000 };
@@ -53,8 +50,8 @@ void write_large_type(int domain_id)
     int32_t int_var = 10;
     float float_var = 3;
     double double_var = 30; 
-    bool bool_var = true;
-    char char_var = 'Z';
+    //bool bool_var = true;
+    //char char_var = 'Z';
     octet_t octet_var = 'A';
     long long ll = 0xFFFFFFF;
     std::string str("Hello World!");
@@ -125,7 +122,10 @@ void write_large_type(int domain_id)
     tu = reflex::Case<UBoolString, green>(ubs); 
 #endif
     
-    MultiDimArray<int16_t,2,3>::type int_array = { { {0,0,0}, {5,5,5} } };
+    MultiDimArray<int16_t,2,3>::type int_array = 
+    { { { { 0,0,0 } }, 
+        { { 5,5,5 } } } };
+
     std::list<MultiDimArray<int16_t,2,3>::type> lmda(2, int_array);
     typedef reflex::Sparse<std::string, 
                            float, 

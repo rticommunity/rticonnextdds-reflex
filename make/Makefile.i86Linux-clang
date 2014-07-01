@@ -30,7 +30,7 @@ CXX = clang++
 CXXLD = clang++
 
 CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 \
-           -Wno-return-type-c-linkage -Wno-deprecated-register
+           -Wall -Wno-return-type-c-linkage -Wno-deprecated-register  
 CXXLDFLAGS = -m32 
 SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
 

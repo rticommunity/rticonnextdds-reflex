@@ -90,8 +90,6 @@ void write_shape_type(int domain_id)
 {
   DDS_ReturnCode_t         rc;
   DDSDomainParticipant *   participant = NULL;
-  DDSTopic *               topic = NULL;
-  DDSDataWriter *dataWriter         = NULL;
   DDSDynamicDataWriter *ddWriter    = NULL;
   DDS_DynamicDataTypeProperty_t props;
   DDS_Duration_t period { 0, 100*1000*1000 };

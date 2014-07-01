@@ -600,7 +600,6 @@ namespace reflex {
     {
       if (count > 0)
       {
-        size_t i = 0;
         for (size_t i = 0; i < count; ++i)
         {
           typedef typename std::map<Key, T, Comp, Alloc>::value_type PairType;
