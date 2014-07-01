@@ -25,191 +25,236 @@ damages arising out of the use or inability to use the software.
 #include "bounded.h"
 #include "dllexport.h"
 
+
 namespace reflex {
 
   DllExport void DECLSPEC
-    print_IDL(const DDS_TypeCode * tc,
-    DDS_UnsignedLong indent);
+    print_IDL(
+        const DDS_TypeCode * tc,
+        DDS_UnsignedLong indent);
 
   namespace detail {
 
-    DllExport SafeTypeCode<std::string> DECLSPEC
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const std::string *);
+    /* TypeCode Overload Resolution Helper */
+    /* Overload resolution of several free primary template 
+     * functions can be notoriously brittle because of the 
+     * ordering issues. If general, a function must be declared
+     * before it is called. Sounds simple but in a set of mutually
+     * recursive primary template functions, it is easy to lose
+     * grip on the what's declared before and what's not. In 
+     * general, all the functions should be declared beforehand.
+     * There is an alternative solution. Put all the functions
+     * in a class and make them static and use their fully
+     * qualified name to call them. No upfront declarations 
+     * are necessary if this idiom is used. 
+     * */
+    struct TC_overload_resolution_helper {
 
-    template <class T>
-    // overload for 
-    // 1. user-defined structs adapted as a Fusion Sequence
-    // 2. tuples.
-    SafeTypeCode<T> get_typecode(DDS_TypeCodeFactory * factory,
-      const T *,
-      typename disable_if<std::is_enum<T>::value ||
-      is_primitive<T>::value ||
-      is_container<T>::value>::type * = 0)
-    {
-      SafeTypeCode<T>
-        structTc(factory, StructName<T>::get().c_str());
+      DllExport SafeTypeCode<std::string> DECLSPEC
+        static get_typecode(
+            DDS_TypeCodeFactory * factory,
+            const std::string *);
 
-      TypelistIterator<T,
-        0,
-        Size<T>::value - 1>
-        ::add(factory, structTc.get());
-
-      return move(structTc);
-    }
-
-    template <class T>
-    // overload for all the primitive types.
-    SafeTypeCode<T> get_typecode(DDS_TypeCodeFactory * factory,
-      const T *,
-      typename enable_if<is_primitive<T>::value>::type * = 0)
-    {
-      return SafeTypeCode<T>(factory);
-    }
-
-    template <class T>
-    // overload for user-defined enumeration types.
-    SafeTypeCode<T> get_typecode(DDS_TypeCodeFactory * factory,
-      const T *,
-      typename enable_if<std::is_enum<T>::value>::type * = 0)
-    {
-      return SafeTypeCode<T>(factory, EnumDef<T>::name());
-    }
-
-    template <class C>
-    SafeTypeCode<C>
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const C *,
-      typename enable_if<is_container<C>::value>::type * = 0)
-    {
-        SafeTypeCode<typename C::value_type> innerTc
-          = get_typecode(factory,
-          static_cast<typename C::value_type *>(0));
-
-        return SafeTypeCode<C>(factory, innerTc);
-      }
-
-    template <class C, size_t Bound>
-    SafeTypeCode<bounded<C, Bound>>
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const bounded<C, Bound> *,
-      typename enable_if<is_container<C>::value>::type * = 0)
-    {
-        SafeTypeCode<typename C::value_type> innerTc
-          = get_typecode(factory,
-          static_cast<typename C::value_type *>(0));
-
-        return SafeTypeCode<bounded<C, Bound>>(factory, innerTc);
-      }
-
-    template <size_t Bound>
-    SafeTypeCode<bounded<std::string, Bound>>
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const bounded<std::string, Bound> *)
-    {
-        SafeTypeCode<std::string> innerTc
-          = get_typecode(factory, static_cast<std::string *>(0));
-
-        return SafeTypeCode<bounded<std::string, Bound>>(factory);
-      }
-
-    template <class T>
-    SafeTypeCode<Range<T>>
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const Range<T> *)
-    {
-        SafeTypeCode<typename remove_reference<T>::type> innerTc
-          = get_typecode(factory,
-          static_cast<typename remove_reference<T>::type *>(0));
-
-        return SafeTypeCode<Range<T>>(factory, innerTc);
-      }
-
-    template <class T, size_t Bound>
-    SafeTypeCode<BoundedRange<T, Bound>>
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const BoundedRange<T, Bound> *)
-    {
-        SafeTypeCode<typename remove_reference<T>::type> innerTc
-          = get_typecode(factory,
-          static_cast<typename remove_reference<T>::type *>(0));
-
-        return SafeTypeCode<BoundedRange<T, Bound>>(factory, innerTc);
-      }
-
-    template <class T, size_t N>
-    SafeTypeCode<std::array<T, N>>
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const std::array<T, N> *)
-    {
-        typedef typename remove_all_extents<T>::type BasicType;
-        SafeTypeCode<BasicType> basicTc
-          = get_typecode(factory, static_cast<BasicType *>(0));
-
-        return SafeTypeCode<std::array<T, N>>(factory, basicTc);
-      }
-
-    template <class... Args>
-    SafeTypeCode<::reflex::Sparse<Args...>>
-      get_typecode(
+      template <class T>
+      // overload for 
+      // 1. user-defined structs adapted as a Fusion Sequence
+      // 2. tuples.
+      static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
-        const ::reflex::Sparse<Args...> *)
-    {
-        SafeTypeCode<::reflex::Sparse<Args...>>
-          sparseTc(factory, 
-                    StructName<::reflex::Sparse<Args...>>::get().c_str());
+        const T *,
+        typename disable_if<std::is_enum<T>::value ||
+                            is_primitive<T>::value ||
+                            is_container<T>::value ||
+                            is_stdarray<T>::value>::type * = 0)
+      {
+        SafeTypeCode<T>
+          structTc(factory, StructName<T>::get().c_str());
 
-        typedef typename 
-          ::reflex::Sparse<Args...>::raw_tuple_type RawTuple;
+        TypelistIterator<
+          T,
+          0,
+          Size<T>::value - 1>
+            ::add(factory, structTc.get());
 
-        TypelistIterator<RawTuple,
-                         0,
-                         Size<RawTuple>::value - 1>::add(
-                           factory, sparseTc.get());
-
-        return move(sparseTc);
+        return move(structTc);
       }
 
-    template <class TagType, class... Cases>
-    void add_union_members(DDS_TypeCodeFactory * factory,
-      DDS_UnionMemberSeq & seq,
-      const Union<TagType, Cases...> *)
-    {
-      typedef typename Union<TagType, Cases...>::case_tuple_type CaseTuple;
-      TypelistIterator<CaseTuple,
-        0,
-        Size<CaseTuple>::value - 1>::add_union_member(factory, seq);
-    }
+      template <class T>
+      // overload for all the primitive types.
+      static SafeTypeCode<T> get_typecode(
+        DDS_TypeCodeFactory * factory,
+        const T *,
+        typename enable_if<is_primitive<T>::value>::type * = 0)
+      {
+        return SafeTypeCode<T>(factory);
+      }
 
-    template <class TagType, class... Cases>
-    SafeTypeCode<Union<TagType, Cases...>>
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const Union<TagType, Cases...> *)
-    {
-        SafeTypeCode<TagType> discriminatorTc =
-          get_typecode(factory, static_cast<TagType *>(0));
+      template <class T>
+      // overload for user-defined enumeration types.
+      static SafeTypeCode<T> get_typecode(
+        DDS_TypeCodeFactory * factory,
+        const T *,
+        typename enable_if<std::is_enum<T>::value>::type * = 0)
+      {
+        return SafeTypeCode<T>(factory, EnumDef<T>::name());
+      }
 
-        typedef typename Union<TagType, Cases...>::case_tuple_type CaseTuple;
-        DDS_UnionMemberSeq umember_seq;
-        const size_t ncases = Size<CaseTuple>::value;
-        umember_seq.ensure_length(ncases, ncases);
+      template <class C, size_t Bound>
+      static SafeTypeCode<reflex::bounded<C, Bound>> get_typecode(
+            DDS_TypeCodeFactory * factory,
+            const reflex::bounded<C, Bound> *,
+            typename enable_if<is_container<C>::value>::type * = 0)
+      {
+          SafeTypeCode<typename C::value_type> innerTc
+            = TC_overload_resolution_helper::get_typecode(
+                factory,
+                static_cast<typename C::value_type *>(0));
 
-        add_union_members(factory,
-          umember_seq,
-          static_cast<Union<TagType, Cases...> *>(0));
+          return SafeTypeCode<reflex::bounded<C, Bound>>(factory, innerTc);
+      }
 
-        SafeTypeCode<Union<TagType, Cases...>>
-          unionTc(factory,
-          StructName<Union<TagType, Cases...>>::get().c_str(),
-          discriminatorTc,
-          umember_seq);
+      template <class C>
+      static SafeTypeCode<C> get_typecode(
+         DDS_TypeCodeFactory * factory,
+         const C *,
+         typename enable_if<is_container<C>::value>::type * = 0)
+      {
+          SafeTypeCode<typename C::value_type> innerTc
+            = TC_overload_resolution_helper::get_typecode(
+                factory,
+                static_cast<typename C::value_type *>(0));
 
+          return SafeTypeCode<C>(factory, innerTc);
+      }
+
+      template <class T, size_t N>
+      static SafeTypeCode<std::array<T, N>> get_typecode(
+          DDS_TypeCodeFactory * factory,
+          const std::array<T, N> *)
+      {
+          typedef typename remove_all_extents<T>::type BasicType;
+          SafeTypeCode<BasicType> basicTc
+            = TC_overload_resolution_helper::get_typecode(
+                factory, 
+                static_cast<BasicType *>(0));
+
+          return SafeTypeCode<std::array<T, N>>(factory, basicTc);
+      }
+
+
+      template <size_t Bound>
+      static SafeTypeCode<reflex::bounded<std::string, Bound>>
+        get_typecode(
+            DDS_TypeCodeFactory * factory,
+            const reflex::bounded<std::string, Bound> *)
+      {
+          SafeTypeCode<std::string> innerTc
+            = TC_overload_resolution_helper::get_typecode(
+                factory, 
+                static_cast<std::string *>(0));
+
+          return SafeTypeCode<reflex::bounded<std::string, Bound>>(factory);
+      }
+
+      template <class T>
+      static SafeTypeCode<Range<T>> get_typecode(
+            DDS_TypeCodeFactory * factory,
+            const reflex::Range<T> *)
+      {
+          SafeTypeCode<typename remove_reference<T>::type> innerTc
+            = TC_overload_resolution_helper::get_typecode(
+                factory,
+                static_cast<typename remove_reference<T>::type *>(0));
+
+          return SafeTypeCode<reflex::Range<T>>(factory, innerTc);
+      }
+
+      template <class T, size_t Bound>
+      static SafeTypeCode<BoundedRange<T, Bound>> get_typecode(
+            DDS_TypeCodeFactory * factory,
+            const reflex::BoundedRange<T, Bound> *)
+      {
+          SafeTypeCode<typename remove_reference<T>::type> innerTc
+            = TC_overload_resolution_helper::get_typecode(
+                factory,
+                static_cast<typename remove_reference<T>::type *>(0));
+
+          return SafeTypeCode<reflex::BoundedRange<T, Bound>>(
+              factory, innerTc);
+      }
+
+      template <class... Args>
+      static SafeTypeCode<::reflex::Sparse<Args...>> get_typecode(
+          DDS_TypeCodeFactory * factory,
+          const ::reflex::Sparse<Args...> *)
+      {
+          SafeTypeCode<::reflex::Sparse<Args...>>
+            sparseTc(factory, 
+                     StructName<::reflex::Sparse<Args...>>::get().c_str());
+
+          typedef typename 
+            ::reflex::Sparse<Args...>::raw_tuple_type RawTuple;
+
+          TypelistIterator<RawTuple,
+                           0,
+                           Size<RawTuple>::value - 1>::add(
+                             factory, sparseTc.get());
+
+          return move(sparseTc);
+      }
+    
+      template <class TagType, class... Cases>
+      static SafeTypeCode<reflex::Union<TagType, Cases...>>
+        get_typecode(
+            DDS_TypeCodeFactory * factory,
+            const reflex::Union<TagType, Cases...> *)
+      {
+          SafeTypeCode<TagType> discriminatorTc =
+            TC_overload_resolution_helper::get_typecode(
+                factory, 
+                static_cast<TagType *>(0));
+
+          typedef typename 
+            reflex::Union<TagType, Cases...>::case_tuple_type CaseTuple;
+
+          DDS_UnionMemberSeq umember_seq;
+          const size_t ncases = Size<CaseTuple>::value;
+          umember_seq.ensure_length(ncases, ncases);
+
+          TC_overload_resolution_helper::add_union_members(
+              factory,
+              umember_seq,
+              static_cast<reflex::Union<TagType, Cases...> *>(0));
+
+          SafeTypeCode<reflex::Union<TagType, Cases...>>
+            unionTc(factory,
+            StructName<reflex::Union<TagType, Cases...>>::get().c_str(),
+            discriminatorTc,
+            umember_seq);
+
+          TypelistIterator<CaseTuple,
+            0,
+            Size<CaseTuple>::value - 1>::delete_typecodes(factory, umember_seq);
+
+          return move(unionTc);
+      }
+
+      private:
+
+      template <class TagType, class... Cases>
+      static void add_union_members(
+          DDS_TypeCodeFactory * factory,
+          DDS_UnionMemberSeq & seq,
+          const reflex::Union<TagType, Cases...> *)
+      {
+        typedef typename 
+          reflex::Union<TagType, Cases...>::case_tuple_type CaseTuple;
         TypelistIterator<CaseTuple,
           0,
-          Size<CaseTuple>::value - 1>::delete_typecodes(factory, umember_seq);
-
-        return move(unionTc);
+          Size<CaseTuple>::value - 1>::add_union_member(factory, seq);
       }
+
+    }; // struct TC_overload_resolution_helper
 
     template <class T>
     void add_member(
@@ -223,7 +268,9 @@ namespace reflex {
     {
       DDS_ExceptionCode_t ex;
       SafeTypeCode<T> innerTc =
-        get_typecode(factory, static_cast<T *>(0));
+        TC_overload_resolution_helper::get_typecode(
+            factory, 
+            static_cast<T *>(0));
 
       DDS_Long member_id =
         (outerTc->kind(ex) == DDS_TK_SPARSE) ? id : DDS_TYPECODE_MEMBER_ID_INVALID;
@@ -256,7 +303,9 @@ namespace reflex {
       typedef typename remove_all_extents<T>::type BasicType;
 
       SafeTypeCode<BasicType> basicTc =
-        get_typecode(factory, static_cast<BasicType *>(0));
+        TC_overload_resolution_helper::get_typecode(
+            factory, 
+            static_cast<BasicType *>(0));
 
       SafeTypeCode<BasicType, typename make_dim_list<T>::type>
         arrayTc(factory, basicTc);
@@ -312,14 +361,16 @@ namespace reflex {
 
 
     template <class Case>
-    void case_add(DDS_TypeCodeFactory * factory,
-      const char * member_name,
-      DDS_UnionMember & umember,
-      typename disable_if<is_builtin_array<typename Case::type>::value>::type *)
+    void case_add(
+        DDS_TypeCodeFactory * factory,
+        const char * member_name,
+        DDS_UnionMember & umember,
+        typename disable_if<is_builtin_array<typename Case::type>::value>::type *)
     {
       DDS_LongSeq label_seq;
-      label_seq.ensure_length(LabelAdder<0, Case>::count,
-        LabelAdder<0, Case>::count);
+      label_seq.ensure_length(
+          LabelAdder<0, Case>::count,
+          LabelAdder<0, Case>::count);
       LabelAdder<0, Case>::exec(label_seq);
 
       umember.name = const_cast<char *>(member_name);
@@ -329,20 +380,26 @@ namespace reflex {
       typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
       // typecodes is deleted in get_typecode() overload for Union.
       umember.type =
-        get_typecode(factory, static_cast<CaseTypeNoRef *>(0)).release();
+        TC_overload_resolution_helper::get_typecode(
+            factory, 
+            static_cast<CaseTypeNoRef *>(0)).release();
 
       umember.labels = label_seq;
     };
 
     template <class Case>
-    void case_add(DDS_TypeCodeFactory * factory,
-      const char * member_name,
-      DDS_UnionMember & umember,
-      typename enable_if<is_builtin_array<typename Case::type>::value>::type *)
+    void case_add(
+        DDS_TypeCodeFactory * factory,
+        const char * member_name,
+        DDS_UnionMember & umember,
+        typename enable_if<
+                           is_builtin_array<typename Case::type>::value
+                          >::type *) 
     {
       DDS_LongSeq label_seq;
-      label_seq.ensure_length(LabelAdder<0, Case>::count,
-        LabelAdder<0, Case>::count);
+      label_seq.ensure_length(
+          LabelAdder<0, Case>::count,
+          LabelAdder<0, Case>::count);
       LabelAdder<0, Case>::exec(label_seq);
 
       umember.name = const_cast<char *>(member_name);
@@ -354,9 +411,12 @@ namespace reflex {
         remove_all_extents<typename Case::type>::type BasicType;
 
       SafeTypeCode<BasicType> basicTc =
-        get_typecode(factory, static_cast<BasicType *>(0));
+        TC_overload_resolution_helper::get_typecode(
+            factory, 
+            static_cast<BasicType *>(0));
 
-      SafeTypeCode<BasicType, typename make_dim_list<typename Case::type>::type>
+      SafeTypeCode<BasicType, 
+                   typename make_dim_list<typename Case::type>::type>
         arrayTc(factory, basicTc);
 
       umember.type = arrayTc.release();

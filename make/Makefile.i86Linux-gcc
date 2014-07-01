@@ -31,7 +31,7 @@ CXX = g++
 # must use new g++ 4.7 or better to link. 
 CXXLD = $(CXX)
 
-CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1
+CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 
 CXXLDFLAGS = -m32 
 SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
 

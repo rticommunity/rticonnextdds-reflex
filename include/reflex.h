@@ -349,37 +349,41 @@ namespace reflex {
     DataReaderListenerAdapter<T> * listener_adapter_;
     std::unique_ptr < DataReaderListenerAdapter<T>> safe_listener_adapter_;
 
-    GenericDataReader(DDSDomainParticipant *participant,
-      ListenerType * listener,
-      const char * topic_name,
-      const char * type_name = 0,
-      DataReaderListenerAdapter<T> * adapter_placeholder = 0)
-      : DataReaderBase(
-      participant,
-      listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
-      topic_name,
-      type_name,
-      MakeTypecode<T>(type_name).release()),
-      safe_listener_adapter_(listener ? adapter_placeholder : 0)
+    GenericDataReader(
+        DDSDomainParticipant *participant,
+        ListenerType * listener,
+        const char * topic_name,
+        const char * type_name = 0,
+        DataReaderListenerAdapter<T> * adapter_placeholder = 0)
+
+      : detail::DataReaderBase(
+            participant,
+            listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
+            topic_name,
+            type_name,
+            MakeTypecode<T>(type_name).release()),
+            safe_listener_adapter_(listener ? adapter_placeholder : 0)
     {
       if (safe_listener_adapter_)
         safe_listener_adapter_->set_datareader(this);
     }
 
-    GenericDataReader(DDSDomainParticipant *participant,
-      const DDS_DataReaderQos & drqos,
-      ListenerType * listener,
-      const char * topic_name,
-      const char * type_name = 0,
-      DataReaderListenerAdapter<T> * adapter_placeholder = 0)
-      : DataReaderBase(
-      participant,
-      drqos,
-      listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
-      topic_name,
-      type_name,
-      MakeTypecode<T>(type_name).release()),
-      safe_listener_adapter_(listener ? adapter_placeholder : 0)
+    GenericDataReader(
+        DDSDomainParticipant *participant,
+        const DDS_DataReaderQos & drqos,
+        ListenerType * listener,
+        const char * topic_name,
+        const char * type_name = 0,
+        DataReaderListenerAdapter<T> * adapter_placeholder = 0)
+
+      : detail::DataReaderBase(
+           participant,
+           drqos,
+           listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
+           topic_name,
+           type_name,
+           MakeTypecode<T>(type_name).release()),
+           safe_listener_adapter_(listener ? adapter_placeholder : 0)
     {
       if (safe_listener_adapter_)
         safe_listener_adapter_->set_datareader(this);
@@ -390,7 +394,8 @@ namespace reflex {
       return safe_datareader_.get();
     }
 
-    DDS_ReturnCode_t take_w_condition(T& data, DDS_SampleInfo & info, DDSReadCondition * cond = 0)
+    DDS_ReturnCode_t take_w_condition(
+        T& data, DDS_SampleInfo & info, DDSReadCondition * cond = 0)
     {
       DDS_DynamicDataSeq data_seq;
       DDS_SampleInfoSeq info_seq;
@@ -471,7 +476,7 @@ namespace reflex {
   // itself!
   template <class... Args>
   class GenericDataReader<std::tuple<Args...>>
-    : public DataReaderBase
+    : public detail::DataReaderBase
   {
     typedef typename 
       detail::remove_refs<std::tuple<Args...>>::type 
@@ -505,12 +510,13 @@ namespace reflex {
       DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
       DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
     {
-      return take_impl<NoRefsTuple>(dd_reader(),
-        data,
-        max_samples,
-        sample_states,
-        view_states,
-        instance_states);
+      return detail::take_impl<NoRefsTuple>(
+          dd_reader(),
+          data,
+          max_samples,
+          sample_states,
+          view_states,
+          instance_states);
     }
   };
 

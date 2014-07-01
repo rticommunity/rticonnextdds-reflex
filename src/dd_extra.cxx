@@ -11,17 +11,21 @@ damages arising out of the use or inability to use the software.
 #include <iostream>
 #include <map>
 #include <stdexcept>
-#include <strstream>
+#include <sstream>
 
 #include "dd_extra.h"
 #include "common.h"
 
 #ifdef RTI_WIN32
-  DllExport extern size_t reflex::MAX_SEQ_SIZE = 256;
-  DllExport extern size_t reflex::MAX_STRING_SIZE = 256;
+namespace reflex {
+  DllExport extern size_t MAX_SEQ_SIZE = 256;
+  DllExport extern size_t MAX_STRING_SIZE = 256;
+} // namespace reflex
 #else
+namespace reflex {
   size_t MAX_SEQ_SIZE = 256;
   size_t MAX_STRING_SIZE = 256;
+} // namespace reflex
 #endif
 
 #define SET_SEQUENCE_DEF(DDS_SEQ_TYPE, FUNCTION)                      \
@@ -118,7 +122,7 @@ void get_member_value(const DDS_DynamicData & instance,                         
     {
       if (rc != DDS_RETCODE_OK)
       {
-        std::strstream stream;
+        std::stringstream stream;
         stream << message << get_readable_retcode(rc);
         throw std::runtime_error(stream.str());
       }
@@ -130,7 +134,7 @@ void get_member_value(const DDS_DynamicData & instance,                         
     {
       if (ex != DDS_NO_EXCEPTION_CODE)
       {
-        std::strstream stream;
+        std::stringstream stream;
         stream << message << get_readable_ex_code(ex);
         throw std::runtime_error(stream.str());
       }

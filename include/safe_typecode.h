@@ -35,7 +35,7 @@ public:                                                   \
   {}                                                      \
                                                           \
   SafeTypeCode & operator                                 \
-     = (detail::proxy<SafeTypeCode> p) throw()           \
+     = (detail::proxy<SafeTypeCode> p) throw()            \
   {                                                       \
     SafeTypeCode(p).swap(*this);                          \
     return *this;                                         \
@@ -43,7 +43,7 @@ public:                                                   \
                                                           \
   operator detail::proxy<SafeTypeCode> () throw() {       \
     detail::proxy<SafeTypeCode>                           \
-    p{ factory_, typecode_, release_ };                   \
+      p(factory_, typecode_, release_);                   \
     typecode_ = 0;                                        \
     return p;                                             \
   }                                                       \
@@ -65,6 +65,15 @@ namespace reflex {
       DDS_TypeCodeFactory * factory_;
       DDS_TypeCode * typecode_;
       bool release_;
+
+      proxy(
+        DDS_TypeCodeFactory * factory,
+        DDS_TypeCode * typecode,
+        bool release)
+         : factory_(factory),
+           typecode_(typecode),
+           release_(release)
+      { }
     };
 
     class DllExport SafeTypeCodeBase
@@ -86,44 +95,46 @@ namespace reflex {
         DDS_TypeCode * typecode = 0,
         bool release = true);
 
-      GET_TYPECODE_DECL(octet_t, DDS_TK_OCTET)
-        GET_TYPECODE_DECL(bool, DDS_TK_BOOLEAN)
-        GET_TYPECODE_DECL(char, DDS_TK_CHAR)
-        GET_TYPECODE_DECL(int8_t, DDS_TK_CHAR)
-        GET_TYPECODE_DECL(int16_t, DDS_TK_SHORT)
-        GET_TYPECODE_DECL(uint16_t, DDS_TK_USHORT)
-        GET_TYPECODE_DECL(int32_t, DDS_TK_LONG)
-        GET_TYPECODE_DECL(uint32_t, DDS_TK_ULONG)
-        GET_TYPECODE_DECL(int64_t, DDS_TK_LONGLONG)
-        GET_TYPECODE_DECL(uint64_t, DDS_TK_ULONGLONG)
+        GET_TYPECODE_DECL(reflex::octet_t,    DDS_TK_OCTET)
+        GET_TYPECODE_DECL(bool,               DDS_TK_BOOLEAN)
+        GET_TYPECODE_DECL(char,               DDS_TK_CHAR)
+        GET_TYPECODE_DECL(int8_t,             DDS_TK_CHAR)
+        GET_TYPECODE_DECL(int16_t,            DDS_TK_SHORT)
+        GET_TYPECODE_DECL(uint16_t,           DDS_TK_USHORT)
+        GET_TYPECODE_DECL(int32_t,            DDS_TK_LONG)
+        GET_TYPECODE_DECL(uint32_t,           DDS_TK_ULONG)
+        GET_TYPECODE_DECL(int64_t,            DDS_TK_LONGLONG)
+        GET_TYPECODE_DECL(uint64_t,           DDS_TK_ULONGLONG)
 
 #ifndef RTI_WIN32
-        GET_TYPECODE_DECL(char32_t, DDS_TK_WCHAR)
+        GET_TYPECODE_DECL(char32_t,           DDS_TK_WCHAR)
 #endif
 
-        GET_TYPECODE_DECL(float, DDS_TK_FLOAT)
-        GET_TYPECODE_DECL(double, DDS_TK_DOUBLE)
+        GET_TYPECODE_DECL(float,              DDS_TK_FLOAT)
+        GET_TYPECODE_DECL(double,             DDS_TK_DOUBLE)
 #if __x86_64__
-        GET_TYPECODE_DECL(long long, DDS_TK_LONGLONG)
+        GET_TYPECODE_DECL(long long,          DDS_TK_LONGLONG)
         GET_TYPECODE_DECL(unsigned long long, DDS_TK_ULONGLONG)
 #endif
-        GET_TYPECODE_DECL(long double, DDS_TK_LONGDOUBLE)
+        GET_TYPECODE_DECL(long double,        DDS_TK_LONGDOUBLE)
 
         void create_array_tc(DDS_TypeCode * inner,
         const DDS_UnsignedLongSeq &dims);
 
       void create_seq_tc(DDS_TypeCode *inner,
-        size_t bound);
+                         size_t bound);
 
       void create_string_tc(size_t bound);
       void create_struct_tc(const char * name);
-      void create_enum_tc(const char * name,
-        const DDS_EnumMemberSeq & enum_seq,
-        const std::vector<MemberInfo> &);
-      void create_union_tc(const char * name,
-        DDS_TypeCode * discTc,
-        DDS_UnsignedLong default_case,
-        DDS_UnionMemberSeq & member_seq);
+      void create_enum_tc(
+              const char * name,
+              const DDS_EnumMemberSeq & enum_seq,
+              const std::vector<MemberInfo> &);
+      void create_union_tc(
+             const char * name,
+             DDS_TypeCode * discTc,
+             DDS_UnsignedLong default_case,
+             DDS_UnionMemberSeq & member_seq);
 
       void create_sparse_tc(const char * name);
 
@@ -267,7 +278,9 @@ namespace reflex {
 
   template <class C, size_t Bound>
   class SafeTypeCode<bounded<C, Bound>,
-    typename detail::enable_if<detail::is_container<C>::value>::type>
+                     typename detail::enable_if<
+                       detail::is_container<C>::value>::type
+                    >
     : public detail::SafeTypeCodeBase
   {
   public:
@@ -348,7 +361,7 @@ namespace reflex {
   public:
 
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      const char * name)
+                 const char * name)
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_struct_tc(name);
@@ -364,7 +377,7 @@ namespace reflex {
   public:
 
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      const char * name)
+                 const char * name)
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_sparse_tc(name);
@@ -426,11 +439,13 @@ namespace reflex {
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-                 SafeTypeCode<typename detail::remove_all_extents<T>::type> & tc)
+                 SafeTypeCode<typename 
+                   detail::remove_all_extents<T>::type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       DDS_UnsignedLongSeq seq;
-      typedef typename detail::make_dim_list<std::array<T, Dim>>::type DimList;
+      typedef typename 
+        detail::make_dim_list<std::array<T, Dim>>::type DimList;
       seq.ensure_length(DimList::size, DimList::size);
       detail::CopyDims<0, DimList>::exec(seq);
 
@@ -506,10 +521,10 @@ namespace reflex {
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_union_tc(
-        name,
-        discTc.get(),
-        DefaultCaseIndex<Union<TagType, Cases...>>::value,
-        member_seq);
+          name,
+          discTc.get(),
+          detail::DefaultCaseIndex<Union<TagType, Cases...>>::value,
+          member_seq);
     }
 
     MAKE_SAFETYPECODE_MOVEONLY

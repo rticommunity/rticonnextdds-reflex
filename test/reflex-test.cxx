@@ -38,6 +38,7 @@ void write_shape_type(int domain_id);
 void write_darkart_type(unsigned domain_id);
 void write_pi_type(int domainid);
 void write_many_members(int domainid);
+void write_one_member(int domainid);
 void read_shape_type(int domain_id);
 
 int main(int argc, const char **argv) 
@@ -68,8 +69,10 @@ int main(int argc, const char **argv)
     write_darkart_type(DOMAIN_ID);
   else if(std::string(argv[1]) == "many")
     write_many_members(DOMAIN_ID);
+  else if(std::string(argv[1]) == "one")
+    write_one_member(DOMAIN_ID);
   else
-    std::cout << "Please specify either shapes, large, darkart, many\n";
+    std::cout << "Please specify either shapes, large, darkart, many, one\n";
 
   return 0;
 }

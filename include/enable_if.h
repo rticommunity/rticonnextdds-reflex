@@ -45,15 +45,17 @@ namespace reflex {
 
   template <class T>
   struct Range
-    : boost::any_range <T,
-    boost::forward_traversal_tag,
-    T, std::ptrdiff_t >
+    : boost::any_range <
+        T,
+        boost::forward_traversal_tag,
+        T, std::ptrdiff_t >
   {
     template <class... U>
     Range(U && ... u)
-      : boost::any_range <T,
-      boost::forward_traversal_tag,
-      T, std::ptrdiff_t >(std::forward<U>(u)...)
+      : boost::any_range <
+          T,
+          boost::forward_traversal_tag,
+          T, std::ptrdiff_t >(std::forward<U>(u)...)
     {}
   };
 
@@ -97,7 +99,7 @@ namespace reflex {
     template <class T>
     struct is_primitive : false_type {}; // enum
 
-    template <> struct is_primitive<octet_t>            : true_type{};
+    template <> struct is_primitive<reflex::octet_t>    : true_type{};
     template <> struct is_primitive<bool>               : true_type{};
     template <> struct is_primitive<char>               : true_type{};
 
@@ -129,7 +131,7 @@ namespace reflex {
     struct is_primitive<std::vector<T>> : false_type{};
 
     template <class TagType, class... Cases>
-    struct is_primitive<Union<TagType, Cases...>> : false_type{};
+    struct is_primitive<reflex::Union<TagType, Cases...>> : false_type{};
 
     template <class T>
     struct is_primitive_or_enum
@@ -221,6 +223,13 @@ namespace reflex {
     template <class T>
     struct is_container : false_type {};
 
+    /*template <class T, size_t N>
+    struct is_container<std::array<T, N>> : true_type{};
+
+    template <class T, size_t N>
+    struct is_container<const std::array<T, N>> : true_type{};
+    */
+
     template <class T, class Alloc>
     struct is_container<std::vector<T, Alloc>> : true_type{};
 
@@ -245,41 +254,38 @@ namespace reflex {
     template <class Key, class T, class Comp, class Alloc>
     struct is_container<const std::map<Key, T, Comp, Alloc>> : true_type{};
 
-    template <class TagType, class... Cases>
-    struct Union;
-
     template <class T>
     struct is_union : false_type {};
 
     template <class TagType, class... Args>
-    struct is_union<Union<TagType, Args...>> : true_type{};
+    struct is_union<reflex::Union<TagType, Args...>> : true_type{};
 
     template <class TagType, class... Args>
-    struct is_union<const Union<TagType, Args...>> : true_type{};
+    struct is_union<const reflex::Union<TagType, Args...>> : true_type{};
 
     template <class T>
     struct is_sparse : false_type {};
 
     template <class... Args>
-    struct is_sparse<::reflex::Sparse<Args...>> : true_type{};
+    struct is_sparse<reflex::Sparse<Args...>> : true_type{};
 
     template <class... Args>
-    struct is_sparse<const ::reflex::Sparse<Args...>> : true_type{};
+    struct is_sparse<const reflex::Sparse<Args...>> : true_type{};
 
     template <class T>
     struct is_range : false_type {};
 
     template <class T>
-    struct is_range<Range<T>> : true_type{};
+    struct is_range<reflex::Range<T>> : true_type{};
 
     template <class T>
-    struct is_range<const Range<T>> : true_type{};
+    struct is_range<const reflex::Range<T>> : true_type{};
 
     template <class T, size_t N>
-    struct is_range<BoundedRange<T, N>> : true_type{};
+    struct is_range<reflex::BoundedRange<T, N>> : true_type{};
 
     template <class T, size_t N>
-    struct is_range<const BoundedRange<T, N>> : true_type{};
+    struct is_range<const reflex::BoundedRange<T, N>> : true_type{};
 
     template <class T>
     struct is_default_member_names {
@@ -351,12 +357,16 @@ namespace reflex {
 
     template <class T, size_t Dim>
     struct make_dim_list<T[Dim]> {
-      typedef typename dim_cat<Dim, typename make_dim_list<T>::type>::type type;
+      typedef typename 
+        dim_cat<Dim, 
+                typename make_dim_list<T>::type>::type type;
     };
 
     template <class T, size_t Dim>
     struct make_dim_list<std::array<T, Dim>> {
-      typedef typename dim_cat<Dim, typename make_dim_list<T>::type>::type type;
+      typedef typename 
+        dim_cat<Dim, 
+                typename make_dim_list<T>::type>::type type;
     };
 
     template <class T>
@@ -430,25 +440,29 @@ namespace reflex {
       //
       // I'm not sure if this will even work for references
       // because const references is redundant because references never change.
-      typedef typename std::tuple_element<I, std::tuple<Args...>>::type const type;
+      typedef typename 
+        std::tuple_element<I, std::tuple<Args...>>::type const type;
     };
 
     template <class First, class Second, size_t I>
     struct At<std::pair<First, Second>, I>
     {
-      typedef typename std::tuple_element<I, std::pair<First, Second>>::type type;
+      typedef typename 
+        std::tuple_element<I, std::pair<First, Second>>::type type;
     };
 
     template <class First, class Second, size_t I>
     struct At<const std::pair<First, Second>, I>
     {
-      typedef typename std::tuple_element<I, std::pair<First, Second>>::type const type;
+      typedef typename 
+        std::tuple_element<I, std::pair<First, Second>>::type const type;
     };
 
     template <class FusionSeq>
     struct Size
     {
-      enum { value = boost::fusion::result_of::size<FusionSeq>::type::value };
+      enum { value = 
+        boost::fusion::result_of::size<FusionSeq>::type::value };
     };
 
     template <class First, class Second>
@@ -476,20 +490,20 @@ namespace reflex {
     };
 
     template <size_t I, class FusionSeq>
-    typename disable_if_lazy < is_tuple<FusionSeq>::value,
-      At < FusionSeq, I >> ::type
+    typename disable_if_lazy <is_tuple<FusionSeq>::value,
+                              At<FusionSeq, I>> ::type
       Get(FusionSeq & seq)
     {
         return boost::fusion::at_c<I>(seq);
-      }
+    }
 
     template <size_t I, class FusionSeq>
-    typename disable_if_lazy < is_tuple<FusionSeq>::value,
-      At < const FusionSeq, I >> ::type
+    typename disable_if_lazy <is_tuple<FusionSeq>::value,
+                              At<const FusionSeq, I>> ::type
       Get(const FusionSeq & seq)
     {
         return boost::fusion::at_c<I>(seq);
-      }
+    }
 
     template <size_t I, class... Args>
     // Note reference (ref) at the end.
@@ -497,7 +511,7 @@ namespace reflex {
       Get(std::tuple<Args...> & tuple)
     {
         return std::get<I>(tuple);
-      }
+    }
 
     template <size_t I, class... Args>
     // Note reference (ref) at the end.
@@ -505,7 +519,7 @@ namespace reflex {
       Get(const std::tuple<Args...> & tuple)
     {
         return std::get<I>(tuple);
-      }
+    }
 
     template <size_t I, class First, class Second>
     // Note reference (ref) at the end.
@@ -513,7 +527,7 @@ namespace reflex {
       Get(std::pair<First, Second> & pair)
     {
         return std::get<I>(pair);
-      }
+    }
 
     template <size_t I, class First, class Second>
     // Note reference (ref) at the end.
@@ -521,7 +535,7 @@ namespace reflex {
       Get(const std::pair<First, Second> & pair)
     {
         return std::get<I>(pair);
-      }
+    }
 
     template <class T>
     struct remove_refs

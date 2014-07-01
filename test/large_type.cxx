@@ -85,8 +85,8 @@ void write_large_type(int domain_id)
     vector<VectorOfTuples>
       vvtss(1, VectorOfTuples(3, std::make_tuple("232 E. Java", "RTI")));
     
-    std::string md_string_array[1][2][3] = { { { "00",  "01",  "01"  }, 
-                                               { "02",  "03",  "05" }  }  };
+    std::string md_str_arr[1][2][3] = { { { "00",  "01",  "01"  }, 
+                                          { "02",  "03",  "05" }  }  };
     
     bool bool_array[2] = { true, false };
     char char_array[2][3] = { { '~', '!', '@' }, 
@@ -109,16 +109,20 @@ void write_large_type(int domain_id)
     std::list<std::list<Color>> llc(2, std::list<Color>(palette, palette+3));
 
 #ifndef RTI_WIN32
-    typedef Union<int16_t, Case<std::string, 20, 19, 18>, Case<char>> UBoolString;
-    typedef Union<Color,   Case<char, red>,
-                           Case<UBoolString, green>, 
-                           Case<std::string, blue>> TestUnion;
+    typedef reflex::Union<int16_t, 
+                          reflex::Case<std::string, 20, 19, 18>, 
+                          reflex::Case<char>> UBoolString;
+
+    typedef reflex::Union<Color,   
+                          reflex::Case<char, red>,
+                          reflex::Case<UBoolString, green>, 
+                          reflex::Case<std::string, blue>> TestUnion;
     
     UBoolString ubs;
     std::string rti = "Real-Time Innovations, Inc.";
-    ubs.set_caseptr_tuple_for_writing(make_caseptr_tuple(rti, char_array[0][0]), 1); 
+    ubs.set_caseptr_tuple_for_writing(reflex::make_caseptr_tuple(rti, char_array[0][0]), 1); 
     TestUnion tu;
-    tu = Case<UBoolString, green>(ubs); 
+    tu = reflex::Case<UBoolString, green>(ubs); 
 #endif
     
     MultiDimArray<int16_t,2,3>::type int_array = { { {0,0,0}, {5,5,5} } };
@@ -142,17 +146,23 @@ void write_large_type(int domain_id)
     zip_map.insert(std::make_pair("Sunnyvale", 94089));
 
 #ifndef RTI_WIN32
-    auto t1 = std::tie(int_var, float_var, double_var, bool_array, char_array,
-                       octet_var, ll, bstr, tis, bvl, float_list, double_set, vb, vs, 
-                       vvltc, bounded_range, vtbss, md_string_array, tuple_array,
-                       avi, avt, tcolor, palette, llc, tu, int_array, lmda, 
-                       sparse, range, lssfa, zip_map);
+    auto t1 = std::tie(int_var,     float_var,     double_var, bool_array, 
+                       char_array,  octet_var,     ll,         bstr, 
+                       tis, bvl,    float_list,    double_set, vb, 
+                       vs, vvltc,   bounded_range, vtbss,      md_str_arr, 
+                       tuple_array, avi,           avt,        tcolor, 
+                       palette,     llc,           tu,         int_array, 
+                       lmda,        sparse,        range,      lssfa, 
+                       zip_map);
 #else
-    auto t1 = std::tie(int_var, float_var, double_var, bool_array, char_array,
-                       octet_var, ll, bstr, tis, bvl, float_list, double_set, vb, vs,
-                       vvltc, bounded_range, vtbss, md_string_array, tuple_array,
-                       avi, avt, tcolor, palette, llc, /* tu, */ int_array, lmda, 
-                       sparse, range, lssfa, zip_map);
+    auto t1 = std::tie(int_var,     float_var,     double_var, bool_array, 
+                       char_array,  octet_var,     ll,         bstr, 
+                       tis, bvl,    float_list,    double_set, vb, 
+                       vs, vvltc,   bounded_range, vtbss,      md_str_arr,
+                       tuple_array, avi,           avt,        tcolor,     
+                       palette,     llc,           /*tu,*/     int_array,  
+                       lmda,        sparse,        range,      lssfa,      
+                       zip_map);
 #endif
 
     typedef std::tuple<
@@ -218,9 +228,10 @@ void write_large_type(int domain_id)
 #ifndef RTI_WIN32
     char st_char;
     UBoolString ubs2;
-    ubs2.set_caseptr_tuple_for_reading(make_caseptr_tuple(st_string, st_char));
+    ubs2.set_caseptr_tuple_for_reading(
+        reflex::make_caseptr_tuple(st_string, st_char));
     std::get<24>(t2).set_caseptr_tuple_for_reading(
-        make_caseptr_tuple(st_char, ubs2, st_string));
+        reflex::make_caseptr_tuple(st_char, ubs2, st_string));
 #endif
 
 #ifdef RTI_WIN32

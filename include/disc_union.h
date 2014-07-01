@@ -103,11 +103,11 @@ namespace reflex {
     typedef T * case_ptr_type;
 
     typedef T type;
-    enum { discriminator = case_discriminator<Case>::value };
+    enum { discriminator = detail::case_discriminator<Case>::value };
 
     static bool matches(int discriminator)
     {
-      return Match<Tags...>::exec(discriminator);
+      return detail::Match<Tags...>::exec(discriminator);
     }
 
     Case() : val_() {}

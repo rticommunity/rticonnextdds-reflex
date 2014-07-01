@@ -13,7 +13,7 @@ damages arising out of the use or inability to use the software.
 
 #include <iostream>
 #include <type_traits>
-#include <strstream>
+#include <sstream>
 
 #include <ndds/ndds_cpp.h>
 
@@ -401,7 +401,7 @@ namespace reflex {
       {
         if (!get_union_case<Typelist, MAX_INDEX>(instance, ma, discriminator_value, val))
         {
-          std::strstream stream;
+          std::stringstream stream;
           stream << "get_union: No match for the discriminator. "
                  << "Did you forget to set a union member? "
                  << "Discriminator value = "

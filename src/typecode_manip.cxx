@@ -11,6 +11,8 @@ damages arising out of the use or inability to use the software.
 #include <ndds/ndds_cpp.h>
 #include <set>
 #include <string>
+
+#include "typecode_manip.h"
 #include "safe_typecode.h"
 #include "dllexport.h"
 
@@ -20,11 +22,12 @@ namespace reflex {
 
     DllExport
       SafeTypeCode<std::string> DECLSPEC
-      get_typecode(DDS_TypeCodeFactory * factory,
-      const std::string *)
+      TC_overload_resolution_helper::get_typecode(
+          DDS_TypeCodeFactory * factory,
+         const std::string *)
     {
         return SafeTypeCode<std::string>(factory);
-      }
+    }
 
     static void print_recursive_IDL(const DDS_TypeCode * tc,
       DDS_UnsignedLong indent,

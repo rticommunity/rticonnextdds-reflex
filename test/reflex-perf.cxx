@@ -13,15 +13,22 @@ damages arising out of the use or inability to use the software.
 #include <time.h>
 #include <time.h>
 
+#ifndef RTI_WIN32
+  #include <sys/time.h>
+#else
+  #include "gettimeofday.h"
+#endif
+
 #include "complex.h"
 #include "complexSupport.h"
-#include "ndds/ndds_cpp.h"
-
 #include "ndds/ndds_namespace_cpp.h"
 
 #include "reflex.h"
 #include "darkart.h"
-#include "gettimeofday.h"
+
+#ifndef RTI_WIN32
+  #define sprintf_s(BUF, LEN, FORMAT, ...) sprintf(BUF, FORMAT, __VA_ARGS__)
+#endif
 
 using namespace DDS;
 
@@ -212,7 +219,7 @@ extern "C" int publisher_main(bool noreflex, int domainId, int sample_count, Dom
         channel.nsamps = rand();
         channel.saturated = false;
 
-        sprintf_s(buffer, "%d", rand());
+        sprintf_s(buffer, 32, "%d", rand());
         channel.label = buffer;
 
         retcode = channel_reflex_writer.write(channel);
