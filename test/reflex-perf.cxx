@@ -78,7 +78,7 @@ extern "C" int publisher_main(bool noreflex, int domainId, int sample_count, Dom
     InstanceHandle_t instance_handle = HANDLE_NIL;
     const char *type_name = NULL;
     int count = 0;  
-    Duration_t send_period = {0,5*1000*1000*100};
+    //Duration_t send_period = {0,5*1000*1000*100};
 
     /* To customize participant QoS, use 
        the configuration file USER_QOS_PROFILES.xml */

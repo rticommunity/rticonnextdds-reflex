@@ -38,7 +38,7 @@ namespace reflex {
       unsigned index,
       const T & val)
     {
-      set_member_value<DefaultMemberNames, 0>(instance, MemberAccess::BY_ID(index + 1), val);
+      // set_member_value<DefaultMemberNames, 0>(instance, MemberAccess::BY_ID(index + 1), val);
     }
 
     template <class T>
@@ -46,7 +46,7 @@ namespace reflex {
       const char * name,
       const T & val)
     {
-      set_member_value<DefaultMemberNames, 0>(instance, MemberAccess::BY_NAME(name), val);
+      // set_member_value<DefaultMemberNames, 0>(instance, MemberAccess::BY_NAME(name), val);
     }
 
     template <class T>

@@ -19,7 +19,6 @@ damages arising out of the use or inability to use the software.
 
 #include "default_member_names.h"
 #include "disc_union.h"
-#include "dd_extra.h"
 #include "enable_if.h"
 
 namespace reflex {
@@ -39,62 +38,33 @@ namespace reflex {
       T & val);
 
     template <class T>
-    void add_member(
+    void add_member_forward(
       DDS_TypeCodeFactory * factory,
       DDS_TypeCode * outerTc,
       const char * member_name,
       unsigned char flags,
       int id,
-      const T *,
-      typename enable_if<is_builtin_array<T>::value>::type * = 0);
-
-    template <class T>
-    void add_member(
-      DDS_TypeCodeFactory * factory,
-      DDS_TypeCode * outerTc,
-      const char * member_name,
-      unsigned char flags,
-      int id,
-      const T *,
-      typename disable_if<is_builtin_array<T>::value>::type * = 0);
+      const T *tptr);
 
     template <class Case>
-    void case_add(
+    void case_add_forward(
       DDS_TypeCodeFactory * factory,
       const char * member_name,
-      DDS_UnionMember & umember,
-      typename enable_if<is_builtin_array<typename Case::type>::value>::type * = 0);
-
-    template <class Case>
-    void case_add(
-      DDS_TypeCodeFactory * factory,
-      const char * member_name,
-      DDS_UnionMember & umember,
-      typename disable_if<is_builtin_array<typename Case::type>::value>::type * = 0);
+      DDS_UnionMember & umember);
 
     template <class T>
-    void deleteTc(
+    void deleteTc_forward(
       DDS_TypeCodeFactory * factory,
-      DDS_TypeCode * tc,
-      const T *, // Can't combine para 3 & 4 because SFINAE is non-deducible context.
-      typename enable_if<is_primitive<T>::value, T>::type * = 0);
-
-    template <class T>
-    void deleteTc(
-      DDS_TypeCodeFactory * factory,
-      DDS_TypeCode * tc,
-      const T *, // Can't combine para 3 & 4 because SFINAE is non-deducible context.
-      typename disable_if<is_primitive<T>::value, T>::type * = 0);
-
+      DDS_TypeCode * tc);
 
     template <class Typelist,
               unsigned int I,
-              class Union>
+              class TUnion>
     bool get_union_case(
         const DDS_DynamicData &instance,
         const MemberAccess & ma,
         int discriminator_value,
-        Union& val)
+        TUnion& val)
     {
         typedef typename At<Typelist, I>::type CaseI;
         if (CaseI::matches(discriminator_value))
@@ -141,11 +111,11 @@ namespace reflex {
 
     template <class Typelist,
               unsigned int I,
-              class Union>
+              class TUnion>
     bool set_union_case(
         DDS_DynamicData &instance,
         const MemberAccess & ma,
-        const Union& val)
+        const TUnion& val)
     {
         // Note that CaseTypelist is off by one w.r.t the variant.
         if ((I == val.get_active_index()) ||
@@ -257,12 +227,12 @@ namespace reflex {
                        I
                       >::member_info();
 
-        add_member(factory,
-                   outer_structTc,
-                   info.name.c_str(),
-                   info.value,
-                   I + 1,
-                   static_cast<InnerNoRef *>(0));
+        add_member_forward(factory,
+                           outer_structTc,
+                           info.name.c_str(),
+                           info.value,
+                           I + 1,
+                           static_cast<InnerNoRef *>(0));
 
         Next::add(factory, outer_structTc);
       }
@@ -278,7 +248,7 @@ namespace reflex {
                        I
                       >::member_info();
 
-        case_add<CaseI>(factory, info.name.c_str(), seq[I]);
+        case_add_forward<CaseI>(factory, info.name.c_str(), seq[I]);
 
         Next::add_union_member(factory, seq);
       }
@@ -289,27 +259,28 @@ namespace reflex {
       {
         typedef typename At<Typelist, I>::type Case;
         typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
-        deleteTc(factory, const_cast<DDS_TypeCode *>(seq[I].type),
-          static_cast<CaseTypeNoRef *>(0));
+        deleteTc_forward<CaseTypeNoRef>(
+            factory, 
+            const_cast<DDS_TypeCode *>(seq[I].type));
         Next::delete_typecodes(factory, seq);
       }
 
-      template <class Union>
+      template <class TUnion>
       static void set_union(
         DDS_DynamicData &instance,
         const MemberAccess & ma,
-        const Union& val)
+        const TUnion& val)
       {
         if (!set_union_case<Typelist, I>(instance, ma, val))
           Next::set_union(instance, ma, val);
       }
 
-      template <class Union>
+      template <class TUnion>
       static void get_union(
         const DDS_DynamicData &instance,
         const MemberAccess & ma,
         int discriminator_value,
-        Union& val)
+        TUnion& val)
       {
         if (!get_union_case<Typelist, I>(instance, ma, discriminator_value, val))
           Next::get_union(instance, ma, discriminator_value, val);
@@ -388,12 +359,12 @@ namespace reflex {
           MemberTraits<typename remove_refs<Typelist>::type, 
                        MAX_INDEX>::member_info();
 
-        add_member(factory,
-                   outer_structTc,
-                   info.name.c_str(),
-                   info.value,
-                   MAX_INDEX + 1,
-                   static_cast<InnerNoRef *>(0));
+        add_member_forward(factory,
+                           outer_structTc,
+                           info.name.c_str(),
+                           info.value,
+                           MAX_INDEX + 1,
+                           static_cast<InnerNoRef *>(0));
       }
 
       static void add_union_member(
@@ -405,7 +376,7 @@ namespace reflex {
           MemberTraits<typename remove_refs<Typelist>::type, 
                        MAX_INDEX>::member_info();
 
-        case_add<CaseI>(factory, info.name.c_str(), seq[MAX_INDEX]);
+        case_add_forward<CaseI>(factory, info.name.c_str(), seq[MAX_INDEX]);
       }
 
       static void delete_typecodes(
@@ -414,16 +385,16 @@ namespace reflex {
       {
         typedef typename At<Typelist, MAX_INDEX>::type Case;
         typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
-        deleteTc(factory, 
-                 const_cast<DDS_TypeCode *>(seq[MAX_INDEX].type),
-                 static_cast<CaseTypeNoRef *>(0));
+        deleteTc_forward<CaseTypeNoRef>(
+            factory, 
+            const_cast<DDS_TypeCode *>(seq[MAX_INDEX].type));
       }
 
-      template <class Union>
+      template <class TUnion>
       static void set_union(
         DDS_DynamicData &instance,
         const MemberAccess & ma,
-        const Union& val)
+        const TUnion& val)
       {
         if (!set_union_case<Typelist, MAX_INDEX>(instance, ma, val))
         {
@@ -431,12 +402,12 @@ namespace reflex {
         }
       }
 
-      template <class Union>
+      template <class TUnion>
       static void get_union(
         const DDS_DynamicData &instance,
         const MemberAccess & ma,
         int discriminator_value,
-        Union& val)
+        TUnion& val)
       {
         if (!get_union_case<Typelist, MAX_INDEX>(
                 instance, 

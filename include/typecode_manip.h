@@ -257,14 +257,14 @@ namespace reflex {
     }; // struct TC_overload_resolution_helper
 
     template <class T>
-    void add_member(
+    void add_member_impl(
       DDS_TypeCodeFactory * factory,
       DDS_TypeCode * outerTc,
       const char * member_name,
       unsigned char flags,
       int id,
       const T *,
-      typename disable_if<is_builtin_array<T>::value>::type *)
+      typename disable_if<is_builtin_array<T>::value>::type * = 0)
     {
       DDS_ExceptionCode_t ex;
       SafeTypeCode<T> innerTc =
@@ -287,14 +287,14 @@ namespace reflex {
     }
 
     template <class T>
-    void add_member(
+    void add_member_impl(
       DDS_TypeCodeFactory * factory,
       DDS_TypeCode * outerTc,
       const char * member_name,
       unsigned char flags,
       int id,
       const T *,
-      typename enable_if<is_builtin_array<T>::value>::type *)
+      typename enable_if<is_builtin_array<T>::value>::type * = 0)
     {
       // Simple overloading is not used to get typecode for built-in
       // arrays because square brackets must be expanded syntactically.
@@ -320,6 +320,18 @@ namespace reflex {
       check_exception_code(
         "add_member: Unable to add inner array typecode, error = ",
         ex);
+    }
+
+    template <class T>
+    void add_member_forward(
+      DDS_TypeCodeFactory * factory,
+      DDS_TypeCode * outerTc,
+      const char * member_name,
+      unsigned char flags,
+      int id,
+      const T * tptr)
+    {
+      add_member_impl(factory, outerTc, member_name, flags, id, tptr);
     }
 
     template <size_t I, class Case>
@@ -361,11 +373,13 @@ namespace reflex {
 
 
     template <class Case>
-    void case_add(
+    void case_add_impl(
         DDS_TypeCodeFactory * factory,
         const char * member_name,
         DDS_UnionMember & umember,
-        typename disable_if<is_builtin_array<typename Case::type>::value>::type *)
+        typename disable_if<
+                            is_builtin_array<typename Case::type
+                           >::value>::type * = 0)
     {
       DDS_LongSeq label_seq;
       label_seq.ensure_length(
@@ -388,13 +402,13 @@ namespace reflex {
     };
 
     template <class Case>
-    void case_add(
+    void case_add_impl(
         DDS_TypeCodeFactory * factory,
         const char * member_name,
         DDS_UnionMember & umember,
         typename enable_if<
                            is_builtin_array<typename Case::type>::value
-                          >::type *) 
+                          >::type * = 0) 
     {
       DDS_LongSeq label_seq;
       label_seq.ensure_length(
@@ -424,20 +438,29 @@ namespace reflex {
       umember.labels = label_seq;
     };
 
+    template <class Case>
+    void case_add_forward(
+        DDS_TypeCodeFactory * factory,
+        const char * member_name,
+        DDS_UnionMember & umember)
+    {
+      case_add_impl<Case>(factory, member_name, umember);
+    }
+
     template <class T>
-    void deleteTc(DDS_TypeCodeFactory * factory,
-      DDS_TypeCode * tc,
-      const T *, // Can't combine para 3 & 4 because SFINAE is non-deducible context.
-      typename enable_if<is_primitive<T>::value, T>::type *)
+    void deleteTc_impl(
+            DDS_TypeCodeFactory * factory,
+            DDS_TypeCode * tc,
+            typename enable_if<is_primitive<T>::value, T>::type * = 0)
     {
       // No-op
     }
 
     template <class T>
-    void deleteTc(DDS_TypeCodeFactory * factory,
-      DDS_TypeCode * tc,
-      const T *, // Can't combine para 3 & 4 because SFINAE is non-deducible context.
-      typename disable_if<is_primitive<T>::value, T>::type *)
+    void deleteTc_impl(
+            DDS_TypeCodeFactory * factory,
+            DDS_TypeCode * tc,
+            typename disable_if<is_primitive<T>::value, T>::type * = 0)
     {
       DDS_ExceptionCode_t ex;
       factory->delete_tc(tc, ex);
@@ -449,6 +472,14 @@ namespace reflex {
                   << std::endl;
         // do not throw
       }
+    }
+
+    template <class TC>
+    void deleteTc_forward(
+            DDS_TypeCodeFactory * factory,
+            DDS_TypeCode * tc)
+    {
+      deleteTc_impl<TC>(factory, tc);
     }
 
   } // namespace detail

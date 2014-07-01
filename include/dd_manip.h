@@ -116,7 +116,7 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const T & val,
-        typename enable_if<std::is_enum<T>::value>::type *)
+        typename enable_if<std::is_enum<T>::value>::type * = 0)
       {
         DDS_ReturnCode_t rc;
 
@@ -505,12 +505,12 @@ namespace reflex {
       }
 
     public:
-      template <class T> // When T is an enum                                                         
+      template <class T> // When T is an enum
       static void get_member_value(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           T & val,
-          typename enable_if<std::is_enum<T>::value>::type *)
+          typename enable_if<std::is_enum<T>::value>::type * = 0)
       {
         DDS_ReturnCode_t rc;
         DDS_Long out;
