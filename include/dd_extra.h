@@ -41,16 +41,6 @@ DllExport DDS_ReturnCode_t get_array(const DDS_DynamicData & instance, \
                            DDS_UnsignedLong *length,                   \
                            const MemberAccess & ma);
 
-#define SET_VALUE_DECL(TYPE)                                         \
-DllExport void set_member_value(DDS_DynamicData & instance,          \
-                       const MemberAccess &ma,                       \
-	                     const TYPE & val);
-
-#define GET_VALUE_DECL(TYPE)                                         \
-DllExport void get_member_value(const DDS_DynamicData & instance,    \
-                       const MemberAccess &ma,                       \
-                       TYPE & val);
-
 namespace reflex {
 
   typedef unsigned char octet_t;
@@ -64,23 +54,6 @@ namespace reflex {
   namespace detail {
 
       class MemberAccess;
-
-      SET_VALUE_DECL(octet_t)    // also uint8_t
-      SET_VALUE_DECL(bool)
-      SET_VALUE_DECL(char)
-      SET_VALUE_DECL(int8_t)
-      SET_VALUE_DECL(char32_t)
-      SET_VALUE_DECL(int16_t)
-      SET_VALUE_DECL(uint16_t)
-      SET_VALUE_DECL(int32_t)
-      SET_VALUE_DECL(uint32_t)
-      SET_VALUE_DECL(int64_t)
-      SET_VALUE_DECL(uint64_t)
-      SET_VALUE_DECL(float)
-      SET_VALUE_DECL(double)
-#ifdef RTIREFLEX_x86_64RTIREFLEX_
-      SET_VALUE_DECL(long long int)
-#endif
 
       SET_SEQUENCE_DECL(DDS_LongSeq)
       SET_SEQUENCE_DECL(DDS_ShortSeq)
@@ -113,24 +86,6 @@ namespace reflex {
 #endif
       // Also see set_array function template for enums in dd_manip.h 
 
-
-      GET_VALUE_DECL(octet_t)    // also uint8_t
-      GET_VALUE_DECL(bool)
-      GET_VALUE_DECL(char)
-      GET_VALUE_DECL(int8_t)
-      GET_VALUE_DECL(char32_t)
-      GET_VALUE_DECL(int16_t)
-      GET_VALUE_DECL(uint16_t)
-      GET_VALUE_DECL(int32_t)
-      GET_VALUE_DECL(uint32_t)
-      GET_VALUE_DECL(int64_t)
-      GET_VALUE_DECL(uint64_t)
-      GET_VALUE_DECL(float)
-      GET_VALUE_DECL(double)
-#ifdef __x86_64__
-      GET_VALUE_DECL(long long int)
-#endif
-
       GET_SEQUENCE_DECL(DDS_OctetSeq)
       GET_SEQUENCE_DECL(DDS_BooleanSeq)
       GET_SEQUENCE_DECL(DDS_CharSeq)
@@ -161,16 +116,6 @@ namespace reflex {
       GET_ARRAY_DECL(long long int)
 #endif
       // Also see get_array function template for enums in dd_manip.h 
-
-    DllExport void set_member_value(
-        DDS_DynamicData & instance,
-        const MemberAccess &ma,
-        const std::string & val);
-
-    DllExport void get_member_value(
-        const DDS_DynamicData & instance,
-        const MemberAccess &ma,
-        std::string & val);
 
     DllExport void set_seq_length(
         DDS_DynamicData & seq,

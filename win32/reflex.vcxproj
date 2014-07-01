@@ -75,6 +75,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dd2tuple.cxx" />
+    <ClCompile Include="..\src\dd_manip.cxx" />
     <ClCompile Include="..\src\reflex.cxx" />
     <ClCompile Include="..\src\dd_extra.cxx" />
     <ClCompile Include="..\src\default_member_names.cxx" />

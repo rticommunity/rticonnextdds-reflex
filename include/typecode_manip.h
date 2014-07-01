@@ -48,10 +48,10 @@ namespace reflex {
      * qualified name to call them. No upfront declarations 
      * are necessary if this idiom is used. 
      * */
-    struct TC_overload_resolution_helper {
-
-      DllExport SafeTypeCode<std::string> DECLSPEC
-        static get_typecode(
+    struct TC_overload_resolution_helper 
+    {
+      DllExport static SafeTypeCode<std::string> DECLSPEC
+        get_typecode(
             DDS_TypeCodeFactory * factory,
             const std::string *);
 

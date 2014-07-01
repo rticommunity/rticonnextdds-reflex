@@ -19,6 +19,9 @@
     <ClCompile Include="..\src\reflex.cxx">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\dd_manip.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\typecode_manip.h">

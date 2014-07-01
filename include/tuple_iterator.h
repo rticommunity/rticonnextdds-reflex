@@ -27,19 +27,20 @@ namespace reflex {
   namespace detail {
 
     template <class T>
-    void set_member_value(DDS_DynamicData & instance,
+    void set_member_forward(
+      DDS_DynamicData & instance,
       const MemberAccess &ma,
-      const T & val,
-      typename enable_if<std::is_enum<T>::value>::type * = 0);
+      const T & val);
 
     template <class T>
-    void get_member_value(const DDS_DynamicData & instance,
+    void get_member_forward(
+      const DDS_DynamicData & instance,
       const MemberAccess &ma,
-      T & val,
-      typename enable_if<std::is_enum<T>::value>::type * = 0);
+      T & val);
 
     template <class T>
-    void add_member(DDS_TypeCodeFactory * factory,
+    void add_member(
+      DDS_TypeCodeFactory * factory,
       DDS_TypeCode * outerTc,
       const char * member_name,
       unsigned char flags,
@@ -48,7 +49,8 @@ namespace reflex {
       typename enable_if<is_builtin_array<T>::value>::type * = 0);
 
     template <class T>
-    void add_member(DDS_TypeCodeFactory * factory,
+    void add_member(
+      DDS_TypeCodeFactory * factory,
       DDS_TypeCode * outerTc,
       const char * member_name,
       unsigned char flags,
@@ -57,37 +59,42 @@ namespace reflex {
       typename disable_if<is_builtin_array<T>::value>::type * = 0);
 
     template <class Case>
-    void case_add(DDS_TypeCodeFactory * factory,
+    void case_add(
+      DDS_TypeCodeFactory * factory,
       const char * member_name,
       DDS_UnionMember & umember,
       typename enable_if<is_builtin_array<typename Case::type>::value>::type * = 0);
 
     template <class Case>
-    void case_add(DDS_TypeCodeFactory * factory,
+    void case_add(
+      DDS_TypeCodeFactory * factory,
       const char * member_name,
       DDS_UnionMember & umember,
       typename disable_if<is_builtin_array<typename Case::type>::value>::type * = 0);
 
     template <class T>
-    void deleteTc(DDS_TypeCodeFactory * factory,
+    void deleteTc(
+      DDS_TypeCodeFactory * factory,
       DDS_TypeCode * tc,
       const T *, // Can't combine para 3 & 4 because SFINAE is non-deducible context.
       typename enable_if<is_primitive<T>::value, T>::type * = 0);
 
     template <class T>
-    void deleteTc(DDS_TypeCodeFactory * factory,
+    void deleteTc(
+      DDS_TypeCodeFactory * factory,
       DDS_TypeCode * tc,
       const T *, // Can't combine para 3 & 4 because SFINAE is non-deducible context.
       typename disable_if<is_primitive<T>::value, T>::type * = 0);
 
 
     template <class Typelist,
-      unsigned int I,
-    class Union>
-      bool get_union_case(const DDS_DynamicData &instance,
-      const MemberAccess & ma,
-      int discriminator_value,
-      Union& val)
+              unsigned int I,
+              class Union>
+    bool get_union_case(
+        const DDS_DynamicData &instance,
+        const MemberAccess & ma,
+        int discriminator_value,
+        Union& val)
     {
         typedef typename At<Typelist, I>::type CaseI;
         if (CaseI::matches(discriminator_value))
@@ -109,17 +116,20 @@ namespace reflex {
           }
 
           if (ma.access_by_id())
-            get_member_value(instance,
-            MemberAccess::BY_ID(discriminator_value),
-            *data_ptr);
+            get_member_forward(
+                instance,
+                MemberAccess::BY_ID(discriminator_value),
+                *data_ptr);
           else
           {
             MemberInfo info =
-              MemberTraits<typename remove_refs<Typelist>::type, I>::member_info();
+              MemberTraits<typename remove_refs<Typelist>::type, 
+                           I>::member_info();
 
-            get_member_value(instance,
-              MemberAccess::BY_NAME(info.name.c_str()),
-              *data_ptr);
+            get_member_forward(
+                instance,
+                MemberAccess::BY_NAME(info.name.c_str()),
+                *data_ptr);
           }
           if (data_in_case_ptr)
             val.set_active_index(I);
@@ -130,11 +140,12 @@ namespace reflex {
       }
 
     template <class Typelist,
-      unsigned int I,
-    class Union>
-      bool set_union_case(DDS_DynamicData &instance,
-      const MemberAccess & ma,
-      const Union& val)
+              unsigned int I,
+              class Union>
+    bool set_union_case(
+        DDS_DynamicData &instance,
+        const MemberAccess & ma,
+        const Union& val)
     {
         // Note that CaseTypelist is off by one w.r.t the variant.
         if ((I == val.get_active_index()) ||
@@ -146,15 +157,19 @@ namespace reflex {
             &(boost::get<CaseI>(val.get_variant()).get());
 
           if (ma.access_by_id())
-            set_member_value(instance,
-            MemberAccess::BY_ID(CaseI::discriminator),
-            *data_ptr);
+            set_member_forward(
+                       instance,
+                       MemberAccess::BY_ID(CaseI::discriminator),
+                       *data_ptr);
           else
           {
             MemberInfo info =
               MemberTraits<typename remove_refs<Typelist>::type, I>::member_info();
 
-            set_member_value(instance, MemberAccess::BY_NAME(info.name.c_str()), *data_ptr);
+            set_member_forward(
+                       instance, 
+                       MemberAccess::BY_NAME(info.name.c_str()), 
+                       *data_ptr);
           }
 
           return true;
@@ -182,22 +197,25 @@ namespace reflex {
 #endif
 
         if (ma.access_by_id())
-          set_member_value(instance,
-                           MemberAccess::BY_ID(I + 1),
-                           Get<I>(tuple));
+          set_member_forward(
+                     instance, 
+                     MemberAccess::BY_ID(I + 1), 
+                     Get<I>(tuple));
         else
         {
           MemberInfo info =
             MemberTraits<typename remove_refs<Typelist>::type, I>::member_info();
 
-          set_member_value(instance,
-                           MemberAccess::BY_NAME(info.name.c_str()),
-                           Get<I>(tuple));
+          set_member_forward(
+                     instance,
+                     MemberAccess::BY_NAME(info.name.c_str()),
+                     Get<I>(tuple));
         }
         Next::set(instance, ma, tuple);
       }
 
-      static void get(const DDS_DynamicData & instance,
+      static void get(
+        const DDS_DynamicData & instance,
         const MemberAccess &ma,
         Typelist & tuple)
       {
@@ -205,17 +223,20 @@ namespace reflex {
         unsigned i = I;
 #endif
         if (ma.access_by_id())
-          get_member_value(instance,
-                           MemberAccess::BY_ID(I + 1),
-                           Get<I>(tuple));
+          get_member_forward(
+              instance,
+              MemberAccess::BY_ID(I + 1),
+              Get<I>(tuple));
         else
         {
           MemberInfo info =
-            MemberTraits<typename remove_refs<Typelist>::type, I>::member_info();
+            MemberTraits<typename remove_refs<Typelist>::type,
+                         I>::member_info();
 
-          get_member_value(instance,
-                           MemberAccess::BY_NAME(info.name.c_str()),
-                           Get<I>(tuple));
+          get_member_forward(
+              instance,
+              MemberAccess::BY_NAME(info.name.c_str()),
+              Get<I>(tuple));
         }
         Next::get(instance, ma, tuple);
       }
@@ -246,7 +267,8 @@ namespace reflex {
         Next::add(factory, outer_structTc);
       }
 
-      static void add_union_member(DDS_TypeCodeFactory * factory,
+      static void add_union_member(
+        DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
         typedef typename At<Typelist, I>::type CaseI;
@@ -261,7 +283,8 @@ namespace reflex {
         Next::add_union_member(factory, seq);
       }
 
-      static void delete_typecodes(DDS_TypeCodeFactory * factory,
+      static void delete_typecodes(
+        DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
         typedef typename At<Typelist, I>::type Case;
@@ -272,7 +295,8 @@ namespace reflex {
       }
 
       template <class Union>
-      static void set_union(DDS_DynamicData &instance,
+      static void set_union(
+        DDS_DynamicData &instance,
         const MemberAccess & ma,
         const Union& val)
       {
@@ -281,7 +305,8 @@ namespace reflex {
       }
 
       template <class Union>
-      static void get_union(const DDS_DynamicData &instance,
+      static void get_union(
+        const DDS_DynamicData &instance,
         const MemberAccess & ma,
         int discriminator_value,
         Union& val)
@@ -292,56 +317,64 @@ namespace reflex {
     };
 
     template <class Typelist,
-      unsigned int MAX_INDEX>
+              unsigned int MAX_INDEX>
     struct TypelistIterator<Typelist, MAX_INDEX, MAX_INDEX>
     {
-      static void set(DDS_DynamicData & instance,
-      const MemberAccess &ma,
-      const Typelist & tuple)
+      static void set(
+          DDS_DynamicData & instance,
+          const MemberAccess &ma,
+          const Typelist & tuple)
       {
 #ifdef _DEBUG
         unsigned max = MAX_INDEX;
 #endif
 
         if (ma.access_by_id())
-          set_member_value(instance,
-          MemberAccess::BY_ID(MAX_INDEX + 1),
-          Get<MAX_INDEX>(tuple));
+          set_member_forward(
+                     instance,
+                     MemberAccess::BY_ID(MAX_INDEX + 1),
+                     Get<MAX_INDEX>(tuple));
         else
         {
           MemberInfo info =
-            MemberTraits<typename remove_refs<Typelist>::type, MAX_INDEX>::member_info();
+            MemberTraits<typename remove_refs<Typelist>::type, 
+                         MAX_INDEX>::member_info();
 
-          set_member_value(instance,
-            MemberAccess::BY_NAME(info.name.c_str()),
-            Get<MAX_INDEX>(tuple));
+          set_member_forward(
+                     instance,
+                     MemberAccess::BY_NAME(info.name.c_str()),
+                     Get<MAX_INDEX>(tuple));
         }
       }
 
       static void get(const DDS_DynamicData & instance,
-        const MemberAccess &ma,
-        Typelist & tuple)
+                      const MemberAccess &ma,
+                      Typelist & tuple)
       {
 #ifdef _DEBUG
         unsigned max = MAX_INDEX;
 #endif
 
         if (ma.access_by_id())
-          get_member_value(instance,
-          MemberAccess::BY_ID(MAX_INDEX + 1),
-          Get<MAX_INDEX>(tuple));
+          get_member_forward(
+              instance,
+              MemberAccess::BY_ID(MAX_INDEX + 1),
+              Get<MAX_INDEX>(tuple));
         else
         {
           MemberInfo info =
-            MemberTraits<typename remove_refs<Typelist>::type, MAX_INDEX>::member_info();
+            MemberTraits<typename remove_refs<Typelist>::type, 
+                         MAX_INDEX>::member_info();
 
-          get_member_value(instance,
-            MemberAccess::BY_NAME(info.name.c_str()),
-            Get<MAX_INDEX>(tuple));
+          get_member_forward(
+              instance,
+              MemberAccess::BY_NAME(info.name.c_str()),
+              Get<MAX_INDEX>(tuple));
         }
       }
 
-      static void add(DDS_TypeCodeFactory * factory,
+      static void add(
+        DDS_TypeCodeFactory * factory,
         DDS_TypeCode * outer_structTc)
       {
 #ifdef _DEBUG
@@ -352,33 +385,38 @@ namespace reflex {
         typedef typename remove_reference<Inner>::type InnerNoRef;
 
         MemberInfo info =
-          MemberTraits<typename remove_refs<Typelist>::type, MAX_INDEX>::member_info();
+          MemberTraits<typename remove_refs<Typelist>::type, 
+                       MAX_INDEX>::member_info();
 
         add_member(factory,
-          outer_structTc,
-          info.name.c_str(),
-          info.value,
-          MAX_INDEX + 1,
-          static_cast<InnerNoRef *>(0));
+                   outer_structTc,
+                   info.name.c_str(),
+                   info.value,
+                   MAX_INDEX + 1,
+                   static_cast<InnerNoRef *>(0));
       }
 
-      static void add_union_member(DDS_TypeCodeFactory * factory,
+      static void add_union_member(
+        DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
         typedef typename At<Typelist, MAX_INDEX>::type CaseI;
         MemberInfo info =
-          MemberTraits<typename remove_refs<Typelist>::type, MAX_INDEX>::member_info();
+          MemberTraits<typename remove_refs<Typelist>::type, 
+                       MAX_INDEX>::member_info();
 
         case_add<CaseI>(factory, info.name.c_str(), seq[MAX_INDEX]);
       }
 
-      static void delete_typecodes(DDS_TypeCodeFactory * factory,
+      static void delete_typecodes(
+        DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
         typedef typename At<Typelist, MAX_INDEX>::type Case;
         typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
-        deleteTc(factory, const_cast<DDS_TypeCode *>(seq[MAX_INDEX].type),
-          static_cast<CaseTypeNoRef *>(0));
+        deleteTc(factory, 
+                 const_cast<DDS_TypeCode *>(seq[MAX_INDEX].type),
+                 static_cast<CaseTypeNoRef *>(0));
       }
 
       template <class Union>
@@ -394,12 +432,17 @@ namespace reflex {
       }
 
       template <class Union>
-      static void get_union(const DDS_DynamicData &instance,
+      static void get_union(
+        const DDS_DynamicData &instance,
         const MemberAccess & ma,
         int discriminator_value,
         Union& val)
       {
-        if (!get_union_case<Typelist, MAX_INDEX>(instance, ma, discriminator_value, val))
+        if (!get_union_case<Typelist, MAX_INDEX>(
+                instance, 
+                ma, 
+                discriminator_value, 
+                val))
         {
           std::stringstream stream;
           stream << "get_union: No match for the discriminator. "

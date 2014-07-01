@@ -109,6 +109,7 @@ LIBS = -L$(NDDSHOME)/lib/$(ARCH) -Lobjs/$(ARCH) $(NDDSLIBS) $(SYSLIBS)
 SOURCES = src/dd2tuple.cxx                 \
           src/typecode_manip.cxx           \
           src/dd_extra.cxx                 \
+          src/dd_manip.cxx                 \
           src/reflex.cxx                   \
           src/safe_typecode.cxx            \
           src/default_member_names.cxx
