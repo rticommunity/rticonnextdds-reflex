@@ -27,27 +27,27 @@ namespace reflex {
 
     bool operator == ( 
       const SafeEnum & rhs)
-    { return lhs.val == rhs.val; }
+    { return val == rhs.val; }
 
     bool operator != (
       const SafeEnum & rhs)
-    { return lhs.val != rhs.val; }
+    { return val != rhs.val; }
     
     bool operator <  (
       const SafeEnum & rhs)
-    { return lhs.val <  rhs.val; }
+    { return val <  rhs.val; }
     
     bool operator <= (
       const SafeEnum & rhs)
-    { return lhs.val <= rhs.val; }
+    { return val <= rhs.val; }
     
     bool operator >(
       const SafeEnum & rhs)
-    { return lhs.val >  rhs.val; }
+    { return val >  rhs.val; }
     
     bool operator >= (
       const SafeEnum & rhs)
-    { return lhs.val >= rhs.val; }
+    { return val >= rhs.val; }
 
   };
 
