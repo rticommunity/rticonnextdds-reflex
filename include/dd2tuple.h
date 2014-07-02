@@ -28,7 +28,7 @@ damages arising out of the use or inability to use the software.
 namespace reflex {
 
   template <class T>
-  void FillDD(const T & data, DDS_DynamicData &instance)
+  void fill_dd(const T & data, DDS_DynamicData &instance)
   {
     detail::MemberAccess nested_ma = 
       detail::MemberAccess::BY_ID();
@@ -41,7 +41,7 @@ namespace reflex {
   }
 
   template <class T>
-  SafeTypeCode<T> MakeTypecode(const char * name = 0)
+  SafeTypeCode<T> make_typecode(const char * name = 0)
   {
     DDS_TypeCodeFactory * factory =
       DDS_TypeCodeFactory::get_instance();
@@ -64,7 +64,7 @@ namespace reflex {
   }
 
   template <class T>
-  void ExtractDD(const DDS_DynamicData & instance, T & data)
+  void extract_dd(const DDS_DynamicData & instance, T & data)
   {
     detail::MemberAccess nested_ma = 
       detail::MemberAccess::BY_ID();
@@ -78,21 +78,21 @@ namespace reflex {
 
 
   template <class Tuple>
-  void Tuple2DD(const Tuple & tuple, DDS_DynamicData &instance)
+  void tuple2dd(const Tuple & tuple, DDS_DynamicData &instance)
   {
-    FillDD<Tuple>(tuple, instance);
+    fill_dd<Tuple>(tuple, instance);
   }
 
   template <class Tuple>
-  void DD2Tuple(const DDS_DynamicData & instance, Tuple & tuple)
+  void dd2tuple(const DDS_DynamicData & instance, Tuple & tuple)
   {
-    ExtractDD<Tuple>(instance, tuple);
+    extract_dd<Tuple>(instance, tuple);
   }
 
   template <class Tuple>
-  SafeTypeCode<Tuple> Tuple2Typecode(const char * name = 0)
+  SafeTypeCode<Tuple> tuple2typecode(const char * name = 0)
   {
-    return MakeTypecode<Tuple>(name);
+    return make_typecode<Tuple>(name);
   }
 
   class DllExport SafeDynamicDataInstance

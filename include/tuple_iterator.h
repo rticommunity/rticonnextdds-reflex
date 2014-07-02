@@ -119,12 +119,12 @@ namespace reflex {
     {
         // Note that CaseTypelist is off by one w.r.t the variant.
         if ((I == val.get_active_index()) ||
-          (I == val.get_variant().which() - 1))
+            (I == val.get_variant().which() - 1))
         {
           typedef typename At<Typelist, I>::type CaseI;
           typename CaseI::type const * data_ptr =
             Get<I>(val.get_caseptr_tuple()) ? :
-            &(boost::get<CaseI>(val.get_variant()).get());
+              &(boost::get<CaseI>(val.get_variant()).get());
 
           if (ma.access_by_id())
             set_member_forward(
@@ -134,7 +134,8 @@ namespace reflex {
           else
           {
             MemberInfo info =
-              MemberTraits<typename remove_refs<Typelist>::type, I>::member_info();
+              MemberTraits<typename remove_refs<Typelist>::type, 
+                           I>::member_info();
 
             set_member_forward(
                        instance, 

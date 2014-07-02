@@ -168,7 +168,7 @@ namespace reflex {
       : detail::DataWriterBase(participant,
                                topic_name,
                                type_name,
-                               MakeTypecode<T>(type_name).release())
+                               make_typecode<T>(type_name).release())
     { }
 
     GenericDataWriter(DDSDomainParticipant *participant,
@@ -180,7 +180,7 @@ namespace reflex {
                                dwqos,
                                topic_name,
                                type_name,
-                               MakeTypecode<T>(type_name).release(),
+                               make_typecode<T>(type_name).release(),
                                listener)
     { }
 
@@ -192,14 +192,14 @@ namespace reflex {
     template <class U>
     DDS_ReturnCode_t write(U & data)
     {
-      FillDD(data, *dd_instance_.get());
+      fill_dd(data, *dd_instance_.get());
       return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
     }
 
     template <class U>
     DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
     {
-      FillDD(data, *dd_instance_.get());
+      fill_dd(data, *dd_instance_.get());
       return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
     }
   };
@@ -217,20 +217,20 @@ namespace reflex {
       : DataWriterBase(participant,
                        topic_name,
                        type_name,
-                       MakeTypecode<NoRefsTuple>(type_name).release())
+                       make_typecode<NoRefsTuple>(type_name).release())
     { }
 
     template <class U>
     DDS_ReturnCode_t write(U & data)
     {
-      FillDD(data, *dd_instance_.get());
+      fill_dd(data, *dd_instance_.get());
       return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
     }
 
     template <class U>
     DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
     {
-      FillDD(data, *dd_instance_.get());
+      fill_dd(data, *dd_instance_.get());
       return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
     }
   };
@@ -321,7 +321,7 @@ namespace reflex {
         for (int i = 0; i < data_seq.length(); ++i)
         {
           if (info_seq[i].valid_data)
-            DD2Tuple(data_seq[i], data[i].data());
+            dd2tuple(data_seq[i], data[i].data());
           else
           {
             T temp;
@@ -361,7 +361,7 @@ namespace reflex {
             listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
             topic_name,
             type_name,
-            MakeTypecode<T>(type_name).release()),
+            make_typecode<T>(type_name).release()),
             safe_listener_adapter_(listener ? adapter_placeholder : 0)
     {
       if (safe_listener_adapter_)
@@ -382,7 +382,7 @@ namespace reflex {
            listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
            topic_name,
            type_name,
-           MakeTypecode<T>(type_name).release()),
+           make_typecode<T>(type_name).release()),
            safe_listener_adapter_(listener ? adapter_placeholder : 0)
     {
       if (safe_listener_adapter_)
@@ -423,7 +423,7 @@ namespace reflex {
         {
           if (info_seq[i].valid_data)
           {
-            DD2Tuple(data_seq[i], data);
+            dd2tuple(data_seq[i], data);
             info = info_seq[i];
           }
         }
@@ -497,7 +497,7 @@ namespace reflex {
       listener ? (adapter_placeholder = new DataReaderListenerAdapter<NoRefsTuple>(listener)) : 0,
       topic_name,
       type_name,
-      MakeTypecode<NoRefsTuple>(type_name).release()),
+      make_typecode<NoRefsTuple>(type_name).release()),
       safe_listener_adapter_(listener ? adapter_placeholder : 0)
     {
       if (safe_listener_adapter_)

@@ -108,7 +108,7 @@ void write_shape_type(int domain_id)
   //auto t1 = ShapeType(color, x, y, shapesize);
 
   typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
-  reflex::SafeTypeCode<DDS_TypeCode> stc(reflex::Tuple2Typecode<Tuple>());
+  reflex::SafeTypeCode<DDS_TypeCode> stc(reflex::tuple2typecode<Tuple>());
 
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
@@ -159,18 +159,18 @@ void write_shape_type(int domain_id)
     copy(t1, x, y, color, shapesize);
 
     // write the values in a dynamic data instance.
-    reflex::Tuple2DD(t1, *ddi1.get());
+    reflex::tuple2dd(t1, *ddi1.get());
 
     // print if you like
     // ddi1.get()->print(stdout, 2);
 
     // read the dynamic data instance back 
     // in a different tuple
-    reflex::DD2Tuple(*ddi1.get(), t2);
+    reflex::dd2tuple(*ddi1.get(), t2);
 
     // write the second tuple again in a
     // different dynamic data instance.
-    reflex::Tuple2DD(t2, *ddi2.get());
+    reflex::tuple2dd(t2, *ddi2.get());
 
     // print if you like
     // ddi2.get()->print(stdout, 2);

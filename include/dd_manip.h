@@ -436,7 +436,7 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const bounded<T, Bound> & val)
+        const Bounded<T, Bound> & val)
       {
         set_member_value(instance, ma, static_cast<const T &>(val));
       }
@@ -793,7 +793,7 @@ namespace reflex {
       static void get_member_value(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          bounded<T, Bound> & val)
+          Bounded<T, Bound> & val)
       {
         get_member_value(instance, ma, static_cast<T &>(val));
       }

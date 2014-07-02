@@ -31,7 +31,7 @@ void write_large_type(int domain_id)
 {
     using reflex::MultiDimArray;
     using reflex::octet_t;
-    using reflex::bounded;
+    using reflex::Bounded;
     using reflex::BoundedRange;
     using reflex::Range;
     using reflex::Sparse;
@@ -55,13 +55,13 @@ void write_large_type(int domain_id)
     octet_t octet_var = 'A';
     long long ll = 0xFFFFFFF;
     std::string str("Hello World!");
-    reflex::bounded<std::string, 99> bstr(str);
+    reflex::Bounded<std::string, 99> bstr(str);
 
     custom::TupleIntString tis 
       = std::make_tuple(99, std::make_tuple("$99.99"));
 
     vector<int32_t> vl(0, 55555);
-    reflex::bounded<vector<int32_t>, 77> bvl(vl);
+    reflex::Bounded<vector<int32_t>, 77> bvl(vl);
 
     float float_arr[SIZE] = { 1.1f, 2.2f, 3.3f, 4.4f };
     std::list<float>       float_list(float_arr, float_arr + SIZE);
@@ -173,9 +173,9 @@ void write_large_type(int domain_id)
     /* 4 */   char[2][3],
     /* 5 */   octet_t,
     /* 6 */   long long,
-    /* 7 */   bounded<std::string, 99>,
+    /* 7 */   Bounded<std::string, 99>,
     /* 8 */   custom::TupleIntString, 
-    /* 9 */   bounded<vector<int32_t>, 77>, 
+    /* 9 */   Bounded<vector<int32_t>, 77>, 
     /* 10 */  std::list<float>,
     /* 11 */  std::set<double>,
     /* 12 */  vector<bool>,
@@ -201,7 +201,7 @@ void write_large_type(int domain_id)
     /* 30 */  std::map<std::string, unsigned> > TupleFull;
     
     reflex::SafeTypeCode<DDS_TypeCode> 
-      stc(reflex::Tuple2Typecode<decltype(t1)>());
+      stc(reflex::tuple2typecode<decltype(t1)>());
     
     typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
 
@@ -213,7 +213,7 @@ void write_large_type(int domain_id)
     reflex::SafeDynamicDataInstance ddi1(safe_typeSupport.get());
     reflex::SafeDynamicDataInstance ddi2(safe_typeSupport.get());
 
-    Tuple2DD(t1, *ddi1.get());
+    tuple2dd(t1, *ddi1.get());
 
 #ifndef RTI_WIN32
     ddi1.get()->print(stdout, 2);
@@ -240,9 +240,9 @@ void write_large_type(int domain_id)
     std::get<28>(t2) = ltfb2;
 #endif
 
-    DD2Tuple(*ddi1.get(), t2);
+    dd2tuple(*ddi1.get(), t2);
     std::cout << "size = " << std::get<29>(t2).size() << std::endl;
-    Tuple2DD(t2, *ddi2.get());
+    tuple2dd(t2, *ddi2.get());
 
 #ifndef RTI_WIN32
     ddi2.get()->print(stdout, 2);

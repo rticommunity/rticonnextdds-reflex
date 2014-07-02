@@ -74,13 +74,13 @@ void write_darkart_type(unsigned domain_id)
   // darkart::AllTuple a = all; 
 
   reflex::SafeTypeCode<DDS_TypeCode> 
-    stc(reflex::Tuple2Typecode<darkart::AllTuple>());
+    stc(reflex::tuple2typecode<darkart::AllTuple>());
 
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
   reflex::SafeDynamicDataInstance ddi1(safe_typeSupport.get());
-  reflex::FillDD(all, *ddi1.get());
+  reflex::fill_dd(all, *ddi1.get());
   std::cout << "Printing Data\n";
   ddi1.get()->print(stdout, 2);
 

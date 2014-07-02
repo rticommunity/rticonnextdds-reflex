@@ -100,9 +100,9 @@ namespace reflex {
       }
 
       template <class C, size_t Bound>
-      static SafeTypeCode<reflex::bounded<C, Bound>> get_typecode(
+      static SafeTypeCode<reflex::Bounded<C, Bound>> get_typecode(
             DDS_TypeCodeFactory * factory,
-            const reflex::bounded<C, Bound> *,
+            const reflex::Bounded<C, Bound> *,
             typename enable_if<is_container<C>::value>::type * = 0)
       {
           SafeTypeCode<typename C::value_type> innerTc
@@ -110,7 +110,7 @@ namespace reflex {
                 factory,
                 static_cast<typename C::value_type *>(0));
 
-          return SafeTypeCode<reflex::bounded<C, Bound>>(factory, innerTc);
+          return SafeTypeCode<reflex::Bounded<C, Bound>>(factory, innerTc);
       }
 
       template <class C>
@@ -143,17 +143,17 @@ namespace reflex {
 
 
       template <size_t Bound>
-      static SafeTypeCode<reflex::bounded<std::string, Bound>>
+      static SafeTypeCode<reflex::Bounded<std::string, Bound>>
         get_typecode(
             DDS_TypeCodeFactory * factory,
-            const reflex::bounded<std::string, Bound> *)
+            const reflex::Bounded<std::string, Bound> *)
       {
           SafeTypeCode<std::string> innerTc
             = TC_overload_resolution_helper::get_typecode(
                 factory, 
                 static_cast<std::string *>(0));
 
-          return SafeTypeCode<reflex::bounded<std::string, Bound>>(factory);
+          return SafeTypeCode<reflex::Bounded<std::string, Bound>>(factory);
       }
 
       template <class T>
@@ -331,7 +331,13 @@ namespace reflex {
       int id,
       const T * tptr)
     {
-      add_member_impl(factory, outerTc, member_name, flags, id, tptr);
+      add_member_impl(
+        factory, 
+        outerTc, 
+        member_name, 
+        flags, 
+        id, 
+        const_cast<T *>(tptr));
     }
 
     template <size_t I, class Case>

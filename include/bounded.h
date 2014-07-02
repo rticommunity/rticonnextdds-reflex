@@ -17,21 +17,21 @@ damages arising out of the use or inability to use the software.
 namespace reflex {
 
   template <class T, size_t Bound>
-  class bounded;
+  class Bounded;
 
   template <typename T, size_t Bound>
-  class bounded
+  class Bounded
   {
     T * ptr;
 
   public:
-    bounded() : ptr(0) {}
+    Bounded() : ptr(0) {}
 
-    explicit bounded(T & t)
+    explicit Bounded(T & t)
       : ptr(&t)
     {}
 
-    bounded(const bounded & b)
+    Bounded(const Bounded & b)
       : ptr(b.ptr)
     {}
 
@@ -40,10 +40,10 @@ namespace reflex {
       if (ptr)
         return *ptr;
       else
-        throw std::runtime_error("bounded<T>: Null pointer");
+        throw std::runtime_error("Bounded<T>: Null pointer");
     }
 
-    bounded & operator = (T & t)
+    Bounded & operator = (T & t)
     {
       ptr = &t;
       return *this;

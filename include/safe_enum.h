@@ -13,45 +13,40 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
-  template<typename def, typename inner = typename def::type>
-  class safe_enum : public def
+  template<typename def, 
+           typename inner = typename def::type>
+  class SafeEnum : public def
   {
     typedef inner type;
     inner val;
 
   public:
 
-    explicit safe_enum(type v) : val(v) {}
+    explicit SafeEnum(type v) : val(v) {}
     inner underlying() const { return val; }
 
-    friend bool operator == (
-      const safe_enum & lhs, 
-      const safe_enum & rhs) 
+    bool operator == ( 
+      const SafeEnum & rhs)
     { return lhs.val == rhs.val; }
 
-    friend bool operator != (
-      const safe_enum & lhs, 
-      const safe_enum & rhs) 
+    bool operator != (
+      const SafeEnum & rhs)
     { return lhs.val != rhs.val; }
     
-    friend bool operator <  (
-      const safe_enum & lhs, 
-      const safe_enum & rhs) 
+    bool operator <  (
+      const SafeEnum & rhs)
     { return lhs.val <  rhs.val; }
     
-    friend bool operator <= (
-      const safe_enum & lhs, 
-      const safe_enum & rhs) 
+    bool operator <= (
+      const SafeEnum & rhs)
     { return lhs.val <= rhs.val; }
     
-    friend bool operator >(
-      const safe_enum & lhs, 
-      const safe_enum & rhs) 
+    bool operator >(
+      const SafeEnum & rhs)
     { return lhs.val >  rhs.val; }
     
-    friend bool operator >= (
-      const safe_enum & lhs, 
-      const safe_enum & rhs) 
+    bool operator >= (
+      const SafeEnum & rhs)
     { return lhs.val >= rhs.val; }
 
   };

@@ -277,7 +277,7 @@ namespace reflex {
   };
 
   template <class C, size_t Bound>
-  class SafeTypeCode<bounded<C, Bound>,
+  class SafeTypeCode<Bounded<C, Bound>,
                      typename detail::enable_if<
                        detail::is_container<C>::value>::type
                     >
@@ -342,7 +342,7 @@ namespace reflex {
   };
 
   template <size_t Bound>
-  class SafeTypeCode<bounded<std::string, Bound>> : public detail::SafeTypeCodeBase
+  class SafeTypeCode<Bounded<std::string, Bound>> : public detail::SafeTypeCodeBase
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory)
