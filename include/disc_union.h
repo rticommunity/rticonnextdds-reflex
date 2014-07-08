@@ -35,8 +35,8 @@ namespace reflex {
       return val_;
     }
 
-    friend bool operator == (const Sparse & lhs, const Sparse & rhs) {
-      return lhs.val_ == rhs.val_;
+    bool operator == (const Sparse & rhs) const {
+      return val_ == rhs.val_;
     }
 
   private:

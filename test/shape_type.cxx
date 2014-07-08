@@ -11,6 +11,8 @@ damages arising out of the use or inability to use the software.
 #include <time.h>
 #include <memory>
 #include "reflex.h"
+#include "ndds/cdr/cdr_stream.h"
+//#include "ndds/cdr/cdr_stream_impl.h"
 
 #include "shape_type.h"
 
@@ -86,18 +88,92 @@ void copy(ShapeType &s, int x, int y, const std::string &color, int shapesize)
   s.shapesize() = shapesize;
 }
 
-void write_shape_type(int domain_id) 
+void write_shape_type_extended(int domain_id)
+{
+  DDS_ReturnCode_t rc;
+  DDSDomainParticipant * participant = NULL;
+  DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
+  const char *topic_name = "Triangle";
+
+  // For interoperability with the ShapesDemo MAX_STRING_SIZE must be 128
+  reflex::MAX_STRING_SIZE = 128;
+
+  reflex::SafeTypeCode<DDS_TypeCode>
+    shape_ex_tc(reflex::make_typecode<ShapeTypeExtended>());
+
+  reflex::print_IDL(shape_ex_tc.get(), 0);
+
+  participant = DDSDomainParticipantFactory::get_instance()->
+    create_participant(
+    domain_id,
+    DDS_PARTICIPANT_QOS_DEFAULT,
+    NULL,   // Listener
+    DDS_STATUS_MASK_NONE);
+  if (participant == NULL) {
+    std::cerr << "! Unable to create DDS domain participant" << std::endl;
+    return;
+  }
+
+  auto writer = reflex::GenericDataWriter<ShapeTypeExtended>(
+                    participant, topic_name, "ShapeType");
+
+  srand((unsigned int) time(NULL));
+
+  int x_max = 200, y_max = 200;
+  int x_min = 30, y_min = 30;
+  int x_dir = 2, y_dir = 2;
+
+  int x = (rand() % 50) + x_min;
+  int y = (rand() % 50) + y_min;
+
+  ShapeTypeExtended shape;
+  shape.color() = "RED";
+  shape.angle() = 0;
+  shape.shapesize() = 30;
+  shape.fillKind() = HORIZONTAL_HATCH_FILL;
+
+  std::cout << "Writing "
+    << reflex::detail::StructName<ShapeTypeExtended>::get()
+    << " topic = "
+    << topic_name
+    << " (domain = "
+    << domain_id
+    << ")...\n";
+
+  for (;;)
+  {
+    if ((x >= x_max) || (x <= x_min))
+      x_dir *= -1;
+    if ((y >= y_max) || (y <= y_min))
+      y_dir *= -1;
+
+    // change app data like usual.
+    // tied tuple has references.
+    x += x_dir;
+    y += y_dir;
+
+    shape.x() = x;
+    shape.y() = y;
+    rc = writer.write(shape);
+    
+    if (rc != DDS_RETCODE_OK) {
+      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
+      break;
+    }
+    NDDSUtility::sleep(period);
+  }
+}
+
+void write_shape_type(int domain_id)
 {
   DDS_ReturnCode_t         rc;
   DDSDomainParticipant *   participant = NULL;
-  DDSDynamicDataWriter *ddWriter    = NULL;
+  DDSDynamicDataWriter *ddWriter = NULL;
   DDS_DynamicDataTypeProperty_t props;
-  DDS_Duration_t period { 0, 100*1000*1000 };
+  DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
 
-  reflex::MAX_SEQ_SIZE = 1024; // Unused in ShapeType
-
-  // For interoperability with the ShapesDemo MAX_STRING_SIZE must be 256
-  reflex::MAX_STRING_SIZE = 256;
+  // For interoperability with the ShapesDemo MAX_STRING_SIZE must be 128
+  reflex::MAX_STRING_SIZE = 128;
 
   int32_t x = 0, y = 0, shapesize = 30;
   std::string color = "BLUE";
@@ -108,17 +184,17 @@ void write_shape_type(int domain_id)
   //auto t1 = ShapeType(color, x, y, shapesize);
 
   typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
-  reflex::SafeTypeCode<DDS_TypeCode> stc(reflex::tuple2typecode<Tuple>());
-
+  reflex::SafeTypeCode<DDS_TypeCode> 
+    stc(reflex::tuple2typecode<Tuple>());
+  
+  reflex::print_IDL(stc.get(), 0);
+  
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
-  // print idl
-  reflex::print_IDL(stc.get(), 0);
-  
   reflex::SafeDynamicDataInstance ddi1(safe_typeSupport.get());
   reflex::SafeDynamicDataInstance ddi2(safe_typeSupport.get());
-
+  
   // multi-value assignment using tie
   std::tie(ddWriter, participant) = 
     create_ddwriter(
@@ -129,9 +205,13 @@ void write_shape_type(int domain_id)
   if(ddWriter == NULL)
     return;
 
-  std::cout << "Writing " << reflex::detail::StructName<Tuple>::get()
-            << " topic = " << topic_name
-            << " (domain = " << domain_id << ")...\n";
+  std::cout << "Writing " 
+            << reflex::detail::StructName<Tuple>::get()
+            << " topic = " 
+            << topic_name
+            << " (domain = " 
+            << domain_id 
+            << ")...\n";
 
   srand((unsigned int) time(NULL));
 
@@ -162,7 +242,8 @@ void write_shape_type(int domain_id)
     reflex::tuple2dd(t1, *ddi1.get());
 
     // print if you like
-    // ddi1.get()->print(stdout, 2);
+    //ddi1.get()->print(stdout, 2);
+
 
     // read the dynamic data instance back 
     // in a different tuple

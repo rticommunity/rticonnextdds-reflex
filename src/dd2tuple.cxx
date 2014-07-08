@@ -17,7 +17,7 @@ namespace reflex {
   SafeDynamicDataInstance::SafeDynamicDataInstance(
     DDSDynamicDataTypeSupport * typeSupport)
     : typeSupport_(typeSupport),
-    instance_(0)
+      instance_(0)
   {
     if (!typeSupport_) 
     {

@@ -34,7 +34,8 @@ create_ddwriter(const char *type_name,
                 DDSDynamicDataTypeSupport *type_support);
 
 void write_large_type(int domain_id);
-void write_shape_type(int domain_id);
+void write_shape_type(int domain_id); 
+void write_shape_type_extended(int domain_id);
 void write_darkart_type(unsigned domain_id);
 void write_pi_type(int domainid);
 void write_many_members(int domainid);
@@ -43,38 +44,45 @@ void read_shape_type(int domain_id);
 
 int main(int argc, const char **argv) 
 {
-  if(argc <= 1) {
-    std::cout << "Please specify either shapes [pub/sub], large, darkart, many\n";
-    return 0;
-  }
-  
-  if (std::string(argv[1]) == "shapes")
-  {
-    if (argc <= 2)
-    {
-      std::cout << "Please specify pub/sub\n";
+  try {
+    if (argc <= 1) {
+      std::cout << "Please specify either shapes [pub/sub/pubex], large, darkart, many, one\n";
       return 0;
     }
 
-    if (std::string(argv[2]) == "pub")
-      write_shape_type(DOMAIN_ID);
-    else if (std::string(argv[2]) == "sub")
-      read_shape_type(DOMAIN_ID);
-    else
-      std::cout << "Please specify pub/sub\n";
-  }
-  else if(std::string(argv[1]) == "large")
-    write_large_type(DOMAIN_ID);
-  else if(std::string(argv[1]) == "darkart")
-    write_darkart_type(DOMAIN_ID);
-  else if(std::string(argv[1]) == "many")
-    write_many_members(DOMAIN_ID);
-  else if(std::string(argv[1]) == "one")
-    write_one_member(DOMAIN_ID);
-  else
-    std::cout << "Please specify either shapes, large, darkart, many, one\n";
+    if (std::string(argv[1]) == "shapes")
+    {
+      if (argc <= 2)
+      {
+        std::cout << "Please specify pub/sub/pubex\n";
+        return 0;
+      }
 
-  return 0;
+      if (std::string(argv[2]) == "pub")
+        write_shape_type(DOMAIN_ID);
+      else if (std::string(argv[2]) == "pubex")
+        write_shape_type_extended(DOMAIN_ID);
+      else if (std::string(argv[2]) == "sub")
+        read_shape_type(DOMAIN_ID);
+      else
+        std::cout << "Please specify pub/sub/pubex\n";
+    }
+    else if (std::string(argv[1]) == "large")
+      write_large_type(DOMAIN_ID);
+    else if (std::string(argv[1]) == "darkart")
+      write_darkart_type(DOMAIN_ID);
+    else if (std::string(argv[1]) == "many")
+      write_many_members(DOMAIN_ID);
+    else if (std::string(argv[1]) == "one")
+      write_one_member(DOMAIN_ID);
+    else
+      std::cout << "Please specify either shapes, large, darkart, many, one\n";
+
+    return 0;
+  }
+  catch (std::exception &ex) {
+    std::cerr << ex.what() << std::endl;
+  }
 }
 
 

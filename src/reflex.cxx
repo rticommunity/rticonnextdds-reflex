@@ -136,6 +136,15 @@ namespace reflex {
       return safe_typecode_.get();
     }
 
+    DDSDataWriter * DataWriterBase::underlying()
+    {
+      return safe_datawriter_.get();
+    }
+
+    DDSDataWriter * DataWriterBase::operator -> () {
+      return underlying();
+    }
+
     DataReaderBase::DataReaderBase(
                       DDSDomainParticipant *participant,
                       DDSDataReaderListener * listener,
@@ -255,6 +264,17 @@ namespace reflex {
     {
       return safe_typecode_.get();
     }
+
+    DDSDataReader * DataReaderBase::underlying()
+    {
+      return safe_datareader_.get();
+    }
+
+    DDSDataReader * DataReaderBase::operator -> ()
+    {
+      return underlying();
+    }
+
 
   } // namespace detail
 

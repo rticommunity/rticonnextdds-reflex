@@ -27,66 +27,161 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
+  namespace detail {
+
+    template <class T, class U>
+    struct MembersInBasesImpl;
+
+    template <class T>
+    struct MembersInBasesImpl<T, false_type>
+    {
+      enum { value = 0 };
+    };
+
+    template <class T>
+    struct MembersInBasesImpl<T, true_type>
+    {
+      typedef typename InheritanceTraits<T>::basetype  Base;
+      typedef typename InheritanceTraits<Base>::has_base BaseHasBase;
+
+      enum {
+        value = MembersInBasesImpl<Base, BaseHasBase>::value +
+        Size<Base>::value
+      };
+    };
+
+    template <class T>
+    struct MembersInBases
+    {
+      typedef typename InheritanceTraits<T>::has_base HasBase;
+      enum { value = MembersInBasesImpl<T, HasBase>::value };
+    };
+
+
+    template <class T>
+    void fill_dd_impl(
+      const T & data,
+      DDS_DynamicData &instance,
+      false_type /* T has no base */)
+    {
+      typedef detail::TypelistIterator<
+                T,
+                0,
+                detail::Size<T>::value - 1> TIter;
+      
+      TIter::set(
+            instance, 
+            detail::MemberAccess::BY_ID(1), 
+            data);
+    }
+
+    template <class T>
+    void fill_dd_impl(
+      const T & data,
+      DDS_DynamicData &instance,
+      true_type /* T has a base */)
+    {
+      typedef typename InheritanceTraits<T>::basetype Base;
+
+      fill_dd_impl(
+        static_cast<const Base &>(data),
+        instance,
+        typename detail::InheritanceTraits<Base>::has_base());
+
+      typedef detail::TypelistIterator<
+                  T,
+                  0,
+                  detail::Size<T>::value - 1> TIter;
+      
+      TIter::set(
+            instance, 
+            detail::MemberAccess::BY_ID(MembersInBases<T>::value + 1), 
+            data);
+    }
+
+    template <class T>
+    void extract_dd_impl(
+      const DDS_DynamicData & instance,
+      T & data,
+      false_type /* T has no base*/)
+    {
+      typedef detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1> TIter;
+
+      TIter::get(
+        instance,
+        detail::MemberAccess::BY_ID(1),
+        data);
+    }
+
+    template <class T>
+    void extract_dd_impl(
+      const DDS_DynamicData & instance,
+      T & data,
+      true_type /* T has a base*/)
+    {
+      typedef typename InheritanceTraits<T>::basetype Base;
+
+      extract_dd_impl(
+        instance,
+        static_cast<Base &>(data),
+        typename InheritanceTraits<Base>::has_base());
+
+      typedef detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1> TIter;
+
+      TIter::get(
+        instance,
+        detail::MemberAccess::BY_ID(MembersInBases<T>::value + 1),
+        data);
+    }
+
+  } // namespace detail
+
   template <class T>
   void fill_dd(const T & data, DDS_DynamicData &instance)
   {
-    detail::MemberAccess nested_ma = 
-      detail::MemberAccess::BY_ID();
-
-    detail::TypelistIterator<
-      T,
-      0,
-      detail::Size<T>::value - 1>::set(
-        instance, nested_ma, data);
+    detail::fill_dd_impl(
+      data,
+      instance,
+      typename detail::InheritanceTraits<T>::has_base());
   }
 
   template <class T>
   SafeTypeCode<T> make_typecode(const char * name = 0)
   {
-    DDS_TypeCodeFactory * factory =
-      DDS_TypeCodeFactory::get_instance();
-
-    std::string type_name_string =
-      detail::StructName<typename detail::remove_refs<T>::type>::get();
-
-    const char * type_name = 
-      name ? name : type_name_string.c_str();
-
-    SafeTypeCode<T> structTc(factory, type_name);
-
-    detail::TypelistIterator<
-              T,
-              0,
-              detail::Size<T>::value - 1>::add(
-                factory, structTc.get());
-
-    return move(structTc);
+    SafeTypeCode<T> aggregateTc =
+      detail::make_typecode_impl<T>(
+        name,
+        typename detail::InheritanceTraits<T>::has_base());
+    
+    return move(aggregateTc);
   }
 
   template <class T>
   void extract_dd(const DDS_DynamicData & instance, T & data)
   {
-    detail::MemberAccess nested_ma = 
-      detail::MemberAccess::BY_ID();
-
-    detail::TypelistIterator<
-      T,
-      0,
-      detail::Size<T>::value - 1>::get(
-        instance, nested_ma, data);
+    detail::extract_dd_impl(
+      instance,
+      data,
+      typename detail::InheritanceTraits<T>::has_base());
   }
 
 
   template <class Tuple>
   void tuple2dd(const Tuple & tuple, DDS_DynamicData &instance)
   {
-    fill_dd<Tuple>(tuple, instance);
+    fill_dd(tuple, instance);
   }
 
   template <class Tuple>
   void dd2tuple(const DDS_DynamicData & instance, Tuple & tuple)
   {
-    extract_dd<Tuple>(instance, tuple);
+    extract_dd(instance, tuple);
   }
 
   template <class Tuple>

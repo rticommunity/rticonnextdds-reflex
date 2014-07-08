@@ -277,6 +277,16 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
         return name_;
       }
 
+      MemberAccess MemberAccess::operator + (int i) const {
+        if (is_valid_id_) {
+          return MemberAccess::BY_ID(id_ + i);
+        }
+        else
+          throw std::runtime_error(
+              "MemberAccess: PRECONDITION_NOT_MET: MemberAccess has no valid id");
+      }
+
+
       MemberAccess MemberAccess::BY_ID(int id) {
         return MemberAccess(true, id, 0);
       }

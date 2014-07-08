@@ -141,6 +141,27 @@ namespace reflex {
       set_typecode(structTc);
     }
 
+    void SafeTypeCodeBase::create_value_tc(
+        const char * name, 
+        DDS_TypeCode * basetc)
+    {
+      DDS_ExceptionCode_t ex;
+      DDS_TypeCode *valueTc =
+        factory_->create_value_tc(
+          name,
+          DDS_EXTENSIBLE_EXTENSIBILITY,
+          DDS_VM_NONE,
+          basetc,
+          DDS_ValueMemberSeq(), 
+          ex);
+
+      check_exception_code(
+        "SafeTypeCodeBase::create_value_tc: Unable to create valuetype typecode, error = ",
+        ex);
+
+      set_typecode(valueTc);
+    }
+
     void SafeTypeCodeBase::create_enum_tc(const char * name,
       const DDS_EnumMemberSeq & enum_seq,
       const std::vector<MemberInfo> &)

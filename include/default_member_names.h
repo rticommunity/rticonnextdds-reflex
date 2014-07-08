@@ -13,6 +13,7 @@ damages arising out of the use or inability to use the software.
 
 #include "ndds/ndds_cpp.h"
 #include "dllexport.h"
+#include "enable_if.h"
 
 #include <string>
 #include <typeinfo>
@@ -90,6 +91,12 @@ namespace reflex {
       }
     };
 
+    template <class T>
+    struct InheritanceTraits {
+      // typedef void basetype;
+      typedef false_type has_base;
+    };
+
   } // namespace detail
 
   template <class... Args>
@@ -98,8 +105,8 @@ namespace reflex {
   template <class TagType, class... Cases>
   struct Union;
 
-  namespace detail {
-
+  namespace detail 
+  {
     template <class First, class Second>
     struct StructName<std::pair<First, Second>>
     {
@@ -203,10 +210,20 @@ namespace reflex { namespace detail {                                  \
   };                                                                   \
 } } // namespace reflex::detail                         
 
+#define INHERITANCE_TRAITS(Derived, Base)          \
+namespace reflex { namespace detail {              \
+  template <>                                      \
+  struct InheritanceTraits<Derived> {              \
+    typedef true_type has_base;                    \
+    typedef Base basetype;                         \
+  };                                               \
+} } // namespace reflex::detail                    
+
 // The parenthesis below are essential for the RTI_DUMMY macro.
 #define _OPTIONAL    (DDS_TYPECODE_NONKEY_MEMBER)
 #define _KEY         (DDS_TYPECODE_KEY_MEMBER)
 #define _REQUIRED    (DDS_TYPECODE_NONKEY_REQUIRED_MEMBER)
+#define BASE(X) X
 
 #ifdef RTI_WIN32
   #define RTI_DUMMY(X) X
@@ -283,14 +300,14 @@ namespace reflex { namespace detail {                  \
 // Otherwise BOOST_FUSION_ADAPT_STRUCT macro will be confused.
 // The TRANSFORM macro expands as follows:
 //
-// RTI_SKIP_LAST_0 Attr                                ---->
-// RTI_SKIP_LAST_0 (a,1,A)(b,2,B)(c,3,C)               ---->
-// (a,1) RTI_SKIP_LAST_1 (b,2,B)(c,3,C)                ---->
-// (a,1) (b,2) RTI_SKIP_LAST_0 (c,3,C)                 ---->
-// (a,1) (b,2) (c,3) RTI_SKIP_LAST_1                   ---->
-// BOOST_PP_CAT((a,1) (b,2) (c,3) RTI_FILLER_1, _END)  ---->
-// (a,1) (b,2) (c,3) RTI_SKIP_LAST_1_END               ---->
-// (a,1) (b,2) (c,3)                                   ---->
+// RTI_SKIP_LAST_0 Attr                                   ---->
+// RTI_SKIP_LAST_0 (a,1,A)(b,2,B)(c,3,C)                  ---->
+// (a,1) RTI_SKIP_LAST_1 (b,2,B)(c,3,C)                   ---->
+// (a,1) (b,2) RTI_SKIP_LAST_0 (c,3,C)                    ---->
+// (a,1) (b,2) (c,3) RTI_SKIP_LAST_1                      ---->
+// BOOST_PP_CAT((a,1) (b,2) (c,3) RTI_SKIP_LAST_1, _END)  ---->
+// (a,1) (b,2) (c,3) RTI_SKIP_LAST_1_END                  ---->
+// (a,1) (b,2) (c,3)                                      ---->
 // voila!!!
 
 #define RTI_TRANSFORM_TRIPLETS_TO_PAIRS(Attributes) \
@@ -299,7 +316,11 @@ namespace reflex { namespace detail {                  \
 #define RTI_ADAPT_STRUCT(Name,Attributes)        \
   STRUCT_NAME_DEF_INTERNAL(Name)                 \
   RTI_MEMBER_TRAITS(Name, Attributes)            \
-  BOOST_FUSION_ADAPT_STRUCT(Name,RTI_TRANSFORM_TRIPLETS_TO_PAIRS(Attributes))
+  BOOST_FUSION_ADAPT_STRUCT(Name, RTI_TRANSFORM_TRIPLETS_TO_PAIRS(Attributes))
+
+#define RTI_ADAPT_VALUETYPE(Name, Base, Attributes) \
+  INHERITANCE_TRAITS(Name, Base)                    \
+  RTI_ADAPT_STRUCT(Name, Attributes)
 
 
 #define RTI_ENUM_MEMBER_INFO_INTERNAL(R,EnumType,Index,Attr)       \

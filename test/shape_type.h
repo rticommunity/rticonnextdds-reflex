@@ -53,8 +53,53 @@ RTI_ADAPT_STRUCT(
   (int,             y())
   (int,     shapesize()))
 
+enum ShapeFillKind {
+  SOLID_FILL,
+  TRANSPARENT_FILL,
+  HORIZONTAL_HATCH_FILL,
+  VERTICAL_HATCH_FILL
+};
+
+class ShapeTypeExtended : public ShapeType 
+{
+  ShapeFillKind fillKind_;
+  float angle_;
+
+public:
+  ShapeTypeExtended() {}
+
+  ShapeTypeExtended(
+    const std::string & color,
+    int x,
+    int y,
+    int shapesize,
+    ShapeFillKind fill,
+    float ang)
+    : ShapeType(color, x, y, shapesize),
+      fillKind_(fill),
+      angle_(ang)
+  {}
+
+  ShapeFillKind & fillKind() { return fillKind_; }
+  float & angle() { return angle_; }
+
+  const ShapeFillKind & fillKind() const { return fillKind_; }
+  const float & angle() const { return angle_; }
+};
 
 
+ENUM_DEF(ShapeFillKind, "ShapeFillKind", 4)
+
+ENUM_MEMBER_DEF(ShapeFillKind, 0, "SOLID_FILL",            0)
+ENUM_MEMBER_DEF(ShapeFillKind, 1, "TRANSPARENT_FILL",      1)
+ENUM_MEMBER_DEF(ShapeFillKind, 2, "HORIZONTAL_HATCH_FILL", 2)
+ENUM_MEMBER_DEF(ShapeFillKind, 3, "VERTICAL_HATCH_FILL",   3)
+
+RTI_ADAPT_VALUETYPE(
+  ShapeTypeExtended, 
+  BASE(ShapeType),
+  (ShapeFillKind, fillKind())
+  (float,         angle()))
 
 /* Alternatively, you may use a tuple. */
 

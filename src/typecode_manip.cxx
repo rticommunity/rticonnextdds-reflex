@@ -24,20 +24,30 @@ namespace reflex {
       SafeTypeCode<std::string> DECLSPEC
       TC_overload_resolution_helper::get_typecode(
           DDS_TypeCodeFactory * factory,
-         const std::string *)
+          const std::string *)
     {
         return SafeTypeCode<std::string>(factory);
     }
 
-    static void print_recursive_IDL(const DDS_TypeCode * tc,
-      DDS_UnsignedLong indent,
-      std::set<std::string> & visited)
+    static void print_recursive_IDL(
+        const DDS_TypeCode * tc,
+        DDS_UnsignedLong indent,
+        std::set<std::string> & visited)
     {
       DDS_ExceptionCode_t ex;
       DDS_TCKind kind = tc->kind(ex);
+
+      if (kind == DDS_TK_VALUE)
+      {
+        DDS_TypeCode *base = tc->concrete_base_type(ex);
+        if (base)
+          print_recursive_IDL(base, indent + 1, visited);
+      }
+      
       if ((kind == DDS_TK_STRUCT) ||
-        (kind == DDS_TK_UNION) ||
-        (kind == DDS_TK_SPARSE))
+          (kind == DDS_TK_VALUE)  ||
+          (kind == DDS_TK_UNION)  ||
+          (kind == DDS_TK_SPARSE))
       {
         size_t count = tc->member_count(ex);
         for (size_t i = 0; i < count; ++i)
@@ -45,18 +55,20 @@ namespace reflex {
           print_recursive_IDL(tc->member_type(i, ex), indent + 1, visited);
         }
       }
+      
       if ((kind == DDS_TK_SEQUENCE) ||
-        (kind == DDS_TK_ARRAY))
+          (kind == DDS_TK_ARRAY))
       {
         print_recursive_IDL(tc->content_type(ex), indent + 1, visited);
       }
-
-      if ((kind == DDS_TK_STRUCT) ||
-        (kind == DDS_TK_UNION) ||
-        (kind == DDS_TK_ENUM) ||
-        (kind == DDS_TK_SEQUENCE) ||
-        (kind == DDS_TK_ARRAY) ||
-        (kind == DDS_TK_SPARSE))
+      
+      if ((kind == DDS_TK_STRUCT)   ||
+          (kind == DDS_TK_VALUE)    ||
+          (kind == DDS_TK_UNION)    ||
+          (kind == DDS_TK_ENUM)     ||
+          (kind == DDS_TK_SEQUENCE) ||
+          (kind == DDS_TK_ARRAY)    ||
+          (kind == DDS_TK_SPARSE))
       {
         if (tc->name(ex) != NULL)
         {
@@ -74,8 +86,9 @@ namespace reflex {
   } // namespace detail
 
 
-  DllExport void DECLSPEC print_IDL(const DDS_TypeCode *tc,
-    DDS_UnsignedLong indent)
+  DllExport void DECLSPEC print_IDL(
+      const DDS_TypeCode *tc,
+      DDS_UnsignedLong indent)
   {
     std::set<std::string> visited;
     detail::print_recursive_IDL(tc, indent, visited);

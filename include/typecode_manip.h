@@ -488,6 +488,65 @@ namespace reflex {
       deleteTc_impl<TC>(factory, tc);
     }
 
+    template <class T>
+    SafeTypeCode<T> make_typecode_impl(
+        const char * name,
+        false_type /* T has no base */)
+    {
+      DDS_TypeCodeFactory * factory =
+        DDS_TypeCodeFactory::get_instance();
+
+      std::string type_name_string =
+        detail::StructName<typename detail::remove_refs<T>::type>::get();
+
+      const char * type_name =
+        name ? name : type_name_string.c_str();
+
+      SafeTypeCode<T> structTc(factory, type_name);
+
+      detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1>::add(
+        factory, structTc.get());
+
+      return move(structTc);
+    }
+
+    template <class T>
+    SafeTypeCode<T> make_typecode_impl(
+        const char * name,
+        true_type /* T has base */)
+    {
+      DDS_TypeCodeFactory * factory =
+        DDS_TypeCodeFactory::get_instance();
+
+      std::string type_name_string =
+        detail::StructName<typename detail::remove_refs<T>::type>::get();
+
+      const char * type_name =
+        name ? name : type_name_string.c_str();
+
+      typedef typename InheritanceTraits<T>::basetype BaseType;
+
+      SafeTypeCode<BaseType> baseTc =
+        make_typecode_impl<BaseType>(
+          0, 
+          typename InheritanceTraits<BaseType>::has_base());
+
+      SafeTypeCode<T> aggregateTc(factory, type_name, baseTc.get());
+
+      detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1>
+          ::add(factory, aggregateTc.get());
+
+      return move(aggregateTc);
+    }
+
+
+
   } // namespace detail
 
 } // namespace reflex

@@ -168,10 +168,10 @@ namespace reflex {
 #endif
 
         if (ma.access_by_id())
-          set_member_forward(
-                     instance, 
-                     MemberAccess::BY_ID(I + 1), 
-                     Get<I>(tuple));
+        {
+          set_member_forward(instance, ma, Get<I>(tuple));
+          Next::set(instance, ma + 1, tuple);
+        }
         else
         {
           MemberInfo info =
@@ -181,8 +181,9 @@ namespace reflex {
                      instance,
                      MemberAccess::BY_NAME(info.name.c_str()),
                      Get<I>(tuple));
+
+          Next::set(instance, ma, tuple);
         }
-        Next::set(instance, ma, tuple);
       }
 
       static void get(
@@ -194,10 +195,10 @@ namespace reflex {
         unsigned i = I;
 #endif
         if (ma.access_by_id())
-          get_member_forward(
-              instance,
-              MemberAccess::BY_ID(I + 1),
-              Get<I>(tuple));
+        {
+          get_member_forward(instance, ma, Get<I>(tuple));
+          Next::get(instance, ma + 1, tuple);
+        }
         else
         {
           MemberInfo info =
@@ -208,8 +209,8 @@ namespace reflex {
               instance,
               MemberAccess::BY_NAME(info.name.c_str()),
               Get<I>(tuple));
+          Next::get(instance, ma, tuple);
         }
-        Next::get(instance, ma, tuple);
       }
 
       static void add(
@@ -301,11 +302,10 @@ namespace reflex {
         unsigned max = MAX_INDEX;
 #endif
 
-        if (ma.access_by_id())
-          set_member_forward(
-                     instance,
-                     MemberAccess::BY_ID(MAX_INDEX + 1),
-                     Get<MAX_INDEX>(tuple));
+        if (ma.access_by_id()) 
+        {
+          set_member_forward(instance, ma, Get<MAX_INDEX>(tuple));
+        }
         else
         {
           MemberInfo info =
@@ -328,10 +328,9 @@ namespace reflex {
 #endif
 
         if (ma.access_by_id())
-          get_member_forward(
-              instance,
-              MemberAccess::BY_ID(MAX_INDEX + 1),
-              Get<MAX_INDEX>(tuple));
+        {
+          get_member_forward(instance, ma, Get<MAX_INDEX>(tuple));
+        }
         else
         {
           MemberInfo info =

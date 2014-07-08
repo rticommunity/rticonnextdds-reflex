@@ -108,6 +108,9 @@ namespace reflex {
         DDS_DynamicDataTypeProperty_t props =
         DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
 
+      DDSDataWriter * underlying();
+      DDSDataWriter * operator -> ();
+
       static void deleter(DDSDynamicDataWriter * ddWriter) throw();
 
     public:
@@ -140,6 +143,9 @@ namespace reflex {
         DDS_DynamicDataTypeProperty_t props =
         DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
 
+      DDSDataReader * underlying();
+      DDSDataReader * operator -> ();
+
       static void deleter(DDSDynamicDataReader * ddReader) throw();
 
     public:
@@ -163,8 +169,8 @@ namespace reflex {
   {
   public:
     GenericDataWriter(DDSDomainParticipant *participant,
-      const char * topic_name,
-      const char * type_name = 0)
+                      const char * topic_name,
+                      const char * type_name = 0)
       : detail::DataWriterBase(participant,
                                topic_name,
                                type_name,
@@ -172,10 +178,10 @@ namespace reflex {
     { }
 
     GenericDataWriter(DDSDomainParticipant *participant,
-      DDS_DataWriterQos & dwqos,
-      const char * topic_name,
-      const char * type_name = 0,
-      void * listener = 0)
+                      DDS_DataWriterQos & dwqos,
+                      const char * topic_name,
+                      const char * type_name = 0,
+                      void * listener = 0)
       : detail::DataWriterBase(participant,
                                dwqos,
                                topic_name,
@@ -183,11 +189,6 @@ namespace reflex {
                                make_typecode<T>(type_name).release(),
                                listener)
     { }
-
-    DDSDataWriter * underlying() const
-    {
-      return safe_datawriter_.get();
-    }
 
     template <class U>
     DDS_ReturnCode_t write(U & data)
@@ -387,11 +388,6 @@ namespace reflex {
     {
       if (safe_listener_adapter_)
         safe_listener_adapter_->set_datareader(this);
-    }
-
-    DDSDataReader * underlying() const
-    {
-      return safe_datareader_.get();
     }
 
     DDS_ReturnCode_t take_w_condition(

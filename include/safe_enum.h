@@ -26,27 +26,27 @@ namespace reflex {
     inner underlying() const { return val; }
 
     bool operator == ( 
-      const SafeEnum & rhs)
+      const SafeEnum & rhs) const
     { return val == rhs.val; }
 
     bool operator != (
-      const SafeEnum & rhs)
+      const SafeEnum & rhs) const
     { return val != rhs.val; }
     
     bool operator <  (
-      const SafeEnum & rhs)
+      const SafeEnum & rhs) const
     { return val <  rhs.val; }
     
     bool operator <= (
-      const SafeEnum & rhs)
+      const SafeEnum & rhs) const
     { return val <= rhs.val; }
     
-    bool operator >(
-      const SafeEnum & rhs)
+    bool operator > (
+      const SafeEnum & rhs) const
     { return val >  rhs.val; }
     
     bool operator >= (
-      const SafeEnum & rhs)
+      const SafeEnum & rhs) const
     { return val >= rhs.val; }
 
   };

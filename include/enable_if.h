@@ -94,32 +94,32 @@ namespace reflex {
     struct is_bool : false_type {};
 
     template <>
-    struct is_bool<bool> : true_type{};
+    struct is_bool<bool> : true_type {};
 
     template <class T>
     struct is_primitive : false_type {}; // enum
 
-    template <> struct is_primitive<reflex::octet_t>    : true_type{};
-    template <> struct is_primitive<bool>               : true_type{};
-    template <> struct is_primitive<char>               : true_type{};
+    template <> struct is_primitive<reflex::octet_t>    : true_type {};
+    template <> struct is_primitive<bool>               : true_type {};
+    template <> struct is_primitive<char>               : true_type {};
 
 #ifndef RTI_WIN32
     template <> struct is_primitive<char32_t>           : true_type {};
 #endif
 
-    template <> struct is_primitive<int16_t>            : true_type{};
-    template <> struct is_primitive<uint16_t>           : true_type{};
-    template <> struct is_primitive<int32_t>            : true_type{};
-    template <> struct is_primitive<uint32_t>           : true_type{};
-    template <> struct is_primitive<int64_t>            : true_type{};
-    template <> struct is_primitive<uint64_t>           : true_type{};
-    template <> struct is_primitive<float>              : true_type{};
-    template <> struct is_primitive<double>             : true_type{};
+    template <> struct is_primitive<int16_t>            : true_type {};
+    template <> struct is_primitive<uint16_t>           : true_type {};
+    template <> struct is_primitive<int32_t>            : true_type {};
+    template <> struct is_primitive<uint32_t>           : true_type {};
+    template <> struct is_primitive<int64_t>            : true_type {};
+    template <> struct is_primitive<uint64_t>           : true_type {};
+    template <> struct is_primitive<float>              : true_type {};
+    template <> struct is_primitive<double>             : true_type {};
 #if __x86_64__
     template <> struct is_primitive<long long>          : true_type {};
     template <> struct is_primitive<unsigned long long> : true_type {};
 #endif 
-    template <> struct is_primitive<long double>        : true_type{};
+    template <> struct is_primitive<long double>        : true_type {};
 
     template <class... Args>
     struct is_primitive<std::tuple<Args...>> : false_type{};
@@ -155,137 +155,139 @@ namespace reflex {
     struct is_vector : false_type {};
 
     template <class T>
-    struct is_vector<std::vector<T>> : true_type{};
+    struct is_vector<std::vector<T>> : true_type {};
 
     template <class T>
-    struct is_vector<const std::vector<T>> : true_type{};
+    struct is_vector<const std::vector<T>> : true_type {};
 
     template <class T>
     struct is_string : false_type {};
 
     template <>
-    struct is_string<std::string> : true_type{};
+    struct is_string<std::string> : true_type {};
 
     template <>
-    struct is_string<const std::string> : true_type{};
+    struct is_string<const std::string> : true_type {};
 
     template <class T>
     struct is_tuple : false_type {};
 
     template <typename... Args>
-    struct is_tuple<std::tuple<Args...>> : true_type{};
+    struct is_tuple<std::tuple<Args...>> : true_type {};
 
     template <typename... Args>
-    struct is_tuple<const std::tuple<Args...>> : true_type{};
+    struct is_tuple<const std::tuple<Args...>> : true_type {};
 
     template <typename T>
     struct is_stdarray : false_type {};
 
     template <typename T, size_t N>
-    struct is_stdarray<std::array<T, N>> : true_type{};
+    struct is_stdarray<std::array<T, N>> : true_type {};
 
     template <typename T, size_t N>
-    struct is_stdarray<const std::array<T, N>> : true_type{};
+    struct is_stdarray<const std::array<T, N>> : true_type {};
 
     template <class C>
     struct is_stdset : false_type {};
 
     template <class T, class Comp, class Alloc>
-    struct is_stdset<std::set<T, Comp, Alloc>> : true_type{};
+    struct is_stdset<std::set<T, Comp, Alloc>> : true_type {};
 
     template <class T, class Comp, class Alloc>
-    struct is_stdset<const std::set<T, Comp, Alloc>> : true_type{};
+    struct is_stdset<const std::set<T, Comp, Alloc>> : true_type {};
+
+    template <class C>
+    struct is_stdmap : false_type {};
+
+    template <class Key, class T, class Comp, class Alloc>
+    struct is_stdmap<std::map<Key, T, Comp, Alloc>> : true_type {};
+
+    template <class Key, class T, class Comp, class Alloc>
+    struct is_stdmap<const std::map<Key, T, Comp, Alloc>> : true_type {};
 
     template <class T>
     struct is_builtin_array : false_type {};
 
     template <class T, size_t Dim>
-    struct is_builtin_array<T[Dim]> : true_type{};
+    struct is_builtin_array<T[Dim]> : true_type {};
 
     template <class T, size_t Dim>
-    struct is_builtin_array<const T[Dim]> : true_type{};
+    struct is_builtin_array<const T[Dim]> : true_type {};
 
     template <class T>
-    struct is_builtin_array<T []> : true_type{};
+    struct is_builtin_array<T []> : true_type {};
 
     template <class T>
-    struct is_builtin_array<const T []> : true_type{};
+    struct is_builtin_array<const T []> : true_type {};
 
     template <class T>
     struct is_pointer : false_type {};
 
     template <class T>
-    struct is_pointer<T *> : true_type{};
+    struct is_pointer<T *> : true_type {};
 
     template <class T>
-    struct is_pointer<const T *> : true_type{};
+    struct is_pointer<const T *> : true_type {};
 
     template <class T>
     struct is_container : false_type {};
 
-    /*template <class T, size_t N>
-    struct is_container<std::array<T, N>> : true_type{};
-
-    template <class T, size_t N>
-    struct is_container<const std::array<T, N>> : true_type{};
-    */
+    template <class T, class Alloc>
+    struct is_container<std::vector<T, Alloc>> : true_type {};
 
     template <class T, class Alloc>
-    struct is_container<std::vector<T, Alloc>> : true_type{};
+    struct is_container<const std::vector<T, Alloc>> : true_type {};
 
     template <class T, class Alloc>
-    struct is_container<const std::vector<T, Alloc>> : true_type{};
+    struct is_container<std::list<T, Alloc>> : true_type {};
 
     template <class T, class Alloc>
-    struct is_container<std::list<T, Alloc>> : true_type{};
-
-    template <class T, class Alloc>
-    struct is_container<const std::list<T, Alloc>> : true_type{};
+    struct is_container<const std::list<T, Alloc>> : true_type {};
 
     template <class Key, class Comp, class Alloc>
-    struct is_container<std::set<Key, Comp, Alloc>> : true_type{};
+    struct is_container<std::set<Key, Comp, Alloc>> : true_type {};
 
     template <class Key, class Comp, class Alloc>
-    struct is_container<const std::set<Key, Comp, Alloc>> : true_type{};
+    struct is_container<const std::set<Key, Comp, Alloc>> : true_type {};
 
     template <class Key, class T, class Comp, class Alloc>
-    struct is_container<std::map<Key, T, Comp, Alloc>> : true_type{};
+    struct is_container<std::map<Key, T, Comp, Alloc>> : true_type {};
 
     template <class Key, class T, class Comp, class Alloc>
-    struct is_container<const std::map<Key, T, Comp, Alloc>> : true_type{};
+    struct is_container<const std::map<Key, T, Comp, Alloc>> : true_type {};
 
     template <class T>
     struct is_union : false_type {};
 
     template <class TagType, class... Args>
-    struct is_union<reflex::Union<TagType, Args...>> : true_type{};
+    struct is_union<reflex::Union<TagType, Args...>> : true_type {};
 
     template <class TagType, class... Args>
-    struct is_union<const reflex::Union<TagType, Args...>> : true_type{};
+    struct is_union<const reflex::Union<TagType, Args...>> : true_type {};
 
     template <class T>
     struct is_sparse : false_type {};
 
     template <class... Args>
-    struct is_sparse<reflex::Sparse<Args...>> : true_type{};
+    struct is_sparse<reflex::Sparse<Args...>> : true_type {};
 
     template <class... Args>
-    struct is_sparse<const reflex::Sparse<Args...>> : true_type{};
+    struct is_sparse<const reflex::Sparse<Args...>> : true_type {};
 
     template <class T>
     struct is_range : false_type {};
 
     template <class T>
-    struct is_range<reflex::Range<T>> : true_type{};
+    struct is_range<reflex::Range<T>> : true_type {};
 
     template <class T>
-    struct is_range<const reflex::Range<T>> : true_type{};
+    struct is_range<const reflex::Range<T>> : true_type {};
 
     template <class T, size_t N>
-    struct is_range<reflex::BoundedRange<T, N>> : true_type{};
+    struct is_range<reflex::BoundedRange<T, N>> : true_type {};
 
     template <class T, size_t N>
-    struct is_range<const reflex::BoundedRange<T, N>> : true_type{};
+    struct is_range<const reflex::BoundedRange<T, N>> : true_type {};
 
     template <class T>
     struct is_default_member_names {

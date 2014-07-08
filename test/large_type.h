@@ -21,9 +21,9 @@ enum Color { red, green, blue };
 
 ENUM_DEF(Color, "Color", 3)  
 
-ENUM_MEMBER_DEF(Color, 0, "RED",   0);
-ENUM_MEMBER_DEF(Color, 1, "GREEN", 1);
-ENUM_MEMBER_DEF(Color, 2, "BLUE",  2);
+ENUM_MEMBER_DEF(Color, 0, "RED",   0)
+ENUM_MEMBER_DEF(Color, 1, "GREEN", 1)
+ENUM_MEMBER_DEF(Color, 2, "BLUE",  2)
 
 namespace custom
 {

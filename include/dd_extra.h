@@ -84,7 +84,27 @@ namespace reflex {
 #ifdef __x86_64__
       SET_ARRAY_DECL(long long int)
 #endif
-      // Also see set_array function template for enums in dd_manip.h 
+
+      template <class T> // When T is an enum
+      static DDS_ReturnCode_t set_array(
+          DDS_DynamicData &instance,
+          const MemberAccess & ma,
+          DDS_UnsignedLong length,
+          const T *array)
+      {
+        if (ma.access_by_id())
+          return instance.set_long_array(
+              NULL,
+              ma.get_id(),
+              length,
+              reinterpret_cast<const DDS_Long *>(array));
+        else
+          return instance.set_long_array(
+              ma.get_name(),
+              DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
+              length,
+              reinterpret_cast<const DDS_Long *>(array));
+      }
 
       GET_SEQUENCE_DECL(DDS_OctetSeq)
       GET_SEQUENCE_DECL(DDS_BooleanSeq)
@@ -115,7 +135,27 @@ namespace reflex {
 #ifdef __x86_64__
       GET_ARRAY_DECL(long long int)
 #endif
-      // Also see get_array function template for enums in dd_manip.h 
+
+      template <class T> // When T is an enum
+      static DDS_ReturnCode_t get_array(
+          const DDS_DynamicData & instance,
+          T *array,
+          DDS_UnsignedLong *length,
+          const MemberAccess &ma)
+      {
+        if (ma.access_by_id())
+          return instance.get_long_array(
+              reinterpret_cast<DDS_Long *>(array),
+              length,
+              NULL,
+              ma.get_id());
+        else
+          return instance.get_long_array(
+              reinterpret_cast<DDS_Long *>(array),
+              length,
+              ma.get_name(),
+              DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+      }
 
     DllExport void set_seq_length(
         DDS_DynamicData & seq,
@@ -131,7 +171,8 @@ namespace reflex {
       int id_;
       const char *name_;
 
-      MemberAccess(bool is_valid_id,
+      MemberAccess(
+        bool is_valid_id,
         int id,
         const char *name);
 
@@ -140,7 +181,9 @@ namespace reflex {
       bool access_by_name() const;
       int get_id() const;
       const char * get_name() const;
-      static MemberAccess BY_ID(int id = -1);
+      MemberAccess operator + (int i) const;
+
+      static MemberAccess BY_ID(int id = -5678);
       static MemberAccess BY_NAME(const char *name = 0);
     };
 

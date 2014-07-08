@@ -92,40 +92,43 @@ namespace reflex {
       explicit SafeTypeCodeBase(DDS_TypeCode * typecode);
       explicit SafeTypeCodeBase(const DDS_TypeCode * typecode);
       explicit SafeTypeCodeBase(DDS_TypeCodeFactory * factory,
-        DDS_TypeCode * typecode = 0,
-        bool release = true);
+                                DDS_TypeCode * typecode = 0,
+                                bool release = true);
 
-        GET_TYPECODE_DECL(reflex::octet_t,    DDS_TK_OCTET)
-        GET_TYPECODE_DECL(bool,               DDS_TK_BOOLEAN)
-        GET_TYPECODE_DECL(char,               DDS_TK_CHAR)
-        GET_TYPECODE_DECL(int8_t,             DDS_TK_CHAR)
-        GET_TYPECODE_DECL(int16_t,            DDS_TK_SHORT)
-        GET_TYPECODE_DECL(uint16_t,           DDS_TK_USHORT)
-        GET_TYPECODE_DECL(int32_t,            DDS_TK_LONG)
-        GET_TYPECODE_DECL(uint32_t,           DDS_TK_ULONG)
-        GET_TYPECODE_DECL(int64_t,            DDS_TK_LONGLONG)
-        GET_TYPECODE_DECL(uint64_t,           DDS_TK_ULONGLONG)
+      GET_TYPECODE_DECL(reflex::octet_t,    DDS_TK_OCTET)
+      GET_TYPECODE_DECL(bool,               DDS_TK_BOOLEAN)
+      GET_TYPECODE_DECL(char,               DDS_TK_CHAR)
+      GET_TYPECODE_DECL(int8_t,             DDS_TK_CHAR)
+      GET_TYPECODE_DECL(int16_t,            DDS_TK_SHORT)
+      GET_TYPECODE_DECL(uint16_t,           DDS_TK_USHORT)
+      GET_TYPECODE_DECL(int32_t,            DDS_TK_LONG)
+      GET_TYPECODE_DECL(uint32_t,           DDS_TK_ULONG)
+      GET_TYPECODE_DECL(int64_t,            DDS_TK_LONGLONG)
+      GET_TYPECODE_DECL(uint64_t,           DDS_TK_ULONGLONG)
 
 #ifndef RTI_WIN32
-        GET_TYPECODE_DECL(char32_t,           DDS_TK_WCHAR)
+      GET_TYPECODE_DECL(char32_t,           DDS_TK_WCHAR)
 #endif
 
-        GET_TYPECODE_DECL(float,              DDS_TK_FLOAT)
-        GET_TYPECODE_DECL(double,             DDS_TK_DOUBLE)
+      GET_TYPECODE_DECL(float,              DDS_TK_FLOAT)
+      GET_TYPECODE_DECL(double,             DDS_TK_DOUBLE)
 #if __x86_64__
-        GET_TYPECODE_DECL(long long,          DDS_TK_LONGLONG)
-        GET_TYPECODE_DECL(unsigned long long, DDS_TK_ULONGLONG)
+      GET_TYPECODE_DECL(long long,          DDS_TK_LONGLONG)
+      GET_TYPECODE_DECL(unsigned long long, DDS_TK_ULONGLONG)
 #endif
-        GET_TYPECODE_DECL(long double,        DDS_TK_LONGDOUBLE)
+      GET_TYPECODE_DECL(long double,        DDS_TK_LONGDOUBLE)
 
-        void create_array_tc(DDS_TypeCode * inner,
-        const DDS_UnsignedLongSeq &dims);
+      void create_array_tc(DDS_TypeCode * inner,
+      const DDS_UnsignedLongSeq &dims);
 
       void create_seq_tc(DDS_TypeCode *inner,
                          size_t bound);
 
       void create_string_tc(size_t bound);
       void create_struct_tc(const char * name);
+      void create_value_tc(const char * name,
+                           DDS_TypeCode * basetc);
+
       void create_enum_tc(
               const char * name,
               const DDS_EnumMemberSeq & enum_seq,
@@ -164,7 +167,15 @@ namespace reflex {
                  const char * name)
       : detail::SafeTypeCodeBase(factory)
     {
-      detail::SafeTypeCodeBase::create_struct_tc(name);
+        detail::SafeTypeCodeBase::create_struct_tc(name);
+    }
+
+    SafeTypeCode(DDS_TypeCodeFactory * factory,
+                 const char * name,
+                 DDS_TypeCode * basetc)
+      : detail::SafeTypeCodeBase(factory)
+    {
+        detail::SafeTypeCodeBase::create_value_tc(name, basetc);
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
@@ -273,7 +284,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class C, size_t Bound>
@@ -292,7 +303,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class T>
@@ -308,7 +319,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class T, size_t Bound>
@@ -324,7 +335,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-    friend class SafeTypeCode<DDS_TypeCode>;
+  friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <>
@@ -338,7 +349,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <size_t Bound>
@@ -352,7 +363,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class... Args>
@@ -368,7 +379,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class... Args>
@@ -384,7 +395,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   namespace detail {
@@ -430,7 +441,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class T, size_t Dim>

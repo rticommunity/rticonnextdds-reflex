@@ -62,29 +62,6 @@ namespace reflex {
 
     struct set_member_overload_resolution_helper
     {
-    private:
-
-      template <class T> // when T is an enum
-      static DDS_ReturnCode_t set_array(
-        DDS_DynamicData &instance,
-        const MemberAccess & ma,
-        DDS_UnsignedLong length,
-        const T *array)
-      {
-        if (ma.access_by_id())
-          return instance.set_long_array(
-          NULL,
-          ma.get_id(),
-          length,
-          reinterpret_cast<const DDS_Long *>(array));
-        else
-          return instance.set_long_array(
-          ma.get_name(),
-          DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-          length,
-          reinterpret_cast<const DDS_Long *>(array));
-      }
-
     public:
 
       SET_MEMBER_VALUE_DECL(reflex::octet_t); // also uint8_t
@@ -124,9 +101,9 @@ namespace reflex {
           rc = instance.set_long(NULL, ma.get_id(), val);
         else
           rc = instance.set_long(
-          ma.get_name(),
-          DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-          val);
+                        ma.get_name(),
+                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
+                        val);
 
         check_retcode("set_member_value: set_long (for enums) error = ", rc);
       }
@@ -143,17 +120,20 @@ namespace reflex {
         const Typelist & val,
         typename disable_if<std::is_enum<Typelist>::value ||
                             is_container<Typelist>::value ||
-                            is_range<Typelist>::value>::type * = 0)
+                            is_range<Typelist>::value
+                      >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
+        reflex::fill_dd(val, inner);
+        /*
         typedef
           TypelistIterator<Typelist,
                            0,
                            Size<Typelist>::value - 1 > TIter;
 
-        TIter::set(inner, MemberAccess::BY_ID(), val);
+        TIter::set(inner, MemberAccess::BY_ID(0), val);*/
       }
 
       template <class C>
@@ -169,7 +149,7 @@ namespace reflex {
                            std::is_enum<typename C::value_type>::value) &&
                           (is_vector<C>::value ?
                            is_bool_or_enum<typename C::value_type>::value : true)
-                         >::type * = 0)
+                       >::type * = 0)
       {
         if (do_serialize(val))
         {
@@ -193,8 +173,10 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const C & val,
-        typename disable_if<!is_container<C>::value ||
-        is_primitive_or_enum<typename C::value_type>::value>::type * = 0)
+        typename disable_if<
+                !is_container<C>::value ||
+                 is_primitive_or_enum<typename C::value_type>::value
+            >::type * = 0)
       {
         if (do_serialize(val))
         {
@@ -291,8 +273,8 @@ namespace reflex {
 
         size_t i = 0;
         for (typename Range<T>::const_iterator iter = boost::begin(range);
-          iter != boost::end(range);
-          ++iter, ++i)
+             iter != boost::end(range);
+             ++iter, ++i)
         {
           set_member_value
             (seq_member, MemberAccess::BY_ID(i + 1), *iter);
@@ -308,14 +290,7 @@ namespace reflex {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        typedef typename
-          ::reflex::Sparse<Args...>::tuple_type OptTuple;
-        typedef
-          TypelistIterator<OptTuple,
-          0,
-          Size<OptTuple>::value - 1> TIter;
-
-        TIter::set(inner, MemberAccess::BY_ID(), val.get_opt_tuple());
+        reflex::fill_dd(val.get_opt_tuple(), inner);
       }
 
       template <class TagType, class... Cases>
@@ -327,13 +302,21 @@ namespace reflex {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        typedef typename Union<TagType, Cases...>::case_tuple_type CaseTuple;
-        typedef TypelistIterator<CaseTuple,
-          0,
-          Size<CaseTuple>::value - 1> TIter;
+        typedef typename 
+              Union<TagType, Cases...>::case_tuple_type CaseTuple;
+
+        typedef TypelistIterator<
+                    CaseTuple,
+                    0,
+                    Size<CaseTuple>::value - 1> TIter;
 
         if (!val.empty())
-          TIter::set_union(inner, MemberAccess::BY_ID(), val);
+        {
+          TIter::set_union(
+            inner,
+            MemberAccess::BY_ID(),// id unimportant due to discriminator
+            val);
+        }
       }
 
       template <class T, size_t Dim>
@@ -341,8 +324,10 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess & ma,
         const T(&val)[Dim],
-        typename disable_if<is_primitive_or_enum<
-        typename remove_all_extents<T>::type>::value>::type * = 0)
+        typename disable_if<
+            is_primitive_or_enum<
+                typename remove_all_extents<T>::type>::value
+            >::type * = 0)
       {
         DDS_DynamicData arr_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, arr_member, ma);
@@ -362,14 +347,16 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const T(&val)[Dim],
-        typename enable_if<is_primitive_or_enum<
-        typename remove_all_extents<T>::type>::value>::type * = 0)
+        typename enable_if<
+           is_primitive_or_enum<
+               typename remove_all_extents<T>::type>::value
+           >::type * = 0)
       {
         typename remove_all_extents<T>::type const * arr =
           reinterpret_cast<typename remove_all_extents<T>::type const *>(&val[0]);
 
         DDS_ReturnCode_t rc =
-          set_array(instance, ma, array_length(val), arr);
+          detail::set_array(instance, ma, array_length(val), arr);
 
         check_retcode("set_member_value: Error setting array, error = ", rc);
       }
@@ -379,8 +366,10 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess & ma,
         const std::array<T, Dim> & val,
-        typename disable_if<is_primitive_or_enum<
-        typename remove_all_extents<T>::type>::value>::type * = 0)
+        typename disable_if<
+            is_primitive_or_enum<
+                 typename remove_all_extents<T>::type>::value
+            >::type * = 0)
       {
         DDS_DynamicData arr_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, arr_member, ma);
@@ -400,14 +389,16 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const std::array<T, Dim> & val,
-        typename enable_if<is_primitive_or_enum<
-        typename remove_all_extents<T>::type>::value>::type * = 0)
+        typename enable_if<
+            is_primitive_or_enum<
+                typename remove_all_extents<T>::type>::value
+            >::type * = 0)
       {
         typename remove_all_extents<T>::type const * arr =
           reinterpret_cast<typename remove_all_extents<T>::type const *>(&val[0]);
 
         DDS_ReturnCode_t rc =
-          set_array(instance, ma, array_length(val), arr);
+          detail::set_array(instance, ma, array_length(val), arr);
 
         check_retcode("set_member_value: Error setting array, error = ", rc);
       }
@@ -476,33 +467,7 @@ namespace reflex {
 #ifdef __x86_64__
       GET_MEMBER_VALUE_DECL(long long int);
 #endif
-
-      DllExport static void get_member_value(
-          const DDS_DynamicData & instance,
-          const MemberAccess &ma,
-          std::string & val);
-
-    private:
-      template <class T> // when T is an enum
-      static DDS_ReturnCode_t get_array(
-          const DDS_DynamicData & instance,
-          T *array,
-          DDS_UnsignedLong *length,
-          const MemberAccess &ma)
-      {
-        if (ma.access_by_id())
-          return instance.get_long_array(
-              reinterpret_cast<DDS_Long *>(array),
-              length,
-              NULL,
-              ma.get_id());
-        else
-          return instance.get_long_array(
-              reinterpret_cast<DDS_Long *>(array),
-              length,
-              ma.get_name(),
-              DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
-      }
+      GET_MEMBER_VALUE_DECL(std::string);
 
     public:
       template <class T> // When T is an enum
@@ -540,16 +505,10 @@ namespace reflex {
                               is_container<Typelist>::value ||
                               is_range<Typelist>::value> ::type * = 0)
       {
-        typedef
-          TypelistIterator<
-              Typelist,
-              0,
-              Size<Typelist>::value - 1 > TIter;
-
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        TIter::get(inner, MemberAccess::BY_ID(), val);
+        reflex::extract_dd(inner, val);
       }
 
     private:
@@ -659,7 +618,7 @@ namespace reflex {
           seq.ensure_length(seq_info.element_count,
             seq_info.element_count);
 
-          DDS_ReturnCode_t rc = get_sequence(instance, seq, ma);
+          DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
           check_retcode("get_member_value: get_sequence error = ", rc);
           copy_primitive_seq(seq, seq_info.element_count, val);
         }
@@ -672,7 +631,9 @@ namespace reflex {
           const Seq & seq,
           size_t count,
           C & c,
-          typename disable_if<is_stdset<C>::value>::type * = 0)
+          typename disable_if<is_stdset<C>::value ||
+                              is_stdmap<C>::value
+                       >::type * = 0)
       {
         if (count > 0)
         {
@@ -783,7 +744,7 @@ namespace reflex {
             throw std::runtime_error("get_member_value: sequence loaning failed");
           }
 
-          DDS_ReturnCode_t rc = get_sequence(instance, seq, ma);
+          DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
           seq.unloan();
           check_retcode("get_member_value: get_sequence error = ", rc);
         }
@@ -824,7 +785,7 @@ namespace reflex {
 
         if (seq_info.element_count > 0)
         {
-          DDS_ReturnCode_t rc = get_sequence(instance, seq, ma);
+          DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
           check_retcode("get_member_value: get_sequence error = ", rc);
 
           if (boost::distance(range) < seq_info.element_count) {
@@ -872,18 +833,10 @@ namespace reflex {
         const MemberAccess &ma,
         reflex::Sparse<Args...> & val)
       {
-        typedef typename
-          ::reflex::Sparse<Args...>::tuple_type OptTuple;
-        typedef
-          TypelistIterator<
-                  OptTuple,
-                  0,
-                  Size<OptTuple>::value - 1> TIter;
-
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        TIter::get(inner, MemberAccess::BY_ID(), val.get_opt_tuple());
+        reflex::extract_dd(instance, val.get_opt_tuple());
       }
 
       template <class T, size_t Dim>
@@ -927,7 +880,7 @@ namespace reflex {
         typename remove_all_extents<T>::type * arr =
           reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
 
-        DDS_ReturnCode_t rc = get_array(instance, arr, &length, ma);
+        DDS_ReturnCode_t rc = detail::get_array(instance, arr, &length, ma);
         check_retcode("get_member_value: get_array error = ", rc);
       }
 
@@ -974,7 +927,7 @@ namespace reflex {
         typename remove_all_extents<T>::type * arr =
           reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
 
-        DDS_ReturnCode_t rc = get_array(instance, arr, &length, ma);
+        DDS_ReturnCode_t rc = detail::get_array(instance, arr, &length, ma);
         check_retcode("get_member_value: get_array error = ", rc);
       }
 
@@ -1003,8 +956,9 @@ namespace reflex {
 
         int discriminator_value = static_cast<TagType>(member_info.member_id);
 
-        TIter::get_union(inner,
-          MemberAccess::BY_ID(),
+        TIter::get_union(
+          inner,
+          MemberAccess::BY_ID(discriminator_value), 
           discriminator_value,
           val);
       }
