@@ -46,6 +46,12 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
+  template <class T>
+  void fill_dd(const T & data, DDS_DynamicData &instance);
+
+  template <class T>
+  void extract_dd(const DDS_DynamicData & instance, T & data);
+
   namespace detail {
 
     template <class T>

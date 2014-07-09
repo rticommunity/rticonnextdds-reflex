@@ -114,8 +114,8 @@ void write_shape_type_extended(int domain_id)
     return;
   }
 
-  auto writer = reflex::GenericDataWriter<ShapeTypeExtended>(
-                    participant, topic_name, "ShapeType");
+  reflex::GenericDataWriter<ShapeTypeExtended>
+    writer(participant, topic_name, "ShapeType");
 
   srand((unsigned int) time(NULL));
 

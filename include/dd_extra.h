@@ -53,7 +53,67 @@ namespace reflex {
 
   namespace detail {
 
-      class MemberAccess;
+      class DllExport MemberAccess
+      {
+        bool is_valid_id_;
+        int id_;
+        const char *name_;
+
+        MemberAccess(
+          bool is_valid_id,
+          int id,
+          const char *name);
+
+      public:
+        bool access_by_id() const;
+        bool access_by_name() const;
+        int get_id() const;
+        const char * get_name() const;
+        MemberAccess operator + (int i) const;
+
+        static MemberAccess BY_ID(int id = -5678);
+        static MemberAccess BY_NAME(const char *name = 0);
+      };
+
+      class DllExport SafeBinder
+      {
+      private:
+        struct proxy {
+          DDS_DynamicData *outer_;
+          DDS_DynamicData *inner_;
+        };
+
+        DDS_DynamicData * outer_;
+        DDS_DynamicData * inner_;
+
+        SafeBinder(SafeBinder &);
+        SafeBinder& operator = (SafeBinder &);
+
+      public:
+        SafeBinder();
+
+        SafeBinder(const DDS_DynamicData & outer,
+          DDS_DynamicData & inner,
+          const char * member_name,
+          DDS_Long member_id);
+
+        SafeBinder(const DDS_DynamicData & outer,
+          DDS_DynamicData & inner,
+          const MemberAccess &ma);
+
+        ~SafeBinder() throw();
+
+        SafeBinder(proxy p) throw();
+
+        void swap(SafeBinder & sb) throw();
+
+        SafeBinder & operator = (proxy p) throw();
+
+        operator proxy () throw();
+
+        friend SafeBinder move(SafeBinder & sb) throw();
+      };
+
 
       SET_SEQUENCE_DECL(DDS_LongSeq)
       SET_SEQUENCE_DECL(DDS_ShortSeq)
@@ -84,27 +144,6 @@ namespace reflex {
 #ifdef __x86_64__
       SET_ARRAY_DECL(long long int)
 #endif
-
-      template <class T> // When T is an enum
-      static DDS_ReturnCode_t set_array(
-          DDS_DynamicData &instance,
-          const MemberAccess & ma,
-          DDS_UnsignedLong length,
-          const T *array)
-      {
-        if (ma.access_by_id())
-          return instance.set_long_array(
-              NULL,
-              ma.get_id(),
-              length,
-              reinterpret_cast<const DDS_Long *>(array));
-        else
-          return instance.set_long_array(
-              ma.get_name(),
-              DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-              length,
-              reinterpret_cast<const DDS_Long *>(array));
-      }
 
       GET_SEQUENCE_DECL(DDS_OctetSeq)
       GET_SEQUENCE_DECL(DDS_BooleanSeq)
@@ -137,6 +176,27 @@ namespace reflex {
 #endif
 
       template <class T> // When T is an enum
+      static DDS_ReturnCode_t set_array(
+          DDS_DynamicData &instance,
+          const MemberAccess & ma,
+          DDS_UnsignedLong length,
+          const T *array)
+      {
+        if (ma.access_by_id())
+          return instance.set_long_array(
+              NULL,
+              ma.get_id(),
+              length,
+              reinterpret_cast<const DDS_Long *>(array));
+        else
+          return instance.set_long_array(
+              ma.get_name(),
+              DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
+              length,
+              reinterpret_cast<const DDS_Long *>(array));
+      }
+
+      template <class T> // When T is an enum
       static DDS_ReturnCode_t get_array(
           const DDS_DynamicData & instance,
           T *array,
@@ -157,74 +217,13 @@ namespace reflex {
               DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
       }
 
-    DllExport void set_seq_length(
-        DDS_DynamicData & seq,
-        size_t size,
-        bool is_string);
+      DllExport void set_seq_length(
+          DDS_DynamicData & seq,
+          size_t size,
+          bool is_string);
 
-    DllExport std::string remove_parenthesis(
-        std::string);
-
-    class DllExport MemberAccess
-    {
-      bool is_valid_id_;
-      int id_;
-      const char *name_;
-
-      MemberAccess(
-        bool is_valid_id,
-        int id,
-        const char *name);
-
-    public:
-      bool access_by_id() const;
-      bool access_by_name() const;
-      int get_id() const;
-      const char * get_name() const;
-      MemberAccess operator + (int i) const;
-
-      static MemberAccess BY_ID(int id = -5678);
-      static MemberAccess BY_NAME(const char *name = 0);
-    };
-
-    class DllExport SafeBinder
-    {
-    private:
-      struct proxy {
-        DDS_DynamicData *outer_;
-        DDS_DynamicData *inner_;
-      };
-
-      DDS_DynamicData * outer_;
-      DDS_DynamicData * inner_;
-
-      SafeBinder(SafeBinder &);
-      SafeBinder& operator = (SafeBinder &);
-
-    public:
-      SafeBinder();
-
-      SafeBinder(const DDS_DynamicData & outer,
-        DDS_DynamicData & inner,
-        const char * member_name,
-        DDS_Long member_id);
-
-      SafeBinder(const DDS_DynamicData & outer,
-        DDS_DynamicData & inner,
-        const MemberAccess &ma);
-
-      ~SafeBinder() throw();
-
-      SafeBinder(proxy p) throw();
-
-      void swap(SafeBinder & sb) throw();
-
-      SafeBinder & operator = (proxy p) throw();
-
-      operator proxy () throw();
-
-      friend SafeBinder move(SafeBinder & sb) throw();
-    };
+      DllExport std::string remove_parenthesis(
+          std::string);
 
   } // namespace detail
 

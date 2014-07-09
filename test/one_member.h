@@ -20,14 +20,18 @@ damages arising out of the use or inability to use the software.
 
 #include "reflex.h"
 
-typedef std::list<std::array<std::array<int, 3>, 4> > Type;
+typedef reflex::Sparse<std::string, 
+                       float, 
+                       reflex::MultiDimArray<int32_t, 2, 3>::type >
+        Type;
 
 struct one_member
 {
   Type member;
 };
 
-RTI_ADAPT_STRUCT(one_member,
+RTI_ADAPT_STRUCT(
+    one_member,
     (Type, member))
 
 #endif // MANY_MEMBERS_H

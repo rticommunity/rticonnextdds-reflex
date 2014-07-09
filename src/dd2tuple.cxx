@@ -48,4 +48,8 @@ namespace reflex {
     return instance_;
   }
 
+  const DDS_DynamicData * SafeDynamicDataInstance::get() const {
+    return instance_;
+  }
+
 } // namespace reflex

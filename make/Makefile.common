@@ -70,8 +70,8 @@ REFLEXLIBRARY = reflex
 # Modify build flags for debug/release
 ###############################################################################
 ifeq ($(DEBUG),1)
-  CXXFLAGS     += -g -pg -O0 
-  CXXLDFLAGS   += -g -pg
+  CXXFLAGS     += -g -pg -O0 -DREFLEX_DEBUG
+  CXXLDFLAGS   += -g -pg -O0 
   ifeq ($(STATICLIB),1)
     NDDSLIBS    = -lnddscppzd -lnddsczd -lnddscorezd 
     REFLEXLIB      = -l$(REFLEXLIBRARY)zd

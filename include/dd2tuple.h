@@ -142,12 +142,36 @@ namespace reflex {
 
   } // namespace detail
 
+  class DllExport SafeDynamicDataInstance
+  {
+    DDSDynamicDataTypeSupport * typeSupport_;
+    DDS_DynamicData * instance_;
+
+    SafeDynamicDataInstance(const SafeDynamicDataInstance &);
+    SafeDynamicDataInstance & operator = (const SafeDynamicDataInstance &);
+
+  public:
+    SafeDynamicDataInstance(DDSDynamicDataTypeSupport * typeSupport);
+    ~SafeDynamicDataInstance();
+    DDS_DynamicData * get();
+    const DDS_DynamicData * get() const;
+  };
+
   template <class T>
   void fill_dd(const T & data, DDS_DynamicData &instance)
   {
     detail::fill_dd_impl(
       data,
       instance,
+      typename detail::InheritanceTraits<T>::has_base());
+  }
+
+  template <class T>
+  void fill_dd(const T & data, SafeDynamicDataInstance &instance)
+  {
+    detail::fill_dd_impl(
+      data,
+      *instance.get(),
       typename detail::InheritanceTraits<T>::has_base());
   }
 
@@ -171,6 +195,15 @@ namespace reflex {
       typename detail::InheritanceTraits<T>::has_base());
   }
 
+  template <class T>
+  void extract_dd(const SafeDynamicDataInstance & instance, T & data)
+  {
+    detail::extract_dd_impl(
+      *instance.get(),
+      data,
+      typename detail::InheritanceTraits<T>::has_base());
+  }
+
 
   template <class Tuple>
   void tuple2dd(const Tuple & tuple, DDS_DynamicData &instance)
@@ -189,20 +222,6 @@ namespace reflex {
   {
     return make_typecode<Tuple>(name);
   }
-
-  class DllExport SafeDynamicDataInstance
-  {
-    DDSDynamicDataTypeSupport * typeSupport_;
-    DDS_DynamicData * instance_;
-
-    SafeDynamicDataInstance(const SafeDynamicDataInstance &);
-    SafeDynamicDataInstance & operator = (const SafeDynamicDataInstance &);
-
-  public:
-    SafeDynamicDataInstance(DDSDynamicDataTypeSupport * typeSupport);
-    ~SafeDynamicDataInstance();
-    DDS_DynamicData * get();
-  };
 
 } // namespace reflex
 

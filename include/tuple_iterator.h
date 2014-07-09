@@ -163,8 +163,10 @@ namespace reflex {
           const MemberAccess &ma,
           const Typelist & tuple)
       {
-#ifdef _DEBUG
+#ifdef REFLEX_DEBUG
         unsigned i = I;
+        std::string member_name =
+          MemberTraits<Typelist, I>::member_info().name();
 #endif
 
         if (ma.access_by_id())
@@ -191,8 +193,10 @@ namespace reflex {
         const MemberAccess &ma,
         Typelist & tuple)
       {
-#ifdef _DEBUG
+#ifdef REFLEX_DEBUG
         unsigned i = I;
+        std::string member_name =
+          MemberTraits<Typelist, I>::member_info().name();
 #endif
         if (ma.access_by_id())
         {
@@ -217,8 +221,10 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_TypeCode * outer_structTc)
       {
-#ifdef _DEBUG
+#ifdef REFLEX_DEBUG
         unsigned i = I;
+        std::string member_name =
+          MemberTraits<Typelist, I>::member_info().name();
 #endif
 
         typedef typename At<Typelist, I>::type Inner;
@@ -298,8 +304,10 @@ namespace reflex {
           const MemberAccess &ma,
           const Typelist & tuple)
       {
-#ifdef _DEBUG
+#ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
+        std::string member_name =
+          MemberTraits<Typelist, MAX_INDEX>::member_info().name();
 #endif
 
         if (ma.access_by_id()) 
@@ -323,8 +331,10 @@ namespace reflex {
                       const MemberAccess &ma,
                       Typelist & tuple)
       {
-#ifdef _DEBUG
+#ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
+        std::string member_name =
+          MemberTraits<Typelist, MAX_INDEX>::member_info().name();
 #endif
 
         if (ma.access_by_id())
@@ -348,8 +358,10 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_TypeCode * outer_structTc)
       {
-#ifdef _DEBUG
+#ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
+        std::string member_name =
+          MemberTraits<Typelist, MAX_INDEX>::member_info().name();
 #endif
 
         typedef typename At<Typelist, MAX_INDEX>::type Inner;
