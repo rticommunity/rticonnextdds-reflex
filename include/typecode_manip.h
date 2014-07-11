@@ -257,7 +257,7 @@ namespace reflex {
             factory,
             static_cast<T *>(0));
 
-        return SafeTypeCode<boost::optional<T>>(factory, innerTc);
+        return SafeTypeCode<boost::optional<T>>(factory, move(innerTc));
       }
 #endif
       

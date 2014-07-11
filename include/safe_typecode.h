@@ -343,9 +343,9 @@ namespace reflex {
   public:
 
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-                 SafeTypeCode<HeadT> innertc)
+                 SafeTypeCode<HeadT> tc)
       : detail::SafeTypeCodeBase(factory),
-        innerTc(move(innertc))
+        innerTc(move(tc))
     {  }
 
     SafeTypeCode(detail::proxy<SafeTypeCode> p) throw()

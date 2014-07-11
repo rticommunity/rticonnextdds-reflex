@@ -44,8 +44,10 @@ void test_sparse_type(int)
 
   // round-tripping must work!
   assert(ddi1.get()->equal(*ddi2.get()));
-    
-  //ddi2.get()->print(stdout, 2);
+
+#ifndef RTI_WIN32    
+  ddi2.get()->print(stdout, 2);
+#endif
 }
 
 void test_optional_type(int domain_id)
@@ -73,7 +75,9 @@ void test_optional_type(int domain_id)
   // round-tripping must work!
   assert(ddi1.get()->equal(*ddi2.get()));
 
-  //ddi2.get()->print(stdout, 2);
+#ifndef RTI_WIN32    
+  ddi2.get()->print(stdout, 2);
+#endif
 }
 
 void test_all_types (int domain_id) 

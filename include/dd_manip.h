@@ -333,7 +333,7 @@ namespace reflex {
         {
           TIter::set_union(
             inner,
-            MemberAccess::BY_ID(),// id unimportant due to discriminator
+            MemberAccess::BY_ID(-999),// id unimportant due to discriminator
             val);
         }
       }
