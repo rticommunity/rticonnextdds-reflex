@@ -130,6 +130,7 @@ HEADERS = include/dd2tuple.h             \
 
 TESTSRCS = test/reflex-test.cxx \
            test/one_member.cxx \
+           test/all_types.cxx \
            test/many_members.cxx \
            test/shape_type.cxx \
            test/darkart.cxx    \
@@ -137,6 +138,7 @@ TESTSRCS = test/reflex-test.cxx \
 
 TESTHEADERS = test/shape_type.h \
               test/one_member.h \
+              test/all_types.h \
               test/many_members.h \
               test/darkart.h    \
               test/large_type.h

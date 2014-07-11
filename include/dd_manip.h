@@ -114,32 +114,23 @@ namespace reflex {
         check_retcode("set_member_value: set_long (for enums) error = ", rc);
       }
 
-      template <class Typelist>
       // Typelist could be
       // 1. A user-defined struct adapted as a Fusion Sequence
       // 2. std::tuple
       // 3. std::pair
-      // The overload is disbaled for user-defined enums.
+      template <class Typelist>
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess & ma,
         const Typelist & val,
         typename disable_if<std::is_enum<Typelist>::value ||
-                            is_container<Typelist>::value ||
-                            is_range<Typelist>::value
+                            is_container<Typelist>::value
                       >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
         reflex::fill_dd(val, inner);
-        /*
-        typedef
-          TypelistIterator<Typelist,
-                           0,
-                           Size<Typelist>::value - 1 > TIter;
-
-        TIter::set(inner, MemberAccess::BY_ID(0), val);*/
       }
 
       template <class C>
@@ -180,9 +171,9 @@ namespace reflex {
         const MemberAccess &ma,
         const C & val,
         typename disable_if<
-                !is_container<C>::value ||
-                 is_primitive_or_enum<typename C::value_type>::value
-            >::type * = 0)
+                     !is_container<C>::value ||
+                     is_primitive_or_enum<typename C::value_type>::value
+                 >::type * = 0)
       {
         if (do_serialize(val))
         {
@@ -195,7 +186,8 @@ namespace reflex {
           // the dynamic data instance is off by 1. This function seems
           // to handle nested empty sequences.
           // BTW, sequence of strings seem to work fine without magic.
-          set_seq_length(seq_member,
+          set_seq_length(
+            seq_member,
             val.size(),
             is_string<typename C::value_type>::value);
 
@@ -234,11 +226,12 @@ namespace reflex {
         }
       }
 
+    private:
       template <class T>
-      static void set_member_value(
+      static void set_member_value_range(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const Range<T> & range,
+        const reflex::Range<T> & range,
         typename enable_if<is_primitive_or_enum<T>::value>::type * = 0)
       {
         typename DynamicDataSeqTraits<T>::type seq;
@@ -258,10 +251,10 @@ namespace reflex {
       }
 
       template <class T>
-      static void set_member_value(
+      static void set_member_value_range(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const Range<T> & range,
+        const reflex::Range<T> & range,
         typename disable_if<is_primitive_or_enum<T>::value>::type * = 0)
       {
         DDS_DynamicData seq_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -279,19 +272,39 @@ namespace reflex {
 
         size_t i = 0;
         for (typename Range<T>::const_iterator iter = boost::begin(range);
-             iter != boost::end(range);
-             ++iter, ++i)
+          iter != boost::end(range);
+          ++iter, ++i)
         {
           set_member_value
             (seq_member, MemberAccess::BY_ID(i + 1), *iter);
         }
       }
 
+    public:
+      
+      template <class T>
+      static void set_member_value(
+        DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        const reflex::Range<T> & range)
+      {
+        set_member_value_range(instance, ma, range);
+      }
+
+      template <class T, size_t Bound>
+      static void set_member_value(
+        DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        const reflex::BoundedRange<T, Bound> & range)
+      {
+        set_member_value_range(instance, ma, range);
+      }
+
       template <class... Args>
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess & ma,
-        const ::reflex::Sparse<Args...> & val)
+        const reflex::Sparse<Args...> & val)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
@@ -303,7 +316,7 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess & ma,
-        const Union<TagType, Cases...> & val)
+        const reflex::Union<TagType, Cases...> & val)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
@@ -433,7 +446,7 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const Bounded<T, Bound> & val)
+        const reflex::Bounded<T, Bound> & val)
       {
         set_member_value(instance, ma, static_cast<const T &>(val));
       }
@@ -508,8 +521,8 @@ namespace reflex {
           const MemberAccess &ma,
           Typelist & val,
           typename disable_if<std::is_enum<Typelist>::value ||
-                              is_container<Typelist>::value ||
-                              is_range<Typelist>::value> ::type * = 0)
+                              is_container<Typelist>::value
+                      >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
@@ -760,19 +773,20 @@ namespace reflex {
       static void get_member_value(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          Bounded<T, Bound> & val)
+          reflex::Bounded<T, Bound> & val)
       {
         get_member_value(instance, ma, static_cast<T &>(val));
       }
 
+    private:
       template <class T>
       // If you are populating a range it must be sufficient in capacity
       // You probably also need to "mark" the range to be erased to
       // separate the old elements from the new one. 
-      static void get_member_value(
+      static void get_member_value_range(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          Range<T> & range,
+          reflex::Range<T> & range,
           typename enable_if<
                              is_primitive_or_enum<T>::value
                             >::type * = 0)
@@ -808,10 +822,10 @@ namespace reflex {
       }
 
       template <class T>
-      static void get_member_value(
+      static void get_member_value_range(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          Range<T> & range,
+          reflex::Range<T> & range,
           typename disable_if<
                               is_primitive_or_enum<T>::value
                              >::type * = 0)
@@ -833,6 +847,25 @@ namespace reflex {
         }
       }
 
+    public:
+      template <class T>
+      static void get_member_value(
+        const DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        reflex::Range<T> & range)
+      {
+        get_member_value_range(instance, ma, range);
+      }
+
+      template <class T, size_t Bound>
+      static void get_member_value(
+        const DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        reflex::BoundedRange<T, Bound> & range)
+      {
+        get_member_value_range(instance, ma, range);
+      }
+
       template <class... Args>
       static void get_member_value(
         const DDS_DynamicData & instance,
@@ -842,7 +875,7 @@ namespace reflex {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        reflex::extract_dd(instance, val.get_opt_tuple());
+        reflex::extract_dd(inner, val.get_opt_tuple());
       }
 
       template <class T, size_t Dim>
@@ -911,7 +944,8 @@ namespace reflex {
 
         for (DDS_UnsignedLong i = 0; i < length; ++i)
         {
-          get_member_value(arr_member,
+          get_member_value(
+            arr_member,
             MemberAccess::BY_ID(i + 1),
             arr[i]);
         }

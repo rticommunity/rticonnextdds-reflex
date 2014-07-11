@@ -25,7 +25,6 @@ damages arising out of the use or inability to use the software.
 #include "bounded.h"
 #include "dllexport.h"
 
-
 namespace reflex {
 
   DllExport void DECLSPEC
@@ -33,7 +32,69 @@ namespace reflex {
         const DDS_TypeCode * tc,
         DDS_UnsignedLong indent);
 
+  template <class T>
+  SafeTypeCode<T> make_typecode(const char * name = 0);
+
   namespace detail {
+
+
+    template <class T>
+    SafeTypeCode<T> make_typecode_impl(
+      const char * name,
+      false_type /* T has no base */)
+    {
+      DDS_TypeCodeFactory * factory =
+        DDS_TypeCodeFactory::get_instance();
+
+      std::string type_name_string =
+        detail::StructName<typename detail::remove_refs<T>::type>::get();
+
+      const char * type_name =
+        name ? name : type_name_string.c_str();
+
+      SafeTypeCode<T> structTc(factory, type_name);
+
+      detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1>::add(
+        factory, structTc.get());
+
+      return move(structTc);
+    }
+
+    template <class T>
+    SafeTypeCode<T> make_typecode_impl(
+      const char * name,
+      true_type /* T has base */)
+    {
+      DDS_TypeCodeFactory * factory =
+        DDS_TypeCodeFactory::get_instance();
+
+      std::string type_name_string =
+        detail::StructName<typename detail::remove_refs<T>::type>::get();
+
+      const char * type_name =
+        name ? name : type_name_string.c_str();
+
+      typedef typename InheritanceTraits<T>::basetype BaseType;
+
+      SafeTypeCode<BaseType> baseTc =
+        make_typecode_impl<BaseType>(
+        0,
+        typename InheritanceTraits<BaseType>::has_base());
+
+      SafeTypeCode<T> aggregateTc(factory, type_name, baseTc.get());
+
+      detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1>
+        ::add(factory, aggregateTc.get());
+
+      return move(aggregateTc);
+    }
+
 
     /* TypeCode Overload Resolution Helper */
     /* Overload resolution of several free primary template 
@@ -67,14 +128,15 @@ namespace reflex {
                             is_container<T>::value ||
                             is_stdarray<T>::value>::type * = 0)
       {
-        SafeTypeCode<T>
+        SafeTypeCode<T> structTc = reflex::make_typecode<T>();
+        /*SafeTypeCode<T>
           structTc(factory, StructName<T>::get().c_str());
 
         TypelistIterator<
           T,
           0,
           Size<T>::value - 1>
-            ::add(factory, structTc.get());
+            ::add(factory, structTc.get());*/
 
         return move(structTc);
       }
@@ -158,17 +220,48 @@ namespace reflex {
 
       template <class T>
       static SafeTypeCode<Range<T>> get_typecode(
-            DDS_TypeCodeFactory * factory,
-            const reflex::Range<T> *)
+        DDS_TypeCodeFactory * factory,
+        const reflex::Range<T> *)
       {
-          SafeTypeCode<typename remove_reference<T>::type> innerTc
-            = TC_overload_resolution_helper::get_typecode(
-                factory,
-                static_cast<typename remove_reference<T>::type *>(0));
+        SafeTypeCode<typename remove_reference<T>::type> innerTc
+          = TC_overload_resolution_helper::get_typecode(
+                  factory,
+                  static_cast<typename remove_reference<T>::type *>(0));
 
-          return SafeTypeCode<reflex::Range<T>>(factory, innerTc);
+        return SafeTypeCode<reflex::Range<T>>(factory, innerTc);
       }
+      
+#ifdef RTI_WIN32
 
+      template <class... T>
+      static SafeTypeCode<boost::optional<T...>> get_typecode(
+        DDS_TypeCodeFactory * factory,
+        const boost::optional<T...> *)
+      {
+        typedef typename PackHead<T...>::type HeadT;
+        SafeTypeCode<HeadT> innerTc =
+          TC_overload_resolution_helper::get_typecode(
+              factory,
+              static_cast<HeadT *>(0));
+
+        return SafeTypeCode<boost::optional<T...>>(factory, move(innerTc));
+      }
+#else
+      template <class T>
+      static SafeTypeCode<boost::optional<T>> get_typecode(
+        DDS_TypeCodeFactory * factory,
+        const boost::optional<T> *)
+      {
+        SafeTypeCode<T> innerTc =
+          TC_overload_resolution_helper::get_typecode(
+            factory,
+            static_cast<T *>(0));
+
+        return SafeTypeCode<boost::optional<T>>(factory, innerTc);
+      }
+#endif
+      
+      
       template <class T, size_t Bound>
       static SafeTypeCode<BoundedRange<T, Bound>> get_typecode(
             DDS_TypeCodeFactory * factory,
@@ -182,7 +275,7 @@ namespace reflex {
           return SafeTypeCode<reflex::BoundedRange<T, Bound>>(
               factory, innerTc);
       }
-
+      
       template <class... Args>
       static SafeTypeCode<::reflex::Sparse<Args...>> get_typecode(
           DDS_TypeCodeFactory * factory,
@@ -331,6 +424,20 @@ namespace reflex {
       int id,
       const T * tptr)
     {
+      if (is_optional<T>::value)
+      {
+        if (flags == DDS_TYPECODE_KEY_MEMBER)
+        {
+          std::stringstream stream;
+          stream << "add_member_forward: optinal member "
+                 << member_name
+                 << " can't be required or key.";
+          throw std::runtime_error(stream.str());
+        }
+        else
+          flags = DDS_TYPECODE_NONKEY_MEMBER;
+      }
+        
       add_member_impl(
         factory, 
         outerTc, 
@@ -487,65 +594,6 @@ namespace reflex {
     {
       deleteTc_impl<TC>(factory, tc);
     }
-
-    template <class T>
-    SafeTypeCode<T> make_typecode_impl(
-        const char * name,
-        false_type /* T has no base */)
-    {
-      DDS_TypeCodeFactory * factory =
-        DDS_TypeCodeFactory::get_instance();
-
-      std::string type_name_string =
-        detail::StructName<typename detail::remove_refs<T>::type>::get();
-
-      const char * type_name =
-        name ? name : type_name_string.c_str();
-
-      SafeTypeCode<T> structTc(factory, type_name);
-
-      detail::TypelistIterator<
-        T,
-        0,
-        detail::Size<T>::value - 1>::add(
-        factory, structTc.get());
-
-      return move(structTc);
-    }
-
-    template <class T>
-    SafeTypeCode<T> make_typecode_impl(
-        const char * name,
-        true_type /* T has base */)
-    {
-      DDS_TypeCodeFactory * factory =
-        DDS_TypeCodeFactory::get_instance();
-
-      std::string type_name_string =
-        detail::StructName<typename detail::remove_refs<T>::type>::get();
-
-      const char * type_name =
-        name ? name : type_name_string.c_str();
-
-      typedef typename InheritanceTraits<T>::basetype BaseType;
-
-      SafeTypeCode<BaseType> baseTc =
-        make_typecode_impl<BaseType>(
-          0, 
-          typename InheritanceTraits<BaseType>::has_base());
-
-      SafeTypeCode<T> aggregateTc(factory, type_name, baseTc.get());
-
-      detail::TypelistIterator<
-        T,
-        0,
-        detail::Size<T>::value - 1>
-          ::add(factory, aggregateTc.get());
-
-      return move(aggregateTc);
-    }
-
-
 
   } // namespace detail
 

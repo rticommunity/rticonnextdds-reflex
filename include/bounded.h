@@ -17,7 +17,7 @@ damages arising out of the use or inability to use the software.
 namespace reflex {
 
   template <class T, size_t Bound>
-  class Bounded;
+  struct BoundedRange;
 
   template <typename T, size_t Bound>
   class Bounded

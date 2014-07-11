@@ -61,7 +61,8 @@ namespace reflex {
   namespace detail {
 
     template <class SafeTypeCode>
-    struct proxy {
+    struct proxy 
+    {
       DDS_TypeCodeFactory * factory_;
       DDS_TypeCode * typecode_;
       bool release_;
@@ -249,7 +250,7 @@ namespace reflex {
 
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      const char * name)
+                 const char * name)
       : detail::SafeTypeCodeBase(factory)
     {
       // The lifetime of info_seq must be until create_enum_tc is invoked
@@ -277,7 +278,7 @@ namespace reflex {
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      SafeTypeCode<typename C::value_type> & tc)
+                 SafeTypeCode<typename C::value_type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_seq_tc(tc.get(), MAX_SEQ_SIZE);
@@ -296,7 +297,7 @@ namespace reflex {
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      SafeTypeCode<typename C::value_type> & tc)
+                 SafeTypeCode<typename C::value_type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_seq_tc(tc.get(), Bound);
@@ -312,13 +313,84 @@ namespace reflex {
   public:
 
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      SafeTypeCode<typename detail::remove_reference<T>::type> & tc)
+                 SafeTypeCode<typename detail::remove_reference<T>::type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
-      detail::SafeTypeCodeBase::create_seq_tc(tc.get(), MAX_SEQ_SIZE);
-    }
+        detail::SafeTypeCodeBase::create_seq_tc(tc.get(), MAX_SEQ_SIZE);
+      }
 
     MAKE_SAFETYPECODE_MOVEONLY
+      friend class SafeTypeCode<DDS_TypeCode>;
+  };
+
+#ifdef RTI_WIN32
+  template <class... T>
+  class SafeTypeCode<boost::optional<T...>> : public detail::SafeTypeCodeBase
+  {
+     typedef typename detail::PackHead<T...>::type HeadT;
+#else
+  template <class T>
+  class SafeTypeCode<boost::optional<T>> : public detail::SafeTypeCodeBase
+  {
+    typedef T HeadT;
+#endif 
+    SafeTypeCode<HeadT> innerTc;
+
+  private:
+    SafeTypeCode & operator = (SafeTypeCode &);
+    SafeTypeCode(SafeTypeCode &);
+
+  public:
+
+    SafeTypeCode(DDS_TypeCodeFactory * factory,
+                 SafeTypeCode<HeadT> innertc)
+      : detail::SafeTypeCodeBase(factory),
+        innerTc(move(innertc))
+    {  }
+
+    SafeTypeCode(detail::proxy<SafeTypeCode> p) throw()
+      : detail::SafeTypeCodeBase(p.factory_,
+                                 p.typecode_,
+                                 p.release_),
+        innerTc(detail::proxy<SafeTypeCode<HeadT>>
+               (p.factory_, p.typecode_, p.release_))
+    {}
+
+    operator detail::proxy<SafeTypeCode>() throw() 
+    { 
+      detail::proxy<SafeTypeCode<HeadT>> inner_proxy = innerTc;
+      detail::proxy<SafeTypeCode> proxy(
+        inner_proxy.factory_,
+        inner_proxy.typecode_,
+        inner_proxy.release_);
+      return proxy;
+    }
+
+  public:
+    DDS_TypeCode * get() const {
+      return innerTc.get();
+    }
+
+    DDS_TypeCode * release() {
+      return innerTc.release();
+    }
+
+    void swap(SafeTypeCode & stc) throw() {
+      this->innerTc.swap(stc.innerTc);
+    }
+
+    SafeTypeCode & operator
+      = (detail::proxy<SafeTypeCode> p) throw()
+    {
+      SafeTypeCode(p).swap(*this);
+      return *this;
+    }
+
+    friend SafeTypeCode move(SafeTypeCode & stc) 
+    {
+      return SafeTypeCode(detail::proxy<SafeTypeCode>(stc));
+    }
+
     friend class SafeTypeCode<DDS_TypeCode>;
   };
 
@@ -328,7 +400,7 @@ namespace reflex {
   public:
 
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      SafeTypeCode<typename detail::remove_reference<T>::type> & tc)
+                 SafeTypeCode<typename detail::remove_reference<T>::type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_seq_tc(tc.get(), Bound);
@@ -430,7 +502,7 @@ namespace reflex {
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-      SafeTypeCode<T> & tc)
+                 SafeTypeCode<T> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       DDS_UnsignedLongSeq seq;
@@ -451,7 +523,7 @@ namespace reflex {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
                  SafeTypeCode<typename 
-                   detail::remove_all_extents<T>::type> & tc)
+                              detail::remove_all_extents<T>::type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       DDS_UnsignedLongSeq seq;

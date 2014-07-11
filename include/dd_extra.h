@@ -71,7 +71,7 @@ namespace reflex {
         const char * get_name() const;
         MemberAccess operator + (int i) const;
 
-        static MemberAccess BY_ID(int id = -5678);
+        static MemberAccess BY_ID(int id);
         static MemberAccess BY_NAME(const char *name = 0);
       };
 

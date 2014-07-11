@@ -17,6 +17,7 @@ damages arising out of the use or inability to use the software.
 
 #include <list>
 #include <array>
+#include <string>
 
 #include "reflex.h"
 

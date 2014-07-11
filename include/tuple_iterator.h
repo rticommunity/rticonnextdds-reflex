@@ -166,7 +166,7 @@ namespace reflex {
 #ifdef REFLEX_DEBUG
         unsigned i = I;
         std::string member_name =
-          MemberTraits<Typelist, I>::member_info().name();
+          MemberTraits<Typelist, I>::member_info().name;
 #endif
 
         if (ma.access_by_id())
@@ -196,7 +196,7 @@ namespace reflex {
 #ifdef REFLEX_DEBUG
         unsigned i = I;
         std::string member_name =
-          MemberTraits<Typelist, I>::member_info().name();
+          MemberTraits<Typelist, I>::member_info().name;
 #endif
         if (ma.access_by_id())
         {
@@ -224,7 +224,7 @@ namespace reflex {
 #ifdef REFLEX_DEBUG
         unsigned i = I;
         std::string member_name =
-          MemberTraits<Typelist, I>::member_info().name();
+          MemberTraits<Typelist, I>::member_info().name;
 #endif
 
         typedef typename At<Typelist, I>::type Inner;
@@ -307,7 +307,7 @@ namespace reflex {
 #ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
         std::string member_name =
-          MemberTraits<Typelist, MAX_INDEX>::member_info().name();
+          MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
 
         if (ma.access_by_id()) 
@@ -334,7 +334,7 @@ namespace reflex {
 #ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
         std::string member_name =
-          MemberTraits<Typelist, MAX_INDEX>::member_info().name();
+          MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
 
         if (ma.access_by_id())
@@ -361,7 +361,7 @@ namespace reflex {
 #ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
         std::string member_name =
-          MemberTraits<Typelist, MAX_INDEX>::member_info().name();
+          MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
 
         typedef typename At<Typelist, MAX_INDEX>::type Inner;

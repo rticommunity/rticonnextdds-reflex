@@ -51,7 +51,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;_DEBUG;_CONSOLE;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;REFLEX_DEBUG;_CONSOLE;</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SDLCheck>true</SDLCheck>

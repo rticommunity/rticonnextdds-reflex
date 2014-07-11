@@ -19,6 +19,9 @@
     <ClCompile Include="..\..\test\one_member.cxx">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\all_types.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\test\darkart.h">
@@ -34,6 +37,9 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\test\one_member.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\all_types.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

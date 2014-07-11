@@ -176,7 +176,7 @@ namespace reflex {
   }
 
   template <class T>
-  SafeTypeCode<T> make_typecode(const char * name = 0)
+  SafeTypeCode<T> make_typecode(const char * name /* default 0 */)
   {
     SafeTypeCode<T> aggregateTc =
       detail::make_typecode_impl<T>(

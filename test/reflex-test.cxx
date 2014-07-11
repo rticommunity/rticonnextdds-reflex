@@ -41,12 +41,13 @@ void write_pi_type(int domainid);
 void write_many_members(int domainid);
 void write_one_member(int domainid);
 void read_shape_type(int domain_id);
+void test_all_types(int domain_id);
 
 int main(int argc, const char **argv) 
 {
   try {
     if (argc <= 1) {
-      std::cout << "Please specify either shapes [pub/sub/pubex], large, darkart, many, one\n";
+      std::cout << "Please specify either shapes [pub/sub/pubex], large, darkart, many, one, all\n";
       return 0;
     }
 
@@ -75,6 +76,8 @@ int main(int argc, const char **argv)
       write_many_members(DOMAIN_ID);
     else if (std::string(argv[1]) == "one")
       write_one_member(DOMAIN_ID);
+    else if (std::string(argv[1]) == "all")
+      test_all_types(DOMAIN_ID);
     else
       std::cout << "Please specify either shapes, large, darkart, many, one\n";
 

@@ -26,6 +26,7 @@ damages arising out of the use or inability to use the software.
 #include <boost/fusion/include/at.hpp>
 #include <boost/fusion/sequence/intrinsic/size.hpp>
 #include <boost/fusion/include/size.hpp>
+#include <boost/optional.hpp>
 
 #ifdef RTI_WIN32
 #include <stdint.h>
@@ -290,6 +291,17 @@ namespace reflex {
     struct is_range<const reflex::BoundedRange<T, N>> : true_type {};
 
     template <class T>
+    struct is_optional : false_type {};
+
+#ifdef RTI_WIN32
+    template <class... T>
+    struct is_optional<boost::optional<T...>> : true_type {};
+#else
+    template <class T>
+    struct is_optional<boost::optional<T>> : true_type {};
+#endif
+
+    template <class T>
     struct is_default_member_names {
       enum { value = std::is_base_of<DefaultBase, T>::value };
     };
@@ -399,6 +411,16 @@ namespace reflex {
     template <class T, size_t N>
     struct remove_all_extents<std::array<T, N>> {
       typedef typename remove_all_extents<T>::type type;
+    };
+
+    template <class T, class... U>
+    struct PackHead {
+      typedef T type;
+    };
+
+    template <class T>
+    struct PackHead<T> {
+      typedef T type;
     };
 
     template <size_t Head, size_t... Tail>
