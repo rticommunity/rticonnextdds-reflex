@@ -47,50 +47,50 @@ RTI_ADAPT_STRUCT(
 
 
 typedef reflex::Bounded<std::string, 128> string128;
-struct ShapeType {
+struct MyShapeType {
   int32_t x, y, shapesize;
   std::string color_src;
   string128 color;
 };
 
-enum ShapeFillKind {
+enum MyShapeFillKind {
   SOLID_FILL,
   TRANSPARENT_FILL,
   HORIZONTAL_HATCH_FILL,
   VERTICAL_HATCH_FILL
 };
 
-struct ShapeTypeExtended : ShapeType {
-  ShapeFillKind fillKind;
+struct MyShapeTypeExtended : MyShapeType {
+  MyShapeFillKind fillKind;
   float angle;
 };
 
 struct TestOptionalBaseType {
-  boost::optional<ShapeTypeExtended> member;
+  boost::optional<MyShapeTypeExtended> member;
 };
 
 RTI_ADAPT_STRUCT(
-  ShapeType,
+  MyShapeType,
   (string128, color, RTI_KEY)
   (int32_t, x)
   (int32_t, y)
   (int32_t, shapesize))
 
-ENUM_DEF(ShapeFillKind, "ShapeFillKind", 4)
-ENUM_MEMBER_DEF(ShapeFillKind, 0, "SOLID_FILL", 0)
-ENUM_MEMBER_DEF(ShapeFillKind, 1, "TRANSPARENT_FILL", 1)
-ENUM_MEMBER_DEF(ShapeFillKind, 2, "HORIZONTAL_HATCH_FILL", 2)
-ENUM_MEMBER_DEF(ShapeFillKind, 3, "VERTICAL_HATCH_FILL", 3)
+ENUM_DEF(MyShapeFillKind, "MyShapeFillKind", 4)
+ENUM_MEMBER_DEF(MyShapeFillKind, 0, "SOLID_FILL", 0)
+ENUM_MEMBER_DEF(MyShapeFillKind, 1, "TRANSPARENT_FILL", 1)
+ENUM_MEMBER_DEF(MyShapeFillKind, 2, "HORIZONTAL_HATCH_FILL", 2)
+ENUM_MEMBER_DEF(MyShapeFillKind, 3, "VERTICAL_HATCH_FILL", 3)
 
 RTI_ADAPT_VALUETYPE(
-  ShapeTypeExtended,
-  BASE(ShapeType),
-  (ShapeFillKind, fillKind)
+  MyShapeTypeExtended,
+  BASE(MyShapeType),
+  (MyShapeFillKind, fillKind)
   (float, angle))
 
 RTI_ADAPT_STRUCT(
   TestOptionalBaseType,
-  (boost::optional<ShapeTypeExtended>, member))
+  (boost::optional<MyShapeTypeExtended>, member))
 
 #endif // MANY_MEMBERS_H
 

@@ -37,7 +37,7 @@ void round_trip_test(int domain, const T & source, T & dest)
   assert(src_dd.get()->equal(*dest_dd.get()));
 
 #ifndef RTI_WIN32    
-  ddi2.get()->print(stdout, 2);
+  dest_dd.get()->print(stdout, 2);
 #endif
 }
 
@@ -65,7 +65,7 @@ void test_optional_type(int domain)
 
 void test_optional_base_type(int domain)
 {
-  ShapeTypeExtended ex_shape;
+  MyShapeTypeExtended ex_shape;
   ex_shape.x = 10;
   ex_shape.y = 20;
   ex_shape.color_src = "BLUE";
@@ -74,7 +74,7 @@ void test_optional_base_type(int domain)
   ex_shape.angle = 90.0;
   ex_shape.fillKind = VERTICAL_HATCH_FILL;
 
-  ShapeTypeExtended shape_dest;
+  MyShapeTypeExtended shape_dest;
   TestOptionalBaseType opt_dest;
   /* Provide space for receive side Bounded<std::string,128>.*/
   shape_dest.color = shape_dest.color_src;
