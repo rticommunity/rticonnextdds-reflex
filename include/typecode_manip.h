@@ -431,7 +431,7 @@ namespace reflex {
           std::stringstream stream;
           stream << "add_member_forward: optinal member "
                  << member_name
-                 << " can't be required or key.";
+                 << " can't be a key.";
           throw std::runtime_error(stream.str());
         }
         else

@@ -220,14 +220,14 @@ namespace reflex { namespace detail {              \
 } } // namespace reflex::detail                    
 
 // The parenthesis below are essential for the RTI_DUMMY macro.
-#define _OPTIONAL    (DDS_TYPECODE_NONKEY_MEMBER)
-#define _KEY         (DDS_TYPECODE_KEY_MEMBER)
-#define _REQUIRED    (DDS_TYPECODE_NONKEY_REQUIRED_MEMBER)
+#define RTI_OPTIONAL    (DDS_TYPECODE_NONKEY_MEMBER)
+#define RTI_KEY         (DDS_TYPECODE_KEY_MEMBER)
+#define RTI_REQUIRED    (DDS_TYPECODE_NONKEY_REQUIRED_MEMBER)
 #define BASE(X) X
 
 #ifdef RTI_WIN32
   #define RTI_DUMMY(X) X
-  #define RTI_DUMMY_VAR   DDS_Octet RTI_DUMMY=_REQUIRED
+  #define RTI_DUMMY_VAR   DDS_Octet RTI_DUMMY=RTI_REQUIRED
 
   #define RTI_GET_NAME_FLAGS(Type, Name, ...)   \
     #Name, RTI_DUMMY ## __VA_ARGS__
@@ -236,7 +236,7 @@ namespace reflex { namespace detail {              \
   #define RTI_DUMMY_VAR
 
   #define WITH_FLAG(Time, Name, Flag)  #Name, Flag
-  #define WITHOUT_FLAG(Time, Name)     #Name, _REQUIRED
+  #define WITHOUT_FLAG(Time, Name)     #Name, RTI_REQUIRED
 
   #define PUSH_4TH_ARG(arg1, arg2, arg3, arg4, ...) arg4
 

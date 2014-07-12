@@ -77,8 +77,8 @@ namespace reflex {
     }
 
     SafeTypeCodeBase::SafeTypeCodeBase(DDS_TypeCodeFactory * factory,
-        DDS_TypeCode * typecode,
-        bool release)
+                                       DDS_TypeCode * typecode,
+                                       bool release)
       : factory_(factory),
         typecode_(typecode),
         release_(release)

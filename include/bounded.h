@@ -43,7 +43,7 @@ namespace reflex {
         throw std::runtime_error("Bounded<T>: Null pointer");
     }
 
-    Bounded & operator = (T & t)
+    Bounded & operator = (T &t)
     {
       ptr = &t;
       return *this;

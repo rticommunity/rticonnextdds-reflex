@@ -48,7 +48,7 @@ public:
 
 RTI_ADAPT_STRUCT(
   ShapeType,
-  (std::string, color(), _KEY)
+  (std::string, color(), RTI_KEY)
   (int,             x())
   (int,             y())
   (int,     shapesize()))
@@ -107,10 +107,10 @@ typedef std::tuple<std::string, int, int, int> ShapeTypeTuple;
 
 STRUCT_NAME_DEF_CUSTOM(ShapeTypeTuple, "ShapeType")
 
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 0, "color",     _KEY);
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 1, "x",         _REQUIRED);
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 2, "y",         _REQUIRED);
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 3, "shapesize", _REQUIRED);
+MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 0, "color",     RTI_KEY);
+MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 1, "x",         RTI_REQUIRED);
+MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 2, "y",         RTI_REQUIRED);
+MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 3, "shapesize", RTI_REQUIRED);
 
 
 #endif // RTIREFLEX_LARGE_TYPE_H

@@ -389,7 +389,7 @@ RTI_ADAPT_STRUCT(
 
 RTI_ADAPT_STRUCT(
     darkart::Channel,
-    (int,              board_id, _KEY)
+    (int,              board_id, RTI_KEY)
     (int,           channel_num)
     (int,            channel_id)
     (std::string,         label)
@@ -449,7 +449,7 @@ RTI_ADAPT_STRUCT(
   darkart::TopLevel,  
   (darkart::BaselineData, baseline_data())
   (darkart::ChannelInfo ,  channel_info())
-  (darkart::EventInfo   ,    event_info(), _KEY)
+  (darkart::EventInfo   ,    event_info(), RTI_KEY)
   (darkart::PmtInfo     ,      pmt_info())
   (darkart::VetoTruth   ,    veto_truth())
   (darkart::Waveforms   ,     waveforms()))
@@ -457,18 +457,18 @@ RTI_ADAPT_STRUCT(
 RTI_ADAPT_STRUCT(
   darkart::BaselineDataProduct,
   (darkart::BaselineData &, baseline_data)
-  (unsigned int, event_id, _KEY)
-  (std::string, producer_label, _KEY)
-  (std::string, instance_name, _KEY)
-  (std::string, proc_step, _KEY))
+  (unsigned int, event_id, RTI_KEY)
+  (std::string, producer_label, RTI_KEY)
+  (std::string, instance_name, RTI_KEY)
+  (std::string, proc_step, RTI_KEY))
 
 RTI_ADAPT_STRUCT(
   darkart::WaveformsProduct,
   (darkart::Waveforms &, waveforms)
-  (unsigned int, event_id, _KEY)
-  (std::string, producer_label, _KEY)
-  (std::string, instance_name, _KEY)
-  (std::string, proc_step, _KEY))
+  (unsigned int, event_id, RTI_KEY)
+  (std::string, producer_label, RTI_KEY)
+  (std::string, instance_name, RTI_KEY)
+  (std::string, proc_step, RTI_KEY))
 
 RTI_ADAPT_STRUCT(
   darkart::ProductID,
@@ -487,26 +487,26 @@ RTI_ADAPT_STRUCT(
 RTI_ADAPT_STRUCT(
   darkart::BaselineDataAssnsProduct,
   (darkart::BaselineDataAssns &, assns)
-  (unsigned int, event_id, _KEY)
-  (std::string, producer_label, _KEY)
-  (std::string, instance_name, _KEY)
-  (std::string, proc_step, _KEY))
+  (unsigned int, event_id, RTI_KEY)
+  (std::string, producer_label, RTI_KEY)
+  (std::string, instance_name, RTI_KEY)
+  (std::string, proc_step, RTI_KEY))
 
 RTI_ADAPT_STRUCT(
   darkart::ChannelInfoProduct,
   (darkart::ChannelInfo &, cinfo)
-  (unsigned int, event_id, _KEY)
-  (std::string, producer_label, _KEY)
-  (std::string, instance_name, _KEY)
-  (std::string, proc_step, _KEY))
+  (unsigned int, event_id, RTI_KEY)
+  (std::string, producer_label, RTI_KEY)
+  (std::string, instance_name, RTI_KEY)
+  (std::string, proc_step, RTI_KEY))
 
 RTI_ADAPT_STRUCT(
   darkart::EventInfoProduct,
   (darkart::EventInfo &, einfo)
-  (unsigned int, event_id, _KEY)
-  (std::string, producer_label, _KEY)
-  (std::string, instance_name, _KEY)
-  (std::string, proc_step, _KEY))
+  (unsigned int, event_id, RTI_KEY)
+  (std::string, producer_label, RTI_KEY)
+  (std::string, instance_name, RTI_KEY)
+  (std::string, proc_step, RTI_KEY))
 
 
 #endif // RTIREFLEX_DARKART_H
