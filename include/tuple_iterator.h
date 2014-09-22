@@ -21,6 +21,8 @@ damages arising out of the use or inability to use the software.
 #include "disc_union.h"
 #include "enable_if.h"
 
+#define UNUSED_VAR(i) do { (void)(i); } while (0)
+
 namespace reflex {
 
   namespace detail {
@@ -165,6 +167,7 @@ namespace reflex {
       {
 #ifdef REFLEX_DEBUG
         unsigned i = I;
+        UNUSED_VAR(i);
         std::string member_name =
           MemberTraits<Typelist, I>::member_info().name;
 #endif
@@ -195,6 +198,7 @@ namespace reflex {
       {
 #ifdef REFLEX_DEBUG
         unsigned i = I;
+        UNUSED_VAR(i);
         std::string member_name =
           MemberTraits<Typelist, I>::member_info().name;
 #endif
@@ -223,6 +227,7 @@ namespace reflex {
       {
 #ifdef REFLEX_DEBUG
         unsigned i = I;
+        UNUSED_VAR(i);
         std::string member_name =
           MemberTraits<Typelist, I>::member_info().name;
 #endif
@@ -306,6 +311,7 @@ namespace reflex {
       {
 #ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
+        UNUSED_VAR(max);
         std::string member_name =
           MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
@@ -333,6 +339,7 @@ namespace reflex {
       {
 #ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
+        UNUSED_VAR(max);
         std::string member_name =
           MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
@@ -360,6 +367,7 @@ namespace reflex {
       {
 #ifdef REFLEX_DEBUG
         unsigned max = MAX_INDEX;
+        UNUSED_VAR(max);
         std::string member_name =
           MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif

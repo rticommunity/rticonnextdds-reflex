@@ -20,17 +20,19 @@
 # to define the rules to define the build process for this application.
 
 # if ndds==5.0.0+
-ARCH=i86Linux2.6gcc4.4.5
+#ARCH=i86Linux2.6gcc4.4.5
 
 # if ndds==5.1.0 and Linux kernel 3.x
-#ARCH=i86Linux3.xgcc4.6.3
+ARCH=i86Linux3.xgcc4.6.3
 
 # Use clang 3.3 or better
 CXX = clang++
 CXXLD = clang++
 
 CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 \
-           -Wall -Wno-return-type-c-linkage -Wno-deprecated-register  
+           -Wall -Wno-return-type-c-linkage \
+           -Wno-deprecated-register  \
+           -ftemplate-depth-1024
 CXXLDFLAGS = -m32 
 SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
 

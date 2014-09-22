@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="DataEvent" type="DataEvent"/>
+	<xs:complexType name="DataEvent">
+		<xs:annotation>
+			<xs:documentation>Provided by an OSA-CBM module; contains layer-specific LRU data (e.g. DAWaveform, SDReal, AGDataEvent).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="alertStatus" type="xs:boolean" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Indicates if the data event has triggered an alert ("true" = alert triggered, and associated NumAlert(s) may then be produced).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="confid" type="xs:float" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Confidence in data event's accuracy (0 = no confidence, 100 = complete confidence).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA meas_loc_id (DA, DM, SD layers) or a MIMOSA agent_id (HA, PA, AG layers).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sequenceNum" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="site" type="Site" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="time" type="OsacbmTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The time of the data event.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DataEventSet" type="DataEventSet"/>
+	<xs:complexType name="DataEventSet">
+		<xs:annotation>
+			<xs:documentation>Provided by an OSA-CBM module; contains an array of DataEvents (one or more DataEvent classes).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="alertStatus" type="xs:boolean" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Indicates if the DataEventSet has triggered an alert ("true" = alert triggered, and associated NumAlert(s) may then be produced).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dataEvents" type="DataEvent" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Range:1 to *
+Contains the data provided by an OSA-CBM layer (e.g. DAWaveform, SDReal, AGDataEvent), as well as id, alert and confidence information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA meas_loc_id (DA, DM, SD layers) or a MIMOSA agent_id (HA, PA, AG layers).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sequenceNum" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="site" type="Site" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Identifies the MIMOSA site associated with the DataEventSet.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="time" type="OsacbmTime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The time of the data event set.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

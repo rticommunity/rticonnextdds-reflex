@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="Site" type="Site"/>
+	<xs:complexType name="Site">
+		<xs:annotation>
+			<xs:documentation>Site is globally uniquely identified by one of two methods: Either by using siteId or by using a (regId, userTag) string combination.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="category" type="SITE_CATEGORY" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Specifies the type of the site.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regId" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>A string assigned by MIMOSA for a specific registered user. (NOTE: Site can be uniquely identified with a (regId, userTag) string combination.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="siteId" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a 16-character MIMOSA site_code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="systemUserTag" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="userTag" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>A string uniquely assigned by a registered user for each of the user's mobile platforms. (NOTE: Site can be uniquely identified with a (regId, userTag) string combination.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="SITE_CATEGORY">
+		<xs:annotation>
+			<xs:documentation>An enumerated list that indicates a specific site type.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SITE_ZERO">
+				<xs:annotation>
+					<xs:documentation>SITE_ZERO is MIMOSA (0, db_id=0).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SITE_SPECIFIC">
+				<xs:annotation>
+					<xs:documentation>SITE_SPECIFIC is for all other sites, and needs to be added into the system directly or indirectly.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SITE_PLAT">
+				<xs:annotation>
+					<xs:documentation>SITE_PLAT is for site platform.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SITE_TEMPLATE">
+				<xs:annotation>
+					<xs:documentation>SITE_TEMPLATE is for platform template.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SITE_ENT_ZERO">
+				<xs:annotation>
+					<xs:documentation>SITE_ENT_ZERO is for platform enterprise site zero entry.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SITE_ZERO_ONE">
+				<xs:annotation>
+					<xs:documentation>SITE_ZERO_ONE is MIMOSA (0, db_id=1).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SITE_ZERO_TWO">
+				<xs:annotation>
+					<xs:documentation>SITE_ZERO_TWO is MIMOSA (0, db_id=2).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SITE_PLAT_TRNG_DATA"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="ConfigRequest" type="ConfigRequest"/>
+	<xs:complexType name="ConfigRequest">
+		<xs:annotation>
+			<xs:documentation>Used for requesting a subset of the Configuration data.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="mList" type="MonitorIdGroup" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>List of data channels or agent/monitored components in the Configuration subset.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="rtnAll" type="xs:boolean" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Overriding parameter to specify that all Configuration  information is desired.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="rtnConfigRequest" type="xs:boolean" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Indicates if the ConfigRequest is desired as part of the return. (This is used as confirmation that the request was properly received.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="rtnModDesc" type="xs:boolean" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Indicates whether the module description is desired as part of the return.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="specialReq" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>For future extensible detailed subset request.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="OsacbmTime" type="OsacbmTime"/>
+	<xs:complexType name="OsacbmTime">
+		<xs:annotation>
+			<xs:documentation>Stores time and time-related information.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="localTime" type="LocalTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Information related to the locat time.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="time" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Stores the time.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="time_binary" type="xs:unsignedLong" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="time_type" type="OsacbmTimeType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Specifies the particular form that time is in.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="LocalTime" type="LocalTime"/>
+	<xs:complexType name="LocalTime">
+		<xs:annotation>
+			<xs:documentation>Information related to the local time.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dst" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="hourDelta" type="xs:int" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="minDelta" type="xs:int" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="OsacbmTimeType">
+		<xs:annotation>
+			<xs:documentation>An enumerated list that is used to specifies the particular form that time is in.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OSACBM_TIME_MIMOSA">
+				<xs:annotation>
+					<xs:documentation>Conforms to ISO-8601.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OSACBM_TIME_POSIX_NSEC_8">
+				<xs:annotation>
+					<xs:documentation>POSIX is a Unix type time.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OSACBM_TIME_POSIX_USEC_8">
+				<xs:annotation>
+					<xs:documentation>POSIX is a Unix type time.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OSACBM_TIME_POSIX_USEC_6">
+				<xs:annotation>
+					<xs:documentation>POSIX is a Unix type time.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OSACBM_TIME_POSIX_MSEC_6">
+				<xs:annotation>
+					<xs:documentation>POSIX is a Unix type time.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OSACBM_TIME_POSIX_SEC_4">
+				<xs:annotation>
+					<xs:documentation>POSIX is a Unix type time.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OSACBM_TIME_TICK_NSEC"/>
+			<xs:enumeration value="OSACBM_TIME_TICK_USEC"/>
+			<xs:enumeration value="OSACBM_TIME_TICK_MSEC"/>
+			<xs:enumeration value="OSACBM_TIME_SYSTEM_TICK"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
