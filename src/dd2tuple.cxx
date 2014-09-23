@@ -14,27 +14,55 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
-  SafeDynamicDataInstance::SafeDynamicDataInstance(
-    DDSDynamicDataTypeSupport * typeSupport)
-    : typeSupport_(typeSupport),
-      instance_(0)
+  DDS_DynamicData * SafeDynamicDataInstance::init(DDSDynamicDataTypeSupport * ts)
   {
-    if (!typeSupport_) 
+    if (!ts) 
     {
-      throw std::runtime_error("SafeDynamicDataInstance: NULL typeSupport");
+      throw std::runtime_error("SafeDynamicDataInstance::init NULL typeSupport");
     }
-    instance_ = typeSupport_->create_data();
-    if (!instance_) 
+    DDS_DynamicData * instance = ts->create_data();
+    if (!instance) 
     {
       throw std::runtime_error(
-        "SafeDynamicDataInstance: DynamicDataTypeSupport::create_data failed");
+        "SafeDynamicDataInstance::init DynamicDataTypeSupport::create_data failed");
     }
+    return instance;
+  }
+
+  SafeDynamicDataInstance::SafeDynamicDataInstance(
+    DDSDynamicDataTypeSupport * typeSupport)
+    : type_support_(typeSupport),
+      instance_(0)
+  {
+    instance_ = init(type_support_);
+  }
+
+  SafeDynamicDataInstance::SafeDynamicDataInstance(
+      const SafeDynamicDataInstance & sddi)
+    : type_support_(sddi.type_support_),
+      instance_(0)
+  {
+    instance_ = init(type_support_);
+    instance_->copy(*sddi.instance_);
+  }
+
+  SafeDynamicDataInstance & SafeDynamicDataInstance::operator = (
+      const SafeDynamicDataInstance & rhs)
+  {
+    SafeDynamicDataInstance(rhs).swap(*this);
+    return *this;
+  }
+
+  void SafeDynamicDataInstance::swap(SafeDynamicDataInstance & other) throw()
+  {
+    std::swap(type_support_, other.type_support_);
+    std::swap(instance_, other.instance_);
   }
 
   SafeDynamicDataInstance::~SafeDynamicDataInstance()
   {
     if (instance_ != NULL) {
-      DDS_ReturnCode_t rc = typeSupport_->delete_data(instance_);
+      DDS_ReturnCode_t rc = type_support_->delete_data(instance_);
       if (rc != DDS_RETCODE_OK) 
       {
         std::cerr << "~SafeDynamicDataInstance: Unable to delete instance data, error = "

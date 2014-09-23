@@ -124,7 +124,8 @@ namespace reflex {
         const MemberAccess & ma,
         const Typelist & val,
         typename disable_if<std::is_enum<Typelist>::value ||
-                            is_container<Typelist>::value
+                            is_container<Typelist>::value ||
+                            is_optional<Typelist>::value
                       >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -142,15 +143,15 @@ namespace reflex {
         const C & val,
         typename enable_if<
                           is_container<C>::value &&
-                          (is_primitive<typename C::value_type>::value ||
-                           std::is_enum<typename C::value_type>::value) &&
+                          (is_primitive<typename container_traits<C>::value_type>::value ||
+                           std::is_enum<typename container_traits<C>::value_type>::value) &&
                           (is_vector<C>::value ?
-                           is_bool_or_enum<typename C::value_type>::value : true)
+                           is_bool_or_enum<typename container_traits<C>::value_type>::value : true)
                        >::type * = 0)
       {
         if (do_serialize(val))
         {
-          typename DynamicDataSeqTraits<typename C::value_type>::type seq;
+          typename DynamicDataSeqTraits<typename container_traits<C>::value_type>::type seq;
           seq.ensure_length(val.size(), val.size());
 
           size_t i = 0;
@@ -165,14 +166,15 @@ namespace reflex {
       }
 
       template <class C>
-      // When C is a container of user-defined type
+      // When C is a container of user-defined types
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const C & val,
         typename disable_if<
                      !is_container<C>::value ||
-                     is_primitive_or_enum<typename C::value_type>::value
+                      is_optional<C>::value  ||
+                     is_primitive_or_enum<typename container_traits<C>::value_type>::value
                  >::type * = 0)
       {
         if (do_serialize(val))
@@ -189,7 +191,7 @@ namespace reflex {
           set_seq_length(
             seq_member,
             val.size(),
-            is_string<typename C::value_type>::value);
+            is_string<typename container_traits<C>::value_type>::value);
 
           size_t i = 0;
           for (auto const &elem : val)
@@ -421,7 +423,7 @@ namespace reflex {
 
         check_retcode("set_member_value: Error setting array, error = ", rc);
       }
-
+/*
 #ifdef RTI_WIN32
       template <typename... T>
       static void set_member_value(
@@ -439,6 +441,19 @@ namespace reflex {
         if (opt.is_initialized())
         {
           set_member_value(instance, ma, *opt.get_ptr());
+        }
+      }
+*/
+      template <typename Opt>
+      static void set_member_value(
+        DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        const Opt & opt,
+        typename detail::enable_if<detail::is_optional<Opt>::value>::type * = 0)
+      {
+        if (opt)
+        {
+          set_member_value(instance, ma, *opt);
         }
       }
 
@@ -521,7 +536,8 @@ namespace reflex {
           const MemberAccess &ma,
           Typelist & val,
           typename disable_if<std::is_enum<Typelist>::value ||
-                              is_container<Typelist>::value
+                              is_container<Typelist>::value ||
+                              is_optional<Typelist>::value
                       >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -531,6 +547,13 @@ namespace reflex {
       }
 
     private:
+      template <class C>
+      static void right_size(C &c, size_t size)
+      {
+        C temp(size, typename container_traits<C>::value_type());
+        c = temp;
+      }
+
       template <class T, class Alloc>
       static void right_size(std::vector<T, Alloc> & v, size_t size)
       {
@@ -562,7 +585,7 @@ namespace reflex {
       template <class Iter, class U>
       static void primitive_assign(Iter dest, U src)
       {
-        *dest = static_cast<typename Iter::value_type>(src);
+        *dest = static_cast<typename std::iterator_traits<Iter>::value_type>(src);
       }
 
       template <class U>
@@ -572,6 +595,13 @@ namespace reflex {
         *dest = src ? true : false;
       }
 
+      template <class C>
+      typename detail::container_traits<C>::iterator
+      static begin(C & c, typename enable_if<is_container<C>::value>::type * = 0)
+      {
+        return c.begin();
+      }
+
       template <class Seq, class C>
       static void copy_primitive_seq(
           const Seq & seq,
@@ -579,7 +609,7 @@ namespace reflex {
           C & c,
           typename disable_if<is_stdset<C>::value>::type * = 0)
       {
-        typename C::iterator iter = begin(c);
+        typename detail::container_traits<C>::iterator iter = begin(c);
         for (size_t i = 0; i < count; ++i, ++iter)
         {
           // Cast required for enums
@@ -615,10 +645,10 @@ namespace reflex {
           C & val,
           typename enable_if <
                               is_container<C>::value &&
-                              (is_primitive<typename C::value_type>::value ||
-                               std::is_enum<typename C::value_type>::value) &&
+                              (is_primitive<typename container_traits<C>::value_type>::value ||
+                               std::is_enum<typename container_traits<C>::value_type>::value) &&
                               (is_vector<C>::value ?
-                               is_bool_or_enum<typename C::value_type>::value : true) 
+                               is_bool_or_enum<typename container_traits<C>::value_type>::value : true) 
                               > ::type * = 0)
       {
         DDS_DynamicDataMemberInfo seq_info;
@@ -633,7 +663,7 @@ namespace reflex {
 
         if (seq_info.element_count > 0)
         {
-          typename DynamicDataSeqTraits<typename C::value_type>::type seq;
+          typename DynamicDataSeqTraits<typename container_traits<C>::value_type>::type seq;
           seq.ensure_length(seq_info.element_count,
             seq_info.element_count);
 
@@ -718,7 +748,7 @@ namespace reflex {
             C & val,
             typename disable_if<!is_container<C>::value ||
                                 is_primitive_or_enum<
-                                    typename C::value_type>::value
+                                    typename container_traits<C>::value_type>::value
                                >::type * = 0)
       {
         DDS_DynamicData seq_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -1002,7 +1032,7 @@ namespace reflex {
           discriminator_value,
           val);
       }
-
+/*
 #ifdef RTI_WIN32
       template <typename... T>
       static void get_member_value(
@@ -1036,7 +1066,54 @@ namespace reflex {
           get_member_value(instance, ma, *opt.get_ptr());
         }
       }
+*/
 
+      private :
+        template <class Opt>
+        static void initialize_optional(Opt & opt)
+        {
+          typename detail::optional_traits<Opt>::value_type temp;
+          opt = temp;
+        }
+
+#ifdef RTI_WIN32
+        template <class... T>
+        static void initialize_optional(boost::optional<T...> & opt)
+        {
+          opt = boost::in_place<T...>();
+        }
+#else
+        template <class T>
+        static void initialize_optional(boost::optional<T> & opt)
+        {
+          opt = boost::in_place<T>();
+        }
+#endif
+      public:
+
+      template <typename Opt>
+      static void get_member_value(
+        const DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        Opt & opt,
+        typename detail::enable_if<detail::is_optional<Opt>::value>::type * = 0)
+      {
+        const char * member_name
+          = ma.access_by_id() ? NULL : ma.get_name();
+
+        int id = ma.access_by_id() ?
+          ma.get_id() : DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED;
+
+        if (instance.member_exists(member_name, id))
+        {
+          if (!opt) {
+            initialize_optional(opt); 
+          }
+
+          if(opt)
+              get_member_value(instance, ma, *opt);
+        }
+      }
     }; // struct get_member_overload_resolution_helper
 
     template <class T>

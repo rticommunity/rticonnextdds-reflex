@@ -15,6 +15,8 @@ damages arising out of the use or inability to use the software.
 #include <vector>
 #include <array>
 #include <string>
+#include <boost/type_traits.hpp>
+
 #include <ndds/ndds_cpp.h>
 #include "enable_if.h"
 #include "safe_enum.h"
@@ -278,7 +280,7 @@ namespace reflex {
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-                 SafeTypeCode<typename C::value_type> & tc)
+                 SafeTypeCode<typename detail::container_traits<C>::value_type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_seq_tc(tc.get(), MAX_SEQ_SIZE);
@@ -297,7 +299,7 @@ namespace reflex {
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory,
-                 SafeTypeCode<typename C::value_type> & tc)
+                 SafeTypeCode<typename detail::container_traits<C>::value_type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
       detail::SafeTypeCodeBase::create_seq_tc(tc.get(), Bound);
@@ -317,23 +319,26 @@ namespace reflex {
       : detail::SafeTypeCodeBase(factory)
     {
         detail::SafeTypeCodeBase::create_seq_tc(tc.get(), MAX_SEQ_SIZE);
-      }
+    }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
-#ifdef RTI_WIN32
-  template <class... T>
-  class SafeTypeCode<boost::optional<T...>> : public detail::SafeTypeCodeBase
+  template <class Opt> 
+  class SafeTypeCode<Opt, 
+                     typename detail::enable_if<
+                       detail::is_optional<Opt>::value >::type
+                     > 
+    : public detail::SafeTypeCodeBase
   {
-     typedef typename detail::PackHead<T...>::type HeadT;
-#else
-  template <class T>
-  class SafeTypeCode<boost::optional<T>> : public detail::SafeTypeCodeBase
-  {
-    typedef T HeadT;
-#endif 
+    static Opt * opt;
+    typedef 
+            typename detail::remove_const<
+              typename detail::remove_reference<decltype(**opt)
+              >::type
+            >::type
+          HeadT;
     SafeTypeCode<HeadT> innerTc;
 
   private:

@@ -336,6 +336,41 @@ namespace reflex {
       enum { size = sizeof...(Dims) };
     };
 
+    template <class C, bool>
+    struct container_traits_impl;
+
+    template <class C>
+    struct container_traits_impl<C, true>
+    {
+        typedef typename C::value_type value_type;
+    };
+
+    template <class C>
+    struct container_traits_impl<C, false>
+    {
+        typedef void value_type;
+        typedef void iterator;
+    };
+
+    template <class C>
+    struct container_traits
+    {
+        typedef typename 
+            container_traits_impl<
+              C, 
+              is_container<C>::value>::value_type 
+          value_type;
+
+        typedef typename 
+            container_traits_impl<
+              C, 
+              is_container<C>::value>::iterator 
+          iterator;
+    };
+
+    template <class T>
+    struct optional_traits;
+
     template <size_t Arg, class DimList>
     struct dim_cat;
 
@@ -390,6 +425,16 @@ namespace reflex {
 
     template <class T>
     struct remove_reference<T &> {
+      typedef T type;
+    };
+
+    template <class T>
+    struct remove_const {
+      typedef T type;
+    };
+
+    template <class T>
+    struct remove_const<const T> {
       typedef T type;
     };
 

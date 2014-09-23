@@ -126,6 +126,7 @@ namespace reflex {
         typename disable_if<std::is_enum<T>::value ||
                             is_primitive<T>::value ||
                             is_container<T>::value ||
+                            is_optional<T>::value  ||
                             is_stdarray<T>::value>::type * = 0)
       {
         SafeTypeCode<T> structTc = reflex::make_typecode<T>();
@@ -181,10 +182,10 @@ namespace reflex {
          const C *,
          typename enable_if<is_container<C>::value>::type * = 0)
       {
-          SafeTypeCode<typename C::value_type> innerTc
+          SafeTypeCode<typename container_traits<C>::value_type> innerTc
             = TC_overload_resolution_helper::get_typecode(
                 factory,
-                static_cast<typename C::value_type *>(0));
+                static_cast<typename container_traits<C>::value_type *>(0));
 
           return SafeTypeCode<C>(factory, innerTc);
       }
@@ -230,7 +231,8 @@ namespace reflex {
 
         return SafeTypeCode<reflex::Range<T>>(factory, innerTc);
       }
-      
+
+/*
 #ifdef RTI_WIN32
 
       template <class... T>
@@ -260,8 +262,30 @@ namespace reflex {
         return SafeTypeCode<boost::optional<T>>(factory, move(innerTc));
       }
 #endif
+*/      
       
-      
+      template <class Opt>
+      static SafeTypeCode<Opt> get_typecode(
+        DDS_TypeCodeFactory * factory,
+        const Opt * opt,
+        typename detail::enable_if<detail::is_optional<Opt>::value>::type * = 0)
+      {
+        typedef 
+            typename detail::remove_const<
+                        typename detail::remove_reference<
+                          decltype(**opt)
+                        >::type
+                     >::type
+            OptValuetype;
+            
+        SafeTypeCode<OptValuetype> innerTc =
+          TC_overload_resolution_helper::get_typecode(
+            factory,
+            static_cast<OptValuetype *>(0));
+
+        return SafeTypeCode<Opt>(factory, move(innerTc));
+      }
+
       template <class T, size_t Bound>
       static SafeTypeCode<BoundedRange<T, Bound>> get_typecode(
             DDS_TypeCodeFactory * factory,
