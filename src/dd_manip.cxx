@@ -62,22 +62,6 @@ namespace reflex {
       SET_MEMBER_VALUE_DEF(long long int, set_longlong)
 #endif
 
-      void set_member_overload_resolution_helper::set_member_value(
-              DDS_DynamicData & instance,
-              const MemberAccess &ma,
-              const std::string & val)
-      {
-        DDS_ReturnCode_t rc;
-        if (ma.access_by_id()) {
-          rc = instance.set_string(NULL, ma.get_id(), val.c_str());
-        }
-        else {
-          rc = instance.set_string(ma.get_name(),
-                                   DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                                   val.c_str());
-        }
-        check_retcode("DDS_DynamicData::set_string error = ", rc);
-      }
 
 
       GET_MEMBER_VALUE_DEF(DDS_Octet, octet_t,  get_octet)    // also uint8_t
@@ -127,7 +111,7 @@ namespace reflex {
       }
 
       // Also see get_array function template for enums in dd_manip.h 
-
+/*
       void get_member_overload_resolution_helper::get_member_value(
             const DDS_DynamicData & instance,
             const MemberAccess &ma,
@@ -169,7 +153,7 @@ namespace reflex {
         else
           check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
       }
-
+*/
 
    
   } // namespace detail

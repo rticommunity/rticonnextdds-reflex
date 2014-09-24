@@ -19,7 +19,7 @@ damages arising out of the use or inability to use the software.
 namespace reflex {
 
   namespace detail {
-
+/*
     DllExport
       SafeTypeCode<std::string> DECLSPEC
       TC_overload_resolution_helper::get_typecode(
@@ -28,7 +28,7 @@ namespace reflex {
     {
         return SafeTypeCode<std::string>(factory);
     }
-
+*/
     static void print_recursive_IDL(
         const DDS_TypeCode * tc,
         DDS_UnsignedLong indent,

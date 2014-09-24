@@ -216,7 +216,7 @@ namespace reflex {
 
   template <class T>
   class SafeTypeCode<T, typename detail::enable_if<
-                          std::is_enum<T>::value
+                          detail::is_enum<T>::value
                         >::type
                     >
     : public detail::SafeTypeCodeBase
@@ -415,8 +415,12 @@ namespace reflex {
   friend class SafeTypeCode<DDS_TypeCode>;
   };
 
-  template <>
-  class SafeTypeCode<std::string> : public detail::SafeTypeCodeBase
+  template <class Str>
+  class SafeTypeCode<Str, 
+                     typename detail::enable_if<
+                        detail::is_string<Str>::value >::type
+                    > 
+    : public detail::SafeTypeCodeBase
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory)

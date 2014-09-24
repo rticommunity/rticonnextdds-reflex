@@ -86,13 +86,16 @@ CXXFLAGS  += -m32 -D HAVE_CXA_DEMANGLE=1 \
              -Wno-deprecated-declarations \
              -Wno-unused-local-typedefs \
              -Wno-unused-parameter \
-             -DRTI_UNIX -DRTI_LINUX 
+             -DRTI_UNIX -DRTI_LINUX \
+             #-ftemplate-backtrace-limit=0
+
 SYSLIBS := -ldl -lnsl -lm -lpthread -lrt
 INCLUDEPATHS    := -I$(NDDSHOME)/include/ndds \
                    -I$(NDDSHOME)/include \
                    -I$(REFLEXHOME)/include \
                    -I$(BOOSTHOME)\
-                   -I$(LIBXSD)
+                   -I$(LIBXSD)   \
+                   -Igen
 
 LIBPATHS    := -L$(NDDSHOME)/lib/$(ARCH) \
                -L$(REFLEXHOME)/objs/$(ARCH) \
@@ -113,5 +116,6 @@ gen: $(TOPXSD)
 	mkdir -p gen
 	mkdir -p objs
 	$(XSDCXX) cxx-tree --hxx-prologue-file common.h $(XSDSTD) \
-        --output-dir gen --file-per-type --generate-default-ctor \
+        --output-dir gen --file-per-type --generate-ostream \
+        --generate-comparison --generate-default-ctor \
         --namespace-map http://www.mimosa.org/OSACBMV3.3.1=osacbm $(TOPXSD)

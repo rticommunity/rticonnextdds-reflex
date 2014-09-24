@@ -111,10 +111,22 @@ namespace reflex {
      * */
     struct TC_overload_resolution_helper 
     {
+      /*
       DllExport static SafeTypeCode<std::string> DECLSPEC
         get_typecode(
             DDS_TypeCodeFactory * factory,
             const std::string *);
+      */
+      
+      template <class Str>
+      static SafeTypeCode<Str> 
+        get_typecode(
+            DDS_TypeCodeFactory * factory,
+            const Str *,
+            typename enable_if<is_string<Str>::value>::type * = 0)
+      {
+         return SafeTypeCode<Str>(factory);
+      }
 
       template <class T>
       // overload for 
@@ -123,10 +135,11 @@ namespace reflex {
       static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
         const T *,
-        typename disable_if<std::is_enum<T>::value ||
-                            is_primitive<T>::value ||
-                            is_container<T>::value ||
-                            is_optional<T>::value  ||
+        typename disable_if<detail::is_enum<T>::value ||
+                            is_primitive<T>::value    ||
+                            is_container<T>::value    ||
+                            is_optional<T>::value     ||
+                            is_string<T>::value       ||
                             is_stdarray<T>::value>::type * = 0)
       {
         SafeTypeCode<T> structTc = reflex::make_typecode<T>();
@@ -157,7 +170,7 @@ namespace reflex {
       static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
         const T *,
-        typename enable_if<std::is_enum<T>::value>::type * = 0)
+        typename enable_if<detail::is_enum<T>::value>::type * = 0)
       {
         return SafeTypeCode<T>(factory, EnumDef<T>::name());
       }

@@ -28,9 +28,6 @@ namespace reflex {
 
   namespace detail {
 
-    template <class Enum>
-    struct EnumDef;
-
     struct MemberInfo
     {
       std::string name;
@@ -156,6 +153,7 @@ namespace reflex { namespace detail {           \
       return Name;                              \
     }                                           \
                                                 \
+    enum { is_enum = true };                    \
     static const unsigned int size = Size;      \
                                                 \
     template <unsigned Index>                   \
@@ -333,30 +331,36 @@ namespace reflex { namespace detail {                              \
 } } // namespace reflex::detail      
 
 
-#define RTI_ADAPT_ENUM(EnumType, Attributes)              \
-namespace reflex { namespace detail {                     \
-  template <>                                             \
-  struct EnumDef<EnumType>                                \
-  {                                                       \
-    static const char *name() {                           \
-      return                                              \
-        DefaultMemberNames::basename                      \
-         (#EnumType);                                     \
-    }                                                     \
-                                                          \
-    static const unsigned int size =                      \
-      BOOST_PP_SEQ_SIZE(RTI_PARENTHESIZE(Attributes));    \
-                                                          \
-    template <unsigned Index>                             \
-    struct EnumMember {                                   \
-      static reflex::detail::MemberInfo info();           \
-    };                                                    \
-  };                                                      \
-} } /* namespace reflex::detail */                        \
-BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL,    \
-                        EnumType,                         \
+#define RTI_ADAPT_ENUM_NAME(EnumType, EnumName, Attributes)  \
+namespace reflex { namespace detail {                        \
+  template <>                                                \
+  struct EnumDef<EnumType>                                   \
+  {                                                          \
+    static const char *name() {                              \
+      return                                                 \
+        DefaultMemberNames::basename                         \
+         (EnumName);                                         \
+    }                                                        \
+                                                             \
+    enum { is_enum = true };                                 \
+                                                             \
+    static const unsigned int size =                         \
+      BOOST_PP_SEQ_SIZE(RTI_PARENTHESIZE(Attributes));       \
+                                                             \
+    template <unsigned Index>                                \
+    struct EnumMember {                                      \
+      static reflex::detail::MemberInfo info();              \
+    };                                                       \
+  };                                                         \
+} } /* namespace reflex::detail */                           \
+BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL,       \
+                        EnumType,                            \
                         RTI_PARENTHESIZE(Attributes))
 
+
+
+#define RTI_ADAPT_ENUM(EnumType, Attributes)                  \
+        RTI_ADAPT_ENUM_NAME(EnumType, #EnumType, Attributes)
 
 
 #endif // RTIREFLEX_DEFAULT_MEMBER_NAMES_H
