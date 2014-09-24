@@ -59,6 +59,16 @@ all:
 	@echo "The environment variable 'REFLEXHOME' is not set!"
 	@echo "***************************************************************"
 	@false
+###############################################################################
+# Ensure $XSDCXXHOME is defined
+###############################################################################
+ifeq ($(XSDCXXHOME), )
+all:
+	@echo "***************************************************************"
+	@echo "The environment variable 'XSDCXXHOME' is not set!"
+	@echo "***************************************************************"
+	@false
+endif
 endif
 endif
 endif
@@ -75,10 +85,8 @@ else
   NDDSLIBS  := -lnddscore -lnddsc -lnddscpp 
 endif 
 
-XSDCXX    := /project/xsd-4.0.0-i686-linux-gnu/bin/xsd # path to the XSD compiler
-#XSDCXX    := xsdcxx # path to the XSD compiler
-LIBXSD    := /project/xsd-4.0.0-i686-linux-gnu/libxsd # path to the LIBXSD
-#LIBXSD    := # path to the LIBXSD
+XSDCXX    := $(XSDCXXHOME)/bin/xsd # path to the XSD compiler
+LIBXSD    := $(XSDCXXHOME)/libxsd # path to the LIBXSD
 CXX       := g++
 XSDSTD    := --std c++11
 CXXSTD    := --std=c++11

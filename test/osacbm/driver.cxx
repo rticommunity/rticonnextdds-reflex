@@ -118,11 +118,11 @@ RTI_ADAPT_ENUM_NAME(
 
 RTI_ADAPT_STRUCT(
     osacbm::Site,
-    (osacbm::SITE_CATEGORY, category())
-    (osacbm::Site::regId_optional, regId())
-    (osacbm::Site::siteId_optional, siteId())
+    (osacbm::SITE_CATEGORY,                category())
+    (osacbm::Site::regId_optional,         regId())
+    (osacbm::Site::siteId_optional,        siteId())
     (osacbm::Site::systemUserTag_optional, systemUserTag())
-    (osacbm::Site::userTag_optional, userTag())
+    (osacbm::Site::userTag_optional,       userTag())
     );
 
 RTI_ADAPT_STRUCT(
@@ -130,28 +130,28 @@ RTI_ADAPT_STRUCT(
     (osacbm::MIMKey3::code_type,     code())
     (osacbm::MIMKey3::dbId_type,     dbId())
     (osacbm::MIMKey3::name_optional, name())
-    (osacbm::Site, site())
+    (osacbm::Site,                   site())
     );
 
 RTI_ADAPT_STRUCT(
     osacbm::MIMKey1,
-    (xml_schema::unsigned_int,           code())
-    (osacbm::MIMKey1::name_optional,     name())
+    (xml_schema::unsigned_int,         code())
+    (osacbm::MIMKey1::name_optional,   name())
     );
 
 RTI_ADAPT_STRUCT(
     osacbm::LocalTime,
-    (osacbm::LocalTime::dst_type, dst())
+    (osacbm::LocalTime::dst_type,       dst())
     (osacbm::LocalTime::hourDelta_type, hourDelta())
-    (osacbm::LocalTime::minDelta_type, minDelta())
+    (osacbm::LocalTime::minDelta_type,  minDelta())
     );
 
 RTI_ADAPT_STRUCT(
     osacbm::OsacbmTime,
-    (osacbm::OsacbmTime::localTime_optional, localTime())
-    (osacbm::OsacbmTime::time_type, time())
+    (osacbm::OsacbmTime::localTime_optional,   localTime())
+    (osacbm::OsacbmTime::time_type,            time())
     (osacbm::OsacbmTime::time_binary_optional, time_binary())
-    (osacbm::OsacbmTime::time_type_type, time_type1())
+    (osacbm::OsacbmTime::time_type_type,       time_type1())
     );
 
 RTI_ADAPT_STRUCT(
@@ -167,51 +167,51 @@ RTI_ADAPT_STRUCT(
 
 RTI_ADAPT_STRUCT(
     osacbm::EngUnit,
-    (osacbm::EngUnit::abbrev_optional, abbrev())
-    (osacbm::EngUnit::code_type, code())
-    (osacbm::EngUnit::dbId_type, dbId())
-    (osacbm::EngUnit::name_optional, name())
-    (osacbm::EngUnit::refUnit_optional, refUnit())
-    (osacbm::Site, site())
+    (osacbm::EngUnit::abbrev_optional,   abbrev())
+    (osacbm::EngUnit::code_type,         code())
+    (osacbm::EngUnit::dbId_type,         dbId())
+    (osacbm::EngUnit::name_optional,     name())
+    (osacbm::EngUnit::refUnit_optional,  refUnit())
+    (osacbm::Site,                       site())
     (osacbm::EngUnit::unitConv_optional, unitConv())
     );
 
 RTI_ADAPT_STRUCT(
     osacbm::EnumValue,
     (osacbm::EnumValue::enumEU_optional, enumEU())
-    (osacbm::EnumValue::name_optional, name())
-    (osacbm::EnumValue::value_type, value())
+    (osacbm::EnumValue::name_optional,   name())
+    (osacbm::EnumValue::value_type,      value())
     );
 
 RTI_ADAPT_STRUCT(
     osacbm::NumAlert,
-    (osacbm::NumAlert::alertName_optional, alertName())
-    (osacbm::NumAlert::alertSeverity_optional, alertSeverity())
-    (osacbm::NumAlert::alertTypeCode_type, alertTypeCode())
-    (osacbm::NumAlert::alertTypeId_optional, alertTypeId())
-    (osacbm::NumAlert::alertTypeSite_optional, alertTypeSite())
-    (osacbm::NumAlert::hiSideAlert_optional, hiSideAlert())
-    (osacbm::NumAlert::lastTrigger_optional, lastTrigger())
-    (osacbm::NumAlert::regionEnum_optional, regionEnum())
-    (osacbm::NumAlert::regionRef_optional, regionRef())
+    (osacbm::NumAlert::alertName_optional,      alertName())
+    (osacbm::NumAlert::alertSeverity_optional,  alertSeverity())
+    (osacbm::NumAlert::alertTypeCode_type,      alertTypeCode())
+    (osacbm::NumAlert::alertTypeId_optional,    alertTypeId())
+    (osacbm::NumAlert::alertTypeSite_optional,  alertTypeSite())
+    (osacbm::NumAlert::hiSideAlert_optional,    hiSideAlert())
+    (osacbm::NumAlert::lastTrigger_optional,    lastTrigger())
+    (osacbm::NumAlert::regionEnum_optional,     regionEnum())
+    (osacbm::NumAlert::regionRef_optional,      regionRef())
     );
 
 RTI_ADAPT_STRUCT(
     osacbm::AlertRegionRef,
-    (xml_schema::unsigned_int, regionId())
+    (xml_schema::unsigned_int,                          regionId())
     (osacbm::AlertRegionRef::regionLastUpdate_optional, regionLastUpdate())
-    (osacbm::AlertRegionRef::regionSeq_optional, regionSeq())
-    (osacbm::AlertRegionRef::regionSite_optional, regionSite())
+    (osacbm::AlertRegionRef::regionSeq_optional,        regionSeq())
+    (osacbm::AlertRegionRef::regionSite_optional,       regionSite())
     );
 
 RTI_ADAPT_STRUCT(
     osacbm::DataEvent,
-    (osacbm::DataEvent::alertStatus_optional, alertStatus())
-    (osacbm::DataEvent::confid_optional, confid())
-    (xml_schema::unsigned_int, id())
-    (osacbm::DataEvent::sequenceNum_optional, sequenceNum())
-    (osacbm::DataEvent::site_optional, site())
-    (osacbm::DataEvent::time_optional, time())
+    (osacbm::DataEvent::alertStatus_optional,  alertStatus())
+    (osacbm::DataEvent::confid_optional,       confid())
+    (xml_schema::unsigned_int,                 id())
+    (osacbm::DataEvent::sequenceNum_optional,  sequenceNum())
+    (osacbm::DataEvent::site_optional,         site())
+    (osacbm::DataEvent::time_optional,         time())
     );
 
 RTI_ADAPT_VALUETYPE(
@@ -262,7 +262,7 @@ void test_DADataSeq()
 
   std::cout << dataseq1 << std::endl;
   // valuetype printing appears to have bugs
-  // sdd1.get()->print(stdout, 2);
+  sdd1.get()->print(stdout, 2);
 
   osacbm::DADataSeq dataseq2;
 
