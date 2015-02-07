@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="Data" type="Data"/>
+	<xs:complexType name="Data">
+		<xs:annotation>
+			<xs:documentation>A generic, user-definable data class.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="compositeData" type="Data" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>An optional attribute to allow for a general construction of a data item.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dataType" type="DataType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="time" type="OsacbmTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Optional time parameter for possible time stamp.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="value" type="Value" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DataType" type="DataType"/>
+	<xs:complexType name="DataType">
+		<xs:sequence>
+			<xs:element name="dataType" type="EngUnit" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="id" type="MIMKey3" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Value" type="Value"/>
+	<xs:complexType name="Value">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:element name="ByteValue" type="ByteValue"/>
+	<xs:complexType name="ByteValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:byte" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ByteArrayValue" type="ByteArrayValue"/>
+	<xs:complexType name="ByteArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:byte" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ShortValue" type="ShortValue"/>
+	<xs:complexType name="ShortValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:short" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ShortArrayValue" type="ShortArrayValue"/>
+	<xs:complexType name="ShortArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:short" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="IntValue" type="IntValue"/>
+	<xs:complexType name="IntValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:int" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="IntArrayValue" type="IntArrayValue"/>
+	<xs:complexType name="IntArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:int" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="LongValue" type="LongValue"/>
+	<xs:complexType name="LongValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:long" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="LongArrayValue" type="LongArrayValue"/>
+	<xs:complexType name="LongArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:long" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FloatValue" type="FloatValue"/>
+	<xs:complexType name="FloatValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:float" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="FloatArrayValue" type="FloatArrayValue"/>
+	<xs:complexType name="FloatArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:float" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DoubleValue" type="DoubleValue"/>
+	<xs:complexType name="DoubleValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:double" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DblArrayValue" type="DblArrayValue"/>
+	<xs:complexType name="DblArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:double" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ComplexValue" type="ComplexValue"/>
+	<xs:complexType name="ComplexValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="imagValue" type="xs:double" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="realValue" type="xs:double" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CmplxArrayValue" type="CmplxArrayValue"/>
+	<xs:complexType name="CmplxArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="imagValues" type="xs:double" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="realValues" type="xs:double" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CharValue" type="CharValue"/>
+	<xs:complexType name="CharValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CharArrayValue" type="CharArrayValue"/>
+	<xs:complexType name="CharArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="BooleanValue" type="BooleanValue"/>
+	<xs:complexType name="BooleanValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="BooleanArrayValue" type="BooleanArrayValue"/>
+	<xs:complexType name="BooleanArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:boolean" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="StringValue" type="StringValue"/>
+	<xs:complexType name="StringValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="StringArrayValue" type="StringArrayValue"/>
+	<xs:complexType name="StringArrayValue">
+		<xs:complexContent>
+			<xs:extension base="Value">
+				<xs:sequence>
+					<xs:element name="values" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Range:1 to *</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

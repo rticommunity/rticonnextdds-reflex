@@ -144,17 +144,47 @@ namespace reflex {
 
   class DllExport SafeDynamicDataInstance
   {
-    DDSDynamicDataTypeSupport * typeSupport_;
+  protected:
+    DDSDynamicDataTypeSupport * type_support_;
     DDS_DynamicData * instance_;
 
-    SafeDynamicDataInstance(const SafeDynamicDataInstance &);
-    SafeDynamicDataInstance & operator = (const SafeDynamicDataInstance &);
+   static DDS_DynamicData * init(DDSDynamicDataTypeSupport * ts);
 
   public:
     SafeDynamicDataInstance(DDSDynamicDataTypeSupport * typeSupport);
+    SafeDynamicDataInstance(const SafeDynamicDataInstance &);
+
+    SafeDynamicDataInstance & operator = (const SafeDynamicDataInstance &);
+
     ~SafeDynamicDataInstance();
+
+    void swap(SafeDynamicDataInstance &) throw();
     DDS_DynamicData * get();
     const DDS_DynamicData * get() const;
+  };
+
+  template <class T>
+  class SafeDynamicData : public SafeDynamicDataInstance
+  {
+    public:
+      SafeDynamicData(
+          DDSDynamicDataTypeSupport *type_support,
+          const T & src)
+        : SafeDynamicDataInstance(type_support)
+      {
+        fill_dd(src, *instance_);
+      }
+
+      explicit SafeDynamicData(
+          DDSDynamicDataTypeSupport *type_support)
+        : SafeDynamicDataInstance(type_support)
+      { }
+
+      SafeDynamicData & operator = (const T & src)
+      {
+        fill_dd(src, *instance_);
+        return *this;
+      }
   };
 
   template <class T>
@@ -173,6 +203,20 @@ namespace reflex {
       data,
       *instance.get(),
       typename detail::InheritanceTraits<T>::has_base());
+  }
+
+  template <class T>
+  SafeDynamicData<T> make_dd(const T & src)
+  {
+    static reflex::SafeTypeCode<DDS_TypeCode> 
+              stc(reflex::make_typecode<T>());
+      
+    static DDS_DynamicDataTypeProperty_t props;
+              
+    static DDSDynamicDataTypeSupport * type_support =  
+             new DDSDynamicDataTypeSupport(stc.get(), props);
+      
+    return reflex::SafeDynamicData<T>(type_support, src);
   }
 
   template <class T>

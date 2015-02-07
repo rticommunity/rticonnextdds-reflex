@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+    <xs:include schemaLocation="AdvisoryGeneration.xsd"/>
+    <xs:include schemaLocation="Alerts.xsd"/>
+    <xs:include schemaLocation="ConfigRequest.xsd"/>
+    <xs:include schemaLocation="Configuration.xsd"/>
+    <xs:include schemaLocation="ConfigurationAlgorithm.xsd"/>
+    <xs:include schemaLocation="ConfigurationSupportingData.xsd"/>
+    <xs:include schemaLocation="DataAcquisition.xsd"/>
+    <xs:include schemaLocation="DataEventSet.xsd"/>
+    <xs:include schemaLocation="DataManipulation.xsd"/>
+    <xs:include schemaLocation="DataReference.xsd"/>
+    <xs:include schemaLocation="DataTypes.xsd"/>
+    <xs:include schemaLocation="EngUnit.xsd"/>
+    <xs:include schemaLocation="ExtensibleComponents.xsd"/>
+    <xs:include schemaLocation="Explanation.xsd"/>
+    <xs:include schemaLocation="Function.xsd"/>
+    <xs:include schemaLocation="HealthAssessment.xsd"/>
+    <xs:include schemaLocation="Item.xsd"/>
+    <xs:include schemaLocation="ItemEvent.xsd"/>
+    <xs:include schemaLocation="ItemId.xsd"/>
+    <xs:include schemaLocation="MeasurementLocation.xsd"/>
+    <xs:include schemaLocation="MIMAgent.xsd"/>
+    <xs:include schemaLocation="MIMKeys.xsd"/>
+    <xs:include schemaLocation="MonitorIdGroup.xsd"/>
+    <xs:include schemaLocation="OutPortSet.xsd"/>
+    <xs:include schemaLocation="PrognosticsAssessment.xsd"/>
+    <xs:include schemaLocation="ProposedEvent.xsd"/>
+    <xs:include schemaLocation="Site.xsd"/>
+    <xs:include schemaLocation="StateDetection.xsd"/>
+    <xs:include schemaLocation="Time.xsd"/>
+</xs:schema>

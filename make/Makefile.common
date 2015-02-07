@@ -193,10 +193,10 @@ test: objs/$(ARCH)/$(REFLEXLIBRARY)-test  \
       objs/$(ARCH)/$(REFLEXLIBRARY)-perf
 
 objs/$(ARCH)/$(REFLEXLIBRARY)-test: $(TESTOBJS)  
-	$(CXXLD) $(CXXLDFLAGS) -o $@ $(REFLEXLIB) $(LIBS) $(TESTOBJS) 
+	$(CXXLD) $(CXXLDFLAGS) -o $@ $(TESTOBJS) $(LIBS) $(REFLEXLIB)
 
 objs/$(ARCH)/$(REFLEXLIBRARY)-perf: $(PERFCODEGEN) $(PERFOBJS) 
-	$(CXXLD) $(CXXLDFLAGS) -o $@ $(REFLEXLIB) $(LIBS) $(PERFOBJS) 
+	$(CXXLD) $(CXXLDFLAGS) -o $@ $(PERFOBJS) $(LIBS) $(REFLEXLIB)
 
 objs/$(ARCH)/%.o: test/%.cxx  
 	$(CXX) $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="ControlChange" type="ControlChange"/>
+	<xs:complexType name="ControlChange">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AppRequest" type="AppRequest"/>
+	<xs:complexType name="AppRequest">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ErrorInfo" type="ErrorInfo"/>
+	<xs:complexType name="ErrorInfo">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ErrorRequest" type="ErrorRequest"/>
+	<xs:complexType name="ErrorRequest">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AppInfo" type="AppInfo"/>
+	<xs:complexType name="AppInfo">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AppChange" type="AppChange"/>
+	<xs:complexType name="AppChange">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ControlInfo" type="ControlInfo"/>
+	<xs:complexType name="ControlInfo">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ControlRequest" type="ControlRequest"/>
+	<xs:complexType name="ControlRequest">
+		<xs:sequence>
+			<xs:element name="parameters" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Parameter" type="Parameter"/>
+	<xs:complexType name="Parameter">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="XmlDataType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="dateTime"/>
+			<xs:enumeration value="decimal"/>
+			<xs:enumeration value="double"/>
+			<xs:enumeration value="float"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="string"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="GeneralParameter" type="GeneralParameter"/>
+	<xs:complexType name="GeneralParameter">
+		<xs:complexContent>
+			<xs:extension base="Parameter">
+				<xs:sequence>
+					<xs:element name="datatype" type="XmlDataType" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

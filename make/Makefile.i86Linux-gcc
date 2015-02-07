@@ -20,10 +20,10 @@
 # to define the rules to define the build process for this application.
 
 # if ndds==5.0.0+
-ARCH=i86Linux2.6gcc4.4.5
+#ARCH=i86Linux2.6gcc4.4.5
 
 # if ndds==5.1.0 and Linux kernel 3.x
-#ARCH=i86Linux3.xgcc4.6.3
+ARCH=i86Linux3.xgcc4.6.3
 
 # USe gcc 4.7 or better
 CXX = g++

@@ -92,6 +92,12 @@ namespace reflex {
     };
 
     template <class T>
+    struct EnumDef 
+    {
+      enum { is_enum = 0 };
+    };
+
+    template <class T>
     struct is_bool : false_type {};
 
     template <>
@@ -135,15 +141,21 @@ namespace reflex {
     struct is_primitive<reflex::Union<TagType, Cases...>> : false_type{};
 
     template <class T>
+    struct is_enum 
+    {
+      enum { value = detail::EnumDef<T>::is_enum };
+    };
+
+    template <class T>
     struct is_primitive_or_enum
     {
-      enum { value = is_primitive<T>::value || std::is_enum<T>::value };
+      enum { value = is_primitive<T>::value || detail::is_enum<T>::value };
     };
 
     template <class T>
     struct is_bool_or_enum
     {
-      enum { value = is_bool<T>::value || std::is_enum<T>::value };
+      enum { value = is_bool<T>::value || detail::is_enum<T>::value };
     };
 
     template <class T>
@@ -336,6 +348,42 @@ namespace reflex {
       enum { size = sizeof...(Dims) };
     };
 
+    template <class C, bool>
+    struct container_traits_impl;
+
+    template <class C>
+    struct container_traits_impl<C, true>
+    {
+        typedef typename C::value_type value_type;
+        typedef typename C::iterator iterator;
+    };
+
+    template <class C>
+    struct container_traits_impl<C, false>
+    {
+        typedef void value_type;
+        typedef void iterator;
+    };
+
+    template <class C>
+    struct container_traits
+    {
+        typedef typename 
+            container_traits_impl<
+              C, 
+              is_container<C>::value>::value_type 
+          value_type;
+
+        typedef typename 
+            container_traits_impl<
+              C, 
+              is_container<C>::value>::iterator 
+          iterator;
+    };
+
+    template <class T>
+    struct optional_traits;
+
     template <size_t Arg, class DimList>
     struct dim_cat;
 
@@ -390,6 +438,16 @@ namespace reflex {
 
     template <class T>
     struct remove_reference<T &> {
+      typedef T type;
+    };
+
+    template <class T>
+    struct remove_const {
+      typedef T type;
+    };
+
+    template <class T>
+    struct remove_const<const T> {
       typedef T type;
     };
 
@@ -578,6 +636,13 @@ namespace reflex {
     {
       typedef const std::tuple<typename remove_reference<Args>::type...> type;
     };
+
+    template <class T>
+    void enum_cast(T & dst, DDS_Long src)
+    {
+      dst = static_cast<T>(src); // cast required for enums         
+    }
+
 
   } // namespace detail
 

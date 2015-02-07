@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="ItemAlertRegions" type="ItemAlertRegions"/>
+	<xs:complexType name="ItemAlertRegions">
+		<xs:annotation>
+			<xs:documentation>Contains alert region information for the item.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="alertRegs" type="AlertRegion" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Stores information related to an alert region that a data event can activate.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="itemId" type="ItemId" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>References either a segment or an asset.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="monitorType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AlertRegion" type="AlertRegion"/>
+	<xs:complexType name="AlertRegion">
+		<xs:annotation>
+			<xs:documentation>Stores information related to an alert region, which a DataEvent value can activate.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="alertType" type="AlertType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Information about an alert, including its name, type, and severity ranking.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regionName" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Name/description of the alert region.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regionRef" type="AlertRegionRef" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Information referencing the specific region (measurement location) that is associated with the alert.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AlertRegion_CBM" type="AlertRegion_CBM"/>
+	<xs:complexType name="AlertRegion_CBM">
+		<xs:annotation>
+			<xs:documentation>This class inherits from AlertRegion and contains various parameters related to how an alert is triggered. (AlertRegion_CBM references the num_alarm_reg MIMOSA table.)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="AlertRegion">
+				<xs:sequence>
+					<xs:element name="amplEU" type="EngUnit" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>The amplitude engineering units.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="bandDelay" type="xs:double" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="bandDelayEU" type="EngUnit" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="hiLowSideUsed" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="hysteresisEU" type="EngUnit" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="maxAmpl" type="xs:double" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Equates to a MIMOSA max_amplitude.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="maxAmplHysteresis" type="xs:double" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="maxInclusive" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="meas_loc_type" type="MIMKey3" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>MIMOSA keys identifying the associated measurement location.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="minAmpl" type="xs:double" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Equates to a MIMOSA min_amplitude.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="minAmplHysteresis" type="xs:double" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="minInclusive" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="mloc_calc_type" type="MIMKey3" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>MIMOSA keys identifying the measurement location calculation type.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="regionEnum" type="EnumValue" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Optional enumeration value associated with the region.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="NumAlert" type="NumAlert"/>
+	<xs:complexType name="NumAlert">
+		<xs:annotation>
+			<xs:documentation>When a DataEvent triggers an alert, it produces a NumAlert. The NumAlert class contains a MIMOSA type code for the alert and specifies when it occurred.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="alertName" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Name/description of the alert.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertSeverity" type="MIMKey3" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>References severity values from the MIMOSA severity_level_type table.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertTypeCode" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Corresponds to al_type_code in MIMOSA.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertTypeId" type="xs:unsignedInt" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The corresponding database id.
+(NOTE: OSA-CBM convention is for an unused alertTypeId to mean alertTypeId = 0 which should be based on platform Site.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertTypeSite" type="Site" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The Site associated with the alert type.
+(NOTE: an unused alertTypeSite means to use the Site found in the corresponding DataEvent.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="hiSideAlert" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="lastTrigger" type="OsacbmTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Specifies the time when the alert was first entered.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regionEnum" type="EnumValue" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="regionRef" type="AlertRegionRef" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Reference info for the associated alert region.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AlertRegionRef" type="AlertRegionRef"/>
+	<xs:complexType name="AlertRegionRef">
+		<xs:annotation>
+			<xs:documentation>Contains information referencing the specific region (measurement location) that is associated with the alert. (References the num_al_assoc_reg MIMOSA table.)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="regionId" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA al_meas_loc_id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regionLastUpdate" type="OsacbmTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The time of the last update in this region.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regionSeq" type="xs:unsignedInt" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA al_ordering_seq.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regionSite" type="Site" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA al_meas_loc_site.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AlertType" type="AlertType"/>
+	<xs:complexType name="AlertType">
+		<xs:annotation>
+			<xs:documentation>Stores information about an alert, including its name, type, and severity ranking. (References the alarm_type MIMOSA table.)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="alertName" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Full description of the alert.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertSeverity" type="MIMKey3" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>MIMOSA table keys related to the severity ranking of the alert.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertTypeCode" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA al_type_code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertTypeId" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA al_db_id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="alertTypeSite" type="Site" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>References the associated MIMOSA site.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
