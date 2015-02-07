@@ -43,41 +43,39 @@
 
 <p>Consider the following simple <code>ShapeType</code>class.</p>
 
-<pre><code>class ShapeType {
+<div class="highlight highlight-cpp"><pre><span class="pl-st">class</span> <span class="pl-en">ShapeType</span> {
   std::string color_;
-  int x_, y_, shapesize_;
+  <span class="pl-st">int</span> x_, y_, shapesize_;
 
-public:
-  ShapeType() {}
-  ShapeType(const std::string &amp; color,
-            int x, int y, int shapesize)
+<span class="pl-s">public:</span>
+  <span class="pl-en">ShapeType</span>() {}
+  <span class="pl-en">ShapeType</span>(<span class="pl-s">const</span> std::string &amp; color,
+            <span class="pl-st">int</span> x, <span class="pl-st">int</span> y, <span class="pl-st">int</span> shapesize)
    : color_(color), x_(x), y_(y),
-      shapesize_(shapesize)
+      <span class="pl-en">shapesize_</span>(shapesize)
   {}
 
-  std::string &amp; color() { return color_;     }
-  int &amp; x()             { return x_;         }
-  int &amp; y()             { return y_;         }
-  int &amp; shapesize()     { return shapesize_; }
+  std::string &amp; <span class="pl-en">color</span>() { <span class="pl-k">return</span> color_;     }
+  <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             { <span class="pl-k">return</span> x_;         }
+  <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             { <span class="pl-k">return</span> y_;         }
+  <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     { <span class="pl-k">return</span> shapesize_; }
 
-  const std::string &amp; color() const { return color_;     }
-  const int &amp; x()             const { return x_;         }
-  const int &amp; y()             const { return y_;         }
-  const int &amp; shapesize()     const { return shapesize_; }
-};
-</code></pre>
+  <span class="pl-s">const</span> std::string &amp; <span class="pl-en">color</span>() <span class="pl-s">const</span> { <span class="pl-k">return</span> color_;     }
+  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> x_;         }
+  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> y_;         }
+  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     <span class="pl-s">const</span> { <span class="pl-k">return</span> shapesize_; }
+};</pre></div>
 
 <p>If you want to send and receive instances of this class using DDS, simply add the <code>RTI_ADAPT_STRUCT</code> macro below. </p>
 
-<pre><code>#include "reflex.h"
+<div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>reflex.h<span class="pl-pds">"</span></span>
 
-RTI_ADAPT_STRUCT(
+<span class="pl-en">RTI_ADAPT_STRUCT</span>(
   ShapeType,
   (std::string, color(), RTI_KEY)
-  (int,             x())
-  (int,             y())
-  (int,     shapesize()))
-</code></pre>
+  (<span class="pl-st">int</span>,             x())
+  (<span class="pl-st">int</span>,             y())
+  (<span class="pl-st">int</span>,     shapesize()))</pre></div>
 
 <p>The <code>ShapeType</code> class can now be used with RTI Connext DDS.</p>
 
