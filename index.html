@@ -36,7 +36,7 @@
 
 <p><img src="images/reflex-log-small.png" alt="RefleX Logo"></p>
 
-<p>RefleX is a short for Reflection for DDS-XTypes. The main objective of this library is to create DDS-XTypes compliant types and data directly from native C++ types. RefleX is declarative–i.e., it is not a reflection API. There is no separate code generation step involved (other than compilation). The RefleX library will take your application-level datatypes in C++ and will happily map them to equivalent DDS topic types.</p>
+<p>RefleX is a short for <strong>Reflection for DDS-XTypes</strong>. The main objective of this library is to create DDS-XTypes compliant types and data directly from native C++ types. RefleX is declarative–i.e., it is not a reflection API. There is no separate code generation step involved (other than compilation). The RefleX library will take your application-level datatypes in C++ and will happily map them to equivalent DDS topic types.</p>
 
 <h3>
 <a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h3>
@@ -135,9 +135,10 @@
 <a id="download-and-build" class="anchor" href="#download-and-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download and Build</h3>
 
 <h4>
-<a id="linux-gcc-48-clang-33-or-better" class="anchor" href="#linux-gcc-48-clang-33-or-better" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux gcc 4.8, clang 3.3 or better</h4>
+<a id="linux" class="anchor" href="#linux" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux</h4>
 
 <ol>
+<li>Use gcc 4.8, clang 3.3 or better</li>
 <li>export REFLEXHOME, BOOSTHOME (1.46+) and NDDSHOME (5.0.0+)</li>
 <li>export ARCH=i86Linux2.6gcc4.4.5, for example. See make/Makefile* for details</li>
 <li>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NDDSHOME/lib/$ARCH:$REFLEXHOME/objs/$ARCH</li>
