@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="MonitorIdGroup" type="MonitorIdGroup"/>
+	<xs:complexType name="MonitorIdGroup">
+		<xs:annotation>
+			<xs:documentation>MonitorIdGroup is used by interfaces to indicate the desired subset of served information by indicating the monitored measurement location, agent or agent/item that is desired.
+
+A MonitorIdGroup can request via EITHER a dataEventSetId OR an array of monitorIds.  If both are used, the dataEventSetId will be ignored.
+
+A MonitorIdGroup can request historical data by specifying EITHER a TimeSelect OR a SequenceSelect.  If both are used, the SequenceSelect will be ignored.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="alertFilter" type="ALERT_FILTER_SETTING" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="dataEventSetId" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="site" type="Site" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="monitorId" type="MonitorId" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="timeSelect" type="TimeSelect" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="sequenceSelect" type="SequenceSelect" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="MonitorId" type="MonitorId"/>
+	<xs:complexType name="MonitorId">
+		<xs:annotation>
+			<xs:documentation>MonitorId is a reference to a monitored measurement location, agent or agent/item.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>A MIMOSA meas_loc_id or agent_id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="itemId" type="ItemId" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>References a segment or asset.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="site" type="Site" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The site associated with the monitored measurement location, agent, or item.  This value overrides the site used in MonitorIdGroup when the two are not the same.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="DataIdType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Specifies what id is meant to be a reference to (measurement location or agent).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="selectionFilter" type="SelectionFilter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SelectionFilter" type="SelectionFilter"/>
+	<xs:complexType name="SelectionFilter">
+		<xs:annotation>
+			<xs:documentation>SelectionFilter contains a list of attributes for specific purposes.  The usage type must be applicable to the type indicated by the MonitorId.   MeasLocAlertFilter is applicable to DA, DM, SD layers.  AgentAlertFilter is applicable to HA, PA, AG layers.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:element name="TimeSelect" type="TimeSelect"/>
+	<xs:complexType name="TimeSelect">
+		<xs:annotation>
+			<xs:documentation>If TimeSelect is not used then assume present time.  SnapshotStart retrieves the given number of DataEventSets before the current time. If timeStart is specified, snapshotStart and End specify a range of DataEventSets before and after the timeStart.  Decimate means to send only one out of every &lt;decimate value&gt; DataEventSets, e.g. &lt;3&gt; =&gt; 1-in-3
+EntryPoints may 
+(1) not support TimeSelect or may support one or more of the following:
+(2) Time Start and End
+(3) Time Start and End with decimation
+(4) Snapshot Start only
+(5) Snapshot Start with decimation
+(6) Time Start only
+(7) Time Start with decimation
+(8) Time Start with Snapshot Start and/or End</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="decimate" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="snapshotEnd" type="xs:int" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="snapshotStart" type="xs:int" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="timeEnd" type="OsacbmTime" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="timeStart" type="OsacbmTime" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="MonitorIdGroupList" type="MonitorIdGroupList"/>
+	<xs:complexType name="MonitorIdGroupList">
+		<xs:annotation>
+			<xs:documentation>MonitorIDGroupList contains a list of MonitorIDGroups. It is used directly by the Asynchronous interface.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="monitorIdGroup" type="MonitorIdGroup" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="MeasLocAlertFilter" type="MeasLocAlertFilter"/>
+	<xs:complexType name="MeasLocAlertFilter">
+		<xs:annotation>
+			<xs:documentation>MeasLocAlertFilter is applicable to DA, DM, SD layers.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SelectionFilter">
+				<xs:sequence>
+					<xs:element name="alertSeverity" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="alertTypeCode" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="alertTypeId" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="alertTypeSite" type="Site" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="regionEnum" type="EnumValue" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="regionRef" type="AlertRegionRef" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="AgentAlertFilter" type="AgentAlertFilter"/>
+	<xs:complexType name="AgentAlertFilter">
+		<xs:annotation>
+			<xs:documentation>AgentAlertFilter is applicable to HA, PA, AG layers.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SelectionFilter">
+				<xs:sequence>
+					<xs:element name="eventType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="itemId" type="ItemId" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="severityType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="ALERT_FILTER_SETTING">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ALL_EVENTS">
+				<xs:annotation>
+					<xs:documentation>Send all events.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ALERT_EVENTS_ONLY">
+				<xs:annotation>
+					<xs:documentation>Send only events that trigger alerts.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CHANGED_VALUE_EVENTS">
+				<xs:annotation>
+					<xs:documentation>Send event only when value changes.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NO_EVENTS">
+				<xs:annotation>
+					<xs:documentation>Cease reporting events.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="SequenceSelect" type="SequenceSelect"/>
+	<xs:complexType name="SequenceSelect">
+		<xs:sequence>
+			<xs:element name="sequenceNumEnd" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="sequenceNumStart" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

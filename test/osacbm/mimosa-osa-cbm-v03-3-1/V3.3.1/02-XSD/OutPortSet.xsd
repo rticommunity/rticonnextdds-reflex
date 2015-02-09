@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="OutPortSet" type="OutPortSet"/>
+	<xs:complexType name="OutPortSet">
+		<xs:annotation>
+			<xs:documentation>Lists each OutPort.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="lastUpdate" type="OsacbmTime" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="outPorts" type="Port" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Range:1 to *</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="site" type="Site" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="templateSite" type="Site" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="verId" type="xs:unsignedInt" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Port" type="Port"/>
+	<xs:complexType name="Port">
+		<xs:annotation>
+			<xs:documentation>Contains configuration information specific to a layer's output (or input) channel.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="config" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Equates to a MIMOSA meas_loc_id (DA, DM, SD layers) or a MIMOSA agent_id (HA, PA, AG layers).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="lastUpdate" type="OsacbmTime" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="osacbmDataType" type="OsacbmDataType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="site" type="Site" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="userTag" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

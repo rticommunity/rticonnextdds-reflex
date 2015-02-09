@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="Function" type="Function"/>
+	<xs:complexType name="Function">
+		<xs:annotation>
+			<xs:documentation>Contains information related to an Item's function. (A "Function" in MIMOSA is always associated with an Item.)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="by_agent" type="MIMKey2" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="func_db_id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="func_db_site" type="Site" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="item_id" type="ItemId" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="seq" type="xs:unsignedInt" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="userTag" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

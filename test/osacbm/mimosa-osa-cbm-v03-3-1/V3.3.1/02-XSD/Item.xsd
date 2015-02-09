@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="DataSource" type="DataSource"/>
+	<xs:complexType name="DataSource">
+		<xs:sequence>
+			<xs:element name="dataSrcType" type="MIMKey3" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AssetInfo" type="AssetInfo"/>
+	<xs:complexType name="AssetInfo">
+		<xs:sequence>
+			<xs:element name="dataSource" type="DataSource" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="transd" type="Transducer" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Transducer" type="Transducer"/>
+	<xs:complexType name="Transducer">
+		<xs:sequence>
+			<xs:element name="calibEU" type="EngUnit" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="lastCalib" type="OsacbmTime" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="outAmpl" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="outEU" type="EngUnit" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="selfPowered" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="transdType" type="MIMKey3" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Item" type="Item"/>
+	<xs:complexType name="Item">
+		<xs:sequence>
+			<xs:element name="id" type="MIMKey2" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="userTag" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Segment" type="Segment"/>
+	<xs:complexType name="Segment">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:sequence>
+					<xs:element name="segmentType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="segmGroup" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Asset" type="Asset"/>
+	<xs:complexType name="Asset">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:sequence>
+					<xs:element name="assetInfo" type="AssetInfo" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="assetType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="serialNo" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="SegOrAs">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SEGMENT">
+				<xs:annotation>
+					<xs:documentation>Represents a functional segment</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ASSET">
+				<xs:annotation>
+					<xs:documentation>Represents a serialized asset</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

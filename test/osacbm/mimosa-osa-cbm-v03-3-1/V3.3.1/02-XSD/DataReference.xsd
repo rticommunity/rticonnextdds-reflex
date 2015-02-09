@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:simpleType name="DataIdType">
+		<xs:annotation>
+			<xs:documentation>Describes what a DataEvent id is meant to be a reference to.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="meas_location">
+				<xs:annotation>
+					<xs:documentation>0</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="agent_id">
+				<xs:annotation>
+					<xs:documentation>1</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OsacbmDataType">
+		<xs:annotation>
+			<xs:documentation>An enumerated list that identifies a particular OSA-CBM data type.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="InvalidUnsetType">
+				<xs:annotation>
+					<xs:documentation>0</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAWaveform">
+				<xs:annotation>
+					<xs:documentation>1</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DABLOBData">
+				<xs:annotation>
+					<xs:documentation>2</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAVector">
+				<xs:annotation>
+					<xs:documentation>3</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DADataSeq">
+				<xs:annotation>
+					<xs:documentation>4</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAReal">
+				<xs:annotation>
+					<xs:documentation>5</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAInt">
+				<xs:annotation>
+					<xs:documentation>6</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DABool">
+				<xs:annotation>
+					<xs:documentation>7</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMAmpl">
+				<xs:annotation>
+					<xs:documentation>8</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMVector">
+				<xs:annotation>
+					<xs:documentation>9</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMRealFrqSpect">
+				<xs:annotation>
+					<xs:documentation>10</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMCmplxFrqSpect">
+				<xs:annotation>
+					<xs:documentation>11</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMCPB">
+				<xs:annotation>
+					<xs:documentation>12</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMReal">
+				<xs:annotation>
+					<xs:documentation>13</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMInt">
+				<xs:annotation>
+					<xs:documentation>14</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMBool">
+				<xs:annotation>
+					<xs:documentation>15</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMRealWaveform">
+				<xs:annotation>
+					<xs:documentation>16</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMCmplxWaveform">
+				<xs:annotation>
+					<xs:documentation>17</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMDataSeq">
+				<xs:annotation>
+					<xs:documentation>18</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMUserDef">
+				<xs:annotation>
+					<xs:documentation>19</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDReal">
+				<xs:annotation>
+					<xs:documentation>20</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDInt">
+				<xs:annotation>
+					<xs:documentation>21</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDBool">
+				<xs:annotation>
+					<xs:documentation>22</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDEnum">
+				<xs:annotation>
+					<xs:documentation>23</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HADataEvent">
+				<xs:annotation>
+					<xs:documentation>24</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PADataEvent">
+				<xs:annotation>
+					<xs:documentation>25</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARUL">
+				<xs:annotation>
+					<xs:documentation>26</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARULDist">
+				<xs:annotation>
+					<xs:documentation>27</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAFutureHlth">
+				<xs:annotation>
+					<xs:documentation>28</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAFutureHlthTrend">
+				<xs:annotation>
+					<xs:documentation>29</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AGDataEvent">
+				<xs:annotation>
+					<xs:documentation>30</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAUnknown">
+				<xs:annotation>
+					<xs:documentation>31</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMUnknown">
+				<xs:annotation>
+					<xs:documentation>32</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDUnknown">
+				<xs:annotation>
+					<xs:documentation>33</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HAUnknown">
+				<xs:annotation>
+					<xs:documentation>34</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAUnknown">
+				<xs:annotation>
+					<xs:documentation>35</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AGUnknown">
+				<xs:annotation>
+					<xs:documentation>36</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAInvalid">
+				<xs:annotation>
+					<xs:documentation>37</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMInvalid">
+				<xs:annotation>
+					<xs:documentation>38</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDInvalid">
+				<xs:annotation>
+					<xs:documentation>39</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HAInvalid">
+				<xs:annotation>
+					<xs:documentation>40</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAInvalid">
+				<xs:annotation>
+					<xs:documentation>41</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AGInvalid">
+				<xs:annotation>
+					<xs:documentation>42</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEUser">
+				<xs:annotation>
+					<xs:documentation>43</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDEnumSet">
+				<xs:annotation>
+					<xs:documentation>44</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDTestReal">
+				<xs:annotation>
+					<xs:documentation>45</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDTestInt">
+				<xs:annotation>
+					<xs:documentation>46</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DMBLOBData">
+				<xs:annotation>
+					<xs:documentation>47</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAString">
+				<xs:annotation>
+					<xs:documentation>48</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SDEvent">
+				<xs:annotation>
+					<xs:documentation>49</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAValueWaveform">
+				<xs:annotation>
+					<xs:documentation>50</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DAValueDataSeq">
+				<xs:annotation>
+					<xs:documentation>51</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="DataRef" type="DataRef"/>
+	<xs:complexType name="DataRef">
+		<xs:annotation>
+			<xs:documentation>A reference to one data item. It is essentially a descriptor to one DataEvent value. (Explanation uses this as a type of pointer.)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dataIdType" type="DataIdType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Specifies what id is meant to be a reference to (measurement location or agent).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dataType" type="OsacbmDataType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Specifies the type of data.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>A MIMOSA meas_loc_id or agent_id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="itemId" type="ItemId" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>References the segment or asset.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="site" type="Site" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Contains the associated site information.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="time" type="OsacbmTime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Stores the associated time.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="EPSStatus" type="EPSStatus"/>
+	<xs:complexType name="EPSStatus">
+		<xs:annotation>
+			<xs:documentation>Used in the Data Service interface.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="status" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

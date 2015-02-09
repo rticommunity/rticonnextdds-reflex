@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="DAPort" type="DAPort"/>
+	<xs:complexType name="DAPort">
+		<xs:annotation>
+			<xs:documentation>DA layer OutPort information.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Port">
+				<xs:sequence>
+					<xs:element name="alertRegs" type="AlertRegion" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Stores information related to an alert region that a data event can activate.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="measLoc" type="MeasLoc" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Contains the MIMOSA table keys for identifying the measurement location.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="valueEU" type="EngUnit" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>MIMOSA table keys that identify the engineering units for the value.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="xAxisEU" type="EngUnit" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>MIMOSA table keys that identify the engineering units for the x-axis.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DADataEvent" type="DADataEvent"/>
+	<xs:complexType name="DADataEvent">
+		<xs:annotation>
+			<xs:documentation>A generic DA layer class that inherits directly from DataEvent.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DataEvent">
+				<xs:sequence>
+					<xs:element name="dataStatus" type="DataStatus" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Specifies the status of the data from an enumerated list.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="numAlerts" type="NumAlert" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DAWaveform" type="DAWaveform"/>
+	<xs:complexType name="DAWaveform">
+		<xs:annotation>
+			<xs:documentation>Stores DA layer waveform data.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+        				<xs:choice>
+          					<xs:annotation>
+            					<xs:documentation>Values can be stored as a list of individual double elements, as a single space-separated list of doubles, or as a base64 string</xs:documentation>
+          					</xs:annotation>
+          					<xs:element maxOccurs="unbounded" name="values" type="xs:double" />
+          					<xs:element name="valuesList" type="listOfDouble" />
+						<xs:element name="valuesBinary" type="xs:base64Binary" />
+        				</xs:choice>
+					<xs:element name="xAxisDelta" type="xs:double" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>The spacing in the waveform.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="xAxisStart" type="xs:double" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Starting point of the waveform.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DABLOBData" type="DABLOBData"/>
+	<xs:complexType name="DABLOBData">
+		<xs:annotation>
+			<xs:documentation>Stores DA layer BLOB (Binary Large OBject) data.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="mEventBlobType" type="MIMKey3" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>MIMKey3 information for the associated BLOB data.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="value" type="BLOB" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Stores the BLOB (Binary Large OBject) data.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="BLOB" type="BLOB"/>
+	<xs:complexType name="BLOB">
+		<xs:annotation>
+			<xs:documentation>Stores BLOB (Binary Large OBject) data.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="contentType" type="Mime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Describes the BLOB's content type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+          			<xs:annotation>
+            			<xs:documentation>Bytes can be stored as a list of individual byte elements or as a base64 string</xs:documentation>
+          			</xs:annotation>
+				<xs:element name="dataBinary" type="xs:base64Binary" minOccurs="1" maxOccurs="1" />
+				<xs:element name="data" type="xs:byte" minOccurs="1" maxOccurs="unbounded" />
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Mime" type="Mime"/>
+	<xs:complexType name="Mime">
+		<xs:annotation>
+			<xs:documentation>Describes an associated BLOB's content type.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Describes the content type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DAVector" type="DAVector"/>
+	<xs:complexType name="DAVector">
+		<xs:annotation>
+			<xs:documentation>Stores a DA layer vector.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="value" type="xs:double" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Stores the value of the vector.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="xValue" type="xs:double" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Stores the x-value of the vector.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DADataSeq" type="DADataSeq"/>
+	<xs:complexType name="DADataSeq">
+		<xs:annotation>
+			<xs:documentation>Stores DA layer data sequence data.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+        				<xs:choice>
+          					<xs:annotation>
+            					<xs:documentation>Values can be stored as a list of individual double elements, as a single space-separated list of doubles, or as a base64 string</xs:documentation>
+          					</xs:annotation>
+          					<xs:element maxOccurs="unbounded" name="values" type="xs:double" />
+          					<xs:element name="valuesList" type="listOfDouble" />
+						<xs:element name="valuesBinary" type="xs:base64Binary" />
+        				</xs:choice>
+        				<xs:choice>
+          					<xs:annotation>
+            					<xs:documentation>xAxisDeltas can be stored as a list of individual double elements, as a single space-separated list of doubles, or as a base64 string</xs:documentation>
+          					</xs:annotation>
+          					<xs:element maxOccurs="unbounded" name="xAxisDeltas" type="xs:double" />
+          					<xs:element name="xAxisDeltasList" type="listOfDouble" />
+						<xs:element name="xAxisDeltasBinary" type="xs:base64Binary" />
+        				</xs:choice>
+					<xs:element name="xAxisStart" type="xs:double" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>The starting value for the data sequence.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DAValueWaveform" type="DAValueWaveform"/>
+	<xs:complexType name="DAValueWaveform">
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="values" type="Value" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="xAxisDelta" type="Value" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="xAxisStart" type="Value" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DAValueDataSeq" type="DAValueDataSeq"/>
+	<xs:complexType name="DAValueDataSeq">
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="values" type="Value" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="xAxisDeltas" type="Value" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="xAxisStart" type="Value" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DABool" type="DABool"/>
+	<xs:complexType name="DABool">
+		<xs:annotation>
+			<xs:documentation>Stores a DA layer boolean value.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="value" type="xs:boolean" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Stores the boolean value.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DAString" type="DAString"/>
+	<xs:complexType name="DAString">
+		<xs:annotation>
+			<xs:documentation>Stores a DA layer string value.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Stores the string value.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DAReal" type="DAReal"/>
+	<xs:complexType name="DAReal">
+		<xs:annotation>
+			<xs:documentation>Stores a DA layer real-number value.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="value" type="xs:double" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Stores the real-number value.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DAInt" type="DAInt"/>
+	<xs:complexType name="DAInt">
+		<xs:annotation>
+			<xs:documentation>Stores a DA layer integer value.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DADataEvent">
+				<xs:sequence>
+					<xs:element name="value" type="xs:int" minOccurs="1" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Stores the integer value.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="listOfDouble" type="listOfDouble"/>
+	<xs:simpleType name="listOfDouble">
+  		<xs:list itemType="xs:double"/>
+	</xs:simpleType>
+
+</xs:schema>

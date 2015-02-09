@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="MIMAgent" type="MIMAgent"/>
+	<xs:complexType name="MIMAgent">
+		<xs:annotation>
+			<xs:documentation>This class is used to describe a MIMOSA agent. A MIMOSA agent is an "intelligent" entity such as an Organization, Group, Individual, Software, System, etc.
+
+(References the agent MIMOSA table.)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="agent_id" type="xs:unsignedInt" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="agent_site" type="Site" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="agentType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="inputs" type="PortRef" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="outputs" type="PortRef" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="roles" type="Role" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Role" type="Role"/>
+	<xs:complexType name="Role">
+		<xs:annotation>
+			<xs:documentation>This class is used to describe the role assigned to an agent.
+
+(References the agent_role MIMOSA table.)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="agentRoleType" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>References the agent_role_type MIMOSA table.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="id" type="MIMKey2" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

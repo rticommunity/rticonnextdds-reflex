@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright 2010 MIMOSA. All Rights Reserved. -->
+<xs:schema targetNamespace="http://www.mimosa.org/OSACBMV3.3.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.mimosa.org/OSACBMV3.3.1">
+	<xs:element name="MeasLoc" type="MeasLoc"/>
+	<xs:complexType name="MeasLoc">
+		<xs:annotation>
+			<xs:documentation>Contains the MIMOSA table keys for identifying the measurement location.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="measLocId" type="MIMKey2" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="measLocType" type="MIMKey3" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="userTag" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DataSourceMeasInfo" type="DataSourceMeasInfo"/>
+	<xs:complexType name="DataSourceMeasInfo">
+		<xs:sequence>
+			<xs:element name="dataSrcType" type="MIMKey3" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="mCalcSize" type="xs:float" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mLocCalcType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="MeasLoc_MIM" type="MeasLoc_MIM"/>
+	<xs:complexType name="MeasLoc_MIM">
+		<xs:complexContent>
+			<xs:extension base="MeasLoc">
+				<xs:sequence>
+					<xs:element name="asset" type="MIMKey2" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="barCode" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="collect_duration" type="xs:int" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="collectEU" type="EngUnit" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="dataSrc" type="DataSourceMeasInfo" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="mim_user_prefix" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="segment" type="MIMKey2" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="segOrAs" type="SegOrAs" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="transd" type="TransducerMeasInfo" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="update_interval" type="xs:double" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="updateEU" type="EngUnit" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="TransducerMeasInfo" type="TransducerMeasInfo"/>
+	<xs:complexType name="TransducerMeasInfo">
+		<xs:sequence>
+			<xs:element name="mim_loc_seq" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="motion_direction" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ta_orient_deg" type="xs:int" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="transdType" type="MIMKey3" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="trAxDirType" type="MIMKey3" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

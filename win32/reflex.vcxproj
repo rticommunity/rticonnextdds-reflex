@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7EECDE8A-125B-474B-8551-74D3D5739377}</ProjectGuid>
+    <ProjectName>reflex</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(REFLEXHOME)\objs\i86Win32VS2013\</OutDir>
+    <IntDir>$(REFLEXHOME)\objs\i86Win32VS2013\</IntDir>
+    <TargetExt>.dll</TargetExt>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(REFLEXHOME)\objs\i86Win32VS2013\</OutDir>
+    <IntDir>$(REFLEXHOME)\objs\i86Win32VS2013\</IntDir>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(REFLEXHOME)\include;$(BOOSTHOME);$(BOOSTHOME)\boost;$(NDDSHOME)\include;$(NDDSHOME)\include\ndds</AdditionalIncludeDirectories>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;REFLEX_DEBUG;_CONSOLE;BUILD_DD2TUPLE_DLL</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(REFLEXHOME)\objs\i86Win32VS2013\reflexd.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(NDDSHOME)\lib\i86Win32VS2012;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(REFLEXHOME)\include;$(BOOSTHOME);$(BOOSTHOME)\boost;$(NDDSHOME)\include;$(NDDSHOME)\include\ndds</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;_CONSOLE;BUILD_DD2TUPLE_DLL</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(REFLEXHOME)\objs\i86Win32VS2013\reflex.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(NDDSHOME)\lib\i86Win32VS2012;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>nddscpp.lib;nddsc.lib;nddscore.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\dd2tuple.cxx" />
+    <ClCompile Include="..\src\dd_manip.cxx" />
+    <ClCompile Include="..\src\reflex.cxx" />
+    <ClCompile Include="..\src\dd_extra.cxx" />
+    <ClCompile Include="..\src\default_member_names.cxx" />
+    <ClCompile Include="..\src\safe_typecode.cxx" />
+    <ClCompile Include="..\src\typecode_manip.cxx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\bounded.h" />
+    <ClInclude Include="..\include\common.h" />
+    <ClInclude Include="..\include\dd2tuple.h" />
+    <ClInclude Include="..\include\reflex.h" />
+    <ClInclude Include="..\include\dd_extra.h" />
+    <ClInclude Include="..\include\dd_manip.h" />
+    <ClInclude Include="..\include\dd_traits.h" />
+    <ClInclude Include="..\include\default_member_names.h" />
+    <ClInclude Include="..\include\disc_union.h" />
+    <ClInclude Include="..\include\dllexport.h" />
+    <ClInclude Include="..\include\enable_if.h" />
+    <ClInclude Include="..\include\memberwise.h" />
+    <ClInclude Include="..\include\safe_enum.h" />
+    <ClInclude Include="..\include\safe_typecode.h" />
+    <ClInclude Include="..\include\tuple_iterator.h" />
+    <ClInclude Include="..\include\typecode_manip.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
