@@ -41,6 +41,8 @@
 <h3>
 <a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h3>
 
+<hr>
+
 <p>Consider the following simple <code>ShapeType</code> class.</p>
 
 <div class="highlight highlight-cpp"><pre><span class="pl-st">class</span> <span class="pl-en">ShapeType</span> 
@@ -103,10 +105,14 @@
 <h3>
 <a id="what-powers-reflex" class="anchor" href="#what-powers-reflex" aria-hidden="true"><span class="octicon octicon-link"></span></a>What powers RefleX?</h3>
 
+<hr>
+
 <p>The Reflex library uses powerful C++ meta-programming (templates and the preprocessor) machinery to iterate over the members of the user-defined type and synthesizes equivalent <code>TypeObject</code> representation for the type and <code>DynamicData</code> representation for the state. <code>RTI_ADAPT_STRUCT</code> macro acts as a substitute for reflection in C++. It is not the kind of reflection in the Java/C# world. It is a macro, which opens the guts of the specified type to the RefleX library (take a <a href="https://github.com/rticommunity/rticonnextdds-reflex/blob/master/test/shape_type_adapt.h">look</a>). The key difference is that the process of reflection happens at compile-time. As a consequence, there is no run-time performance penalty for using reflection. The resulting on-the-wire type description is fully compatible with an equivalent type described in IDL. Needless to say, they interoperate.</p>
 
 <h3>
 <a id="c-types-supported-by-reflex" class="anchor" href="#c-types-supported-by-reflex" aria-hidden="true"><span class="octicon octicon-link"></span></a>C++ Types Supported by RefleX</h3>
+
+<hr>
 
 <ul>
 <li>All fundamental types, arrays, multi-dimensional arrays, enumerations</li>
@@ -115,6 +121,7 @@
 <li>Nested struct/classes (<a href="https://github.com/rticommunity/rticonnextdds-reflex/blob/master/test/darkart.h">example</a>)</li>
 <li>Standard Template Library (STL) <code>string</code>, <code>vector</code>, <code>list</code>, <code>set</code>, <code>map</code>, <code>array</code>, <code>tuple</code>, <code>pair</code>, iterators, etc. </li>
 <li>Raw pointer, smart pointers</li>
+<li>Optional members (e.g., boost::optional)</li>
 <li>User-defined/custom containers (e.g., those that expose STL-compatible iterators, boost.Iterators) (<a href="https://github.com/rticommunity/rticonnextdds-reflex/blob/master/test/osacbm/driver.cxx">example</a>)</li>
 <li>Class inheritance (<a href="https://github.com/rticommunity/rticonnextdds-reflex/blob/master/test/shape_type.h">example</a>)</li>
 <li>Most combinations of the above </li>
@@ -122,6 +129,8 @@
 
 <h3>
 <a id="advantages-of-reflex" class="anchor" href="#advantages-of-reflex" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advantages of RefleX</h3>
+
+<hr>
 
 <ol>
 <li><p><strong>Native Types (IDL-free):</strong> IDL representation of DDS types is no longer necessary. Adapted C++ types declarations in the headers are sufficient. With RefleX, you are free to use C++ standard library types, such as STL containers, custom iterators, <code>shared_ptr</code>, <code>auto_ptr</code>, <code>unique_ptr</code>, etc. The RefleX library has a predefined mapping for each and you can also define your own mapping. </p></li>
@@ -133,6 +142,8 @@
 
 <h3>
 <a id="download-and-build" class="anchor" href="#download-and-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download and Build</h3>
+
+<hr>
 
 <h4>
 <a id="linux" class="anchor" href="#linux" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux</h4>
@@ -158,6 +169,8 @@
 <h3>
 <a id="more-reading" class="anchor" href="#more-reading" aria-hidden="true"><span class="octicon octicon-link"></span></a>More reading</h3>
 
+<hr>
+
 <ul>
 <li><a href="http://blogs.rti.com/2014/03/22/rti-reflex-reflection-based-type-modeling-for-dds-topics/">RefleX announcement</a></li>
 <li><a href="http://community.rti.com/paper/c-template-library-data-centric-type-modeling-dds-xtypes">RefleX whitepaper</a></li>
@@ -166,6 +179,8 @@
 
 <h3>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h3>
+
+<hr>
 
 <p>(c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.<br>
 RTI grants Licensee a license to use, modify, compile, and create derivative works 
@@ -177,6 +192,8 @@ damages arising out of the use or inability to use the software.</p>
 
 <h3>
 <a id="contact" class="anchor" href="#contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contact</h3>
+
+<hr>
 
 <p>Sumant Tambe (sumant at RTI d0t com)</p>
       </section>
