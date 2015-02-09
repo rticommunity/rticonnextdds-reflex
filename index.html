@@ -100,6 +100,38 @@
 };<span class="pl-c">//@Extensibility EXTENSIBLE_EXTENSIBILITY</span></pre></div>
 
 <h3>
+<a id="download-and-build" class="anchor" href="#download-and-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download and Build</h3>
+
+<h4>
+<a id="linux-gcc-48-clang-33-or-better" class="anchor" href="#linux-gcc-48-clang-33-or-better" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux gcc 4.8, clang 3.3 or better</h4>
+
+<ol>
+<li>export REFLEXHOME, BOOSTHOME (1.46+) and NDDSHOME (5.0.0+)</li>
+<li>export ARCH=i86Linux2.6gcc4.4.5, for example. See make/Makefile* for details</li>
+<li>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NDDSHOME/lib/$ARCH:$REFLEXHOME/objs/$ARCH</li>
+<li>Example: make -f make/Makefile.i86Linux-gcc CXX=g++48 (g++48 must be in your $PATH) </li>
+</ol>
+
+<h4>
+<a id="visual-studio-2013-build" class="anchor" href="#visual-studio-2013-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Visual Studio 2013 Build</h4>
+
+<ol>
+<li>Set REFLEXHOME, BOOSTHOME (1.46+), and NDDSHOME (5.1.0+)</li>
+<li>Set PATH=%PATH%;%REFLEXHOME%\objs\i86Win32VS2013;%NDDSHOME%\lib\i86Win32VS2012</li>
+<li>Run %NDDSHOME%\scripts\rtiddsgen -language C++ -namespace -d test idl\complex.idl</li>
+<li>Open win32\reflex-vs2013.sln using Visual Studio</li>
+</ol>
+
+<h3>
+<a id="more-reading" class="anchor" href="#more-reading" aria-hidden="true"><span class="octicon octicon-link"></span></a>More reading</h3>
+
+<ul>
+<li><a href="http://blogs.rti.com/2014/03/22/rti-reflex-reflection-based-type-modeling-for-dds-topics/">RefleX announcement</a></li>
+<li><a href="http://community.rti.com/paper/c-template-library-data-centric-type-modeling-dds-xtypes">RefleX whitepaper</a></li>
+<li><a href="http://www.slideshare.net/SumantTambe/overloading-in-overdrive-a-generic-datacentric-library-for">Overloading in Overdrive presentation</a></li>
+</ul>
+
+<h3>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h3>
 
 <p>(c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.<br>
