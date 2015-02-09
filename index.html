@@ -43,31 +43,31 @@
 
 <p>Consider the following simple <code>ShapeType</code> class.</p>
 
-<div class="highlight highlight-cpp"><pre>    <span class="pl-st">class</span> <span class="pl-en">ShapeType</span> 
-    {
-      std::string color_;
-      <span class="pl-st">int</span> x_, y_, shapesize_;
+<div class="highlight highlight-cpp"><pre><span class="pl-st">class</span> <span class="pl-en">ShapeType</span> 
+{
+  std::string color_;
+  <span class="pl-st">int</span> x_, y_, shapesize_;
 
-    <span class="pl-s">public:</span>
-      <span class="pl-en">ShapeType</span>() {}
-      <span class="pl-en">ShapeType</span>(<span class="pl-s">const</span> std::string &amp; color,
-                <span class="pl-st">int</span> x, <span class="pl-st">int</span> y, <span class="pl-st">int</span> shapesize)
-       : color_(color), x_(x), y_(y),
-          <span class="pl-en">shapesize_</span>(shapesize)
-      {}
+<span class="pl-s">public:</span>
+  <span class="pl-en">ShapeType</span>() {}
+  <span class="pl-en">ShapeType</span>(<span class="pl-s">const</span> std::string &amp; color,
+            <span class="pl-st">int</span> x, <span class="pl-st">int</span> y, <span class="pl-st">int</span> shapesize)
+    : color_(color), x_(x), y_(y),
+      <span class="pl-en">shapesize_</span>(shapesize)
+  {}
 
-      std::string &amp; <span class="pl-en">color</span>() { <span class="pl-k">return</span> color_;     }
-      <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             { <span class="pl-k">return</span> x_;         }
-      <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             { <span class="pl-k">return</span> y_;         }
-      <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     { <span class="pl-k">return</span> shapesize_; }
+  std::string &amp; <span class="pl-en">color</span>() { <span class="pl-k">return</span> color_;     }
+  <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             { <span class="pl-k">return</span> x_;         }
+  <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             { <span class="pl-k">return</span> y_;         }
+  <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     { <span class="pl-k">return</span> shapesize_; }
 
-      <span class="pl-s">const</span> std::string &amp; <span class="pl-en">color</span>() <span class="pl-s">const</span> { <span class="pl-k">return</span> color_;     }
-      <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> x_;         }
-      <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> y_;         }
-      <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     <span class="pl-s">const</span> { <span class="pl-k">return</span> shapesize_; }
-    };</pre></div>
+  <span class="pl-s">const</span> std::string &amp; <span class="pl-en">color</span>() <span class="pl-s">const</span> { <span class="pl-k">return</span> color_;     }
+  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> x_;         }
+  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> y_;         }
+  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     <span class="pl-s">const</span> { <span class="pl-k">return</span> shapesize_; }
+};</pre></div>
 
-<p>To send and receive instances of this class using DDS, simply add the <code>RTI_ADAPT_STRUCT</code> macro below. Note that the <code>color</code> is the key.</p>
+<p>To send and receive instances of this class using DDS, simply add the <code>RTI_ADAPT_STRUCT</code> macro below. Note that <code>color</code> is the key.</p>
 
 <div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>reflex.h<span class="pl-pds">"</span></span>
 
@@ -90,7 +90,7 @@
   writer.<span class="pl-s3">write</span>(shape);
 }</pre></div>
 
-<p>RefleX maps the ShapeType class to the following ShapeType IDL, which is interoperable with Shapes Demo.</p>
+<p>RefleX maps the ShapeType class to the following ShapeType IDL, which is interoperable with the Shapes Demo.</p>
 
 <div class="highlight highlight-cpp"><pre><span class="pl-st">struct</span> <span class="pl-en">ShapeType</span>
 {
@@ -99,6 +99,38 @@
     <span class="pl-st">long</span> y;
     <span class="pl-st">long</span> shapesize;
 };<span class="pl-c">//@Extensibility EXTENSIBLE_EXTENSIBILITY</span></pre></div>
+
+<h3>
+<a id="what-powers-reflex" class="anchor" href="#what-powers-reflex" aria-hidden="true"><span class="octicon octicon-link"></span></a>What powers RefleX?</h3>
+
+<p>The Reflex library uses powerful C++ meta-programming (templates and the preprocessor) machinery to iterate over the members of the user-defined type and synthesizes equivalent TypeObject representation for the type and DynamicData representation for the state. RTI_ADAPT_STRUCT macro acts as a substitute for reflection in C++. It is not the kind of reflection in the Java/C# world. It is a macro, which opens the guts of the specified type to the RefleX library. The key difference is that the process of reflection happens at compile-time.  The resulting on-the-wire type description is fully compatible with an equivalent type described in IDL. Needless to say, they interoperate.</p>
+
+<h3>
+<a id="c-types-supported-by-reflex" class="anchor" href="#c-types-supported-by-reflex" aria-hidden="true"><span class="octicon octicon-link"></span></a>C++ Types Supported by RefleX</h3>
+
+<ul>
+<li>All fundamental types, arrays, multi-dimensional arrays, enumerations</li>
+<li>Struct (with public members)</li>
+<li>Classes (with setter/getter)</li>
+<li>Nested struct/classes</li>
+<li>Standard Template Library (STL) string, vector, list, set, map, array, tuple, pair, iterators, etc.</li>
+<li>Raw pointer, smart pointers</li>
+<li>User-defined/custom containers(e.g., those that expose STL-compatible iterators)</li>
+<li>Lazy container adapters (e.g., boost.Iterators)</li>
+<li>Class inheritance </li>
+<li>Most combinations of the above </li>
+</ul>
+
+<h3>
+<a id="advantages-of-reflex" class="anchor" href="#advantages-of-reflex" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advantages of RefleX</h3>
+
+<ol>
+<li><p><strong>Native Types (IDL-free):</strong> IDL representation of DDS types is no longer necessary. Adapted C++ types declarations in the headers are sufficient. With RefleX, you are free to use C++ standard library types, such as STL containers, custom iterators, shared_ptr, auto_ptr, unique_ptr, etc. The RefleX library has a predefined mapping for each and you can also define your own mapping. </p></li>
+<li><p><strong>Declarative Dynamic Data:</strong> <code>DynamicData</code> and <code>TypeCode</code> objects can be created declaratively as opposed to procedurally, which quickly gets laborious and repetitive as the complexity of the type increases. Many times, types are known statically but no code generation support is available (e.g., RTI Routing Service adapters). With RefleX, creating a TypeCode and populating a DynamicData object is never more than one line of code!</p></li>
+<li><p><strong>Third-party code generators:</strong> Classes generated by third-party code generation tools can be mapped to DDS topic types. The key is that RefleX works directly off of C++ types. The generated types may use a wide variety of types (e.g., boost containers, custom iterators, etc.). RefleX provides a way to map such types directly to a DDS. For example, with RefleX the types generated by a third-party XSD to C++ compiler can be mapped to DDS adding an RTI_ADAPT_STRUCT macro for each generated type.</p></li>
+<li><p><strong>Glue code:</strong> Glue code must often be written because wire-level types may not always match with the application-level types. RefleX allows direct use of application-level types with DDS. Glue code is nearly eliminated.</p></li>
+<li><p><strong>Performance:</strong> Users of complex XML vocabularies (e.g., XSD) often serialize data to plain-text XML before writing it out to DDS. Such an approach incurs significant performance penalty as data is serialized twice. RefleX does only one serialization as the underlying DynamicData representation is already serialized. </p></li>
+</ol>
 
 <h3>
 <a id="download-and-build" class="anchor" href="#download-and-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download and Build</h3>
