@@ -116,6 +116,13 @@
 <p>The Reflex library uses powerful C++ meta-programming (templates and the preprocessor) machinery to iterate over the members of the user-defined type and synthesizes equivalent <code>TypeObject</code> representation for the type and <code>DynamicData</code> representation for the state. <code>RTI_ADAPT_STRUCT</code> macro acts as a substitute for reflection in C++. The macro uses Boost Fusion internally. It is not the kind of reflection in the Java/C# world. It is a macro, which opens the guts of the specified type to the RefleX library (take a <a href="https://github.com/rticommunity/rticonnextdds-reflex/blob/master/test/shape_type_adapt.h">look</a>). The key difference is that the process of reflection happens at compile-time. As a consequence, there is no run-time performance penalty for using reflection. The resulting on-the-wire type description is fully compatible with an equivalent type described in IDL. Needless to say, they interoperate.</p>
 
 <h3>
+<a id="architecture" class="anchor" href="#architecture" aria-hidden="true"><span class="octicon octicon-link"></span></a>Architecture</h3>
+
+<p>RefleX is based on a simple layered architecture. DDS applications based on the classic C++ DDS API and the new C++ DDS PSM can make use of RefleX. </p>
+
+<p><img src="images/architecture.png" alt="Architecture"></p>
+
+<h3>
 <a id="native-c-types-supported-by-reflex" class="anchor" href="#native-c-types-supported-by-reflex" aria-hidden="true"><span class="octicon octicon-link"></span></a>Native C++ Types Supported by RefleX</h3>
 
 <ul>
