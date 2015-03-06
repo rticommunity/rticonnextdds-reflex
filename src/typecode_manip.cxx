@@ -12,9 +12,9 @@ damages arising out of the use or inability to use the software.
 #include <set>
 #include <string>
 
-#include "typecode_manip.h"
-#include "safe_typecode.h"
-#include "dllexport.h"
+#include "reflex/typecode_manip.h"
+#include "reflex/safe_typecode.h"
+#include "reflex/dllexport.h"
 
 namespace reflex {
 

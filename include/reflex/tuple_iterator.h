@@ -17,9 +17,9 @@ damages arising out of the use or inability to use the software.
 
 #include <ndds/ndds_cpp.h>
 
-#include "default_member_names.h"
-#include "disc_union.h"
-#include "enable_if.h"
+#include "reflex/default_member_names.h"
+#include "reflex/disc_union.h"
+#include "reflex/enable_if.h"
 
 #define UNUSED_VAR(i) do { (void)(i); } while (0)
 

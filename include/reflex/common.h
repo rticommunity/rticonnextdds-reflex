@@ -11,7 +11,7 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_COMMON_H
 #define RTIREFLEX_COMMON_H
 
-#include "dllexport.h"
+#include "reflex/dllexport.h"
 
 namespace reflex {
 

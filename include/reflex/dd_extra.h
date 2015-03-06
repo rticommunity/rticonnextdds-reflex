@@ -13,7 +13,7 @@ damages arising out of the use or inability to use the software.
 
 #include <string>
 #include "ndds/ndds_cpp.h"
-#include "dllexport.h"
+#include "reflex/dllexport.h"
 
 #ifdef RTI_WIN32
 #include <stdint.h>

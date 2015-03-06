@@ -16,8 +16,8 @@ damages arising out of the use or inability to use the software.
 #include <boost/utility/typed_in_place_factory.hpp> 
 #include <tuple>
 #include <typeinfo>
-#include "tuple_iterator.h"
-#include "default_member_names.h"
+#include "reflex/tuple_iterator.h"
+#include "reflex/default_member_names.h"
 
 namespace reflex {
 

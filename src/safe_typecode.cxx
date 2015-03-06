@@ -8,7 +8,7 @@ support the Software.  RTI shall not be liable for any incidental or consequenti
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
-#include "safe_typecode.h"
+#include "reflex/safe_typecode.h"
 
 #define GET_TYPECODE_DEF(BASIC_TYPE, TYPECODE)                            \
 const DDS_TypeCode * SafeTypeCodeBase::get_typecode(const BASIC_TYPE *) { \

@@ -13,9 +13,9 @@ damages arising out of the use or inability to use the software.
 #include <stdexcept>
 #include <sstream>
 
-#include "dd_extra.h"
-#include "common.h"
-#include "dd_manip.h"
+#include "reflex/dd_extra.h"
+#include "reflex/common.h"
+#include "reflex/dd_manip.h"
 
 #ifdef RTI_WIN32
 namespace reflex {

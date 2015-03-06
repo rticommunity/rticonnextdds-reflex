@@ -8,7 +8,7 @@ support the Software.  RTI shall not be liable for any incidental or consequenti
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
-#include "default_member_names.h"
+#include "reflex/default_member_names.h"
 #include "ndds/ndds_cpp.h"
 #include <string>
 

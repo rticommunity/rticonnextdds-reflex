@@ -16,14 +16,14 @@ damages arising out of the use or inability to use the software.
 #include <vector>
 
 #include <ndds/ndds_cpp.h>
-#include "safe_typecode.h"
-#include "default_member_names.h"
-#include "enable_if.h"
-#include "safe_enum.h"
-#include "disc_union.h" 
-#include "tuple_iterator.h"
-#include "bounded.h"
-#include "dllexport.h"
+#include "reflex/safe_typecode.h"
+#include "reflex/default_member_names.h"
+#include "reflex/enable_if.h"
+#include "reflex/safe_enum.h"
+#include "reflex/disc_union.h" 
+#include "reflex/tuple_iterator.h"
+#include "reflex/bounded.h"
+#include "reflex/dllexport.h"
 
 namespace reflex {
 

@@ -11,8 +11,8 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_TUPLE_READER_WRITER_H
 #define RTIREFLEX_TUPLE_READER_WRITER_H
 
-#include "dd2tuple.h"
-#include "dllexport.h"
+#include "reflex/dd2tuple.h"
+#include "reflex/dllexport.h"
 #include <memory>
 
 EXPIMP_TEMPLATE template class DllExport reflex::SafeTypeCode<DDS_TypeCode>;

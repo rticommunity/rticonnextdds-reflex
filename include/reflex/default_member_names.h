@@ -12,8 +12,9 @@ damages arising out of the use or inability to use the software.
 #define RTIREFLEX_DEFAULT_MEMBER_NAMES_H
 
 #include "ndds/ndds_cpp.h"
-#include "dllexport.h"
-#include "enable_if.h"
+
+#include "reflex/dllexport.h"
+#include "reflex/enable_if.h"
 
 #include <string>
 #include <typeinfo>

@@ -15,8 +15,8 @@ damages arising out of the use or inability to use the software.
 #include <type_traits>
 
 #include "ndds/ndds_cpp.h"
-#include "dd_extra.h"
-#include "enable_if.h"
+#include "reflex/dd_extra.h"
+#include "reflex/enable_if.h"
 
 namespace reflex {
   namespace detail {

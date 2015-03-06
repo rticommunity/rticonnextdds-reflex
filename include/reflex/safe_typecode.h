@@ -18,11 +18,11 @@ damages arising out of the use or inability to use the software.
 #include <boost/type_traits.hpp>
 
 #include <ndds/ndds_cpp.h>
-#include "enable_if.h"
-#include "safe_enum.h"
-#include "disc_union.h" 
-#include "bounded.h"
-#include "common.h"
+#include "reflex/enable_if.h"
+#include "reflex/safe_enum.h"
+#include "reflex/disc_union.h" 
+#include "reflex/bounded.h"
+#include "reflex/common.h"
 
 #define MAKE_SAFETYPECODE_MOVEONLY                        \
 private:                                                  \

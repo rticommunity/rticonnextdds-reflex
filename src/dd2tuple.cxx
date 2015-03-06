@@ -10,7 +10,7 @@ damages arising out of the use or inability to use the software.
 
 #include <iostream>
 #include "ndds/ndds_cpp.h"
-#include "dd2tuple.h"
+#include "reflex/dd2tuple.h"
 
 namespace reflex {
 

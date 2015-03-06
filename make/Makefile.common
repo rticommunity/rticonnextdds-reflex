@@ -114,21 +114,22 @@ SOURCES = src/dd2tuple.cxx                 \
           src/safe_typecode.cxx            \
           src/default_member_names.cxx
 
-HEADERS = include/dd2tuple.h             \
-          include/dd_manip.h             \
-          include/typecode_manip.h       \
-          include/default_member_names.h \
-          include/dd_traits.h            \
-          include/enable_if.h            \
-          include/safe_typecode.h        \
-          include/safe_enum.h            \
-          include/disc_union.h           \
-          include/dd_extra.h             \
-          include/bounded.h              \
-          include/reflex.h               \
-          include/tuple_iterator.h
+HEADERS = include/reflex/dd2tuple.h             \
+          include/reflex/dd_manip.h             \
+          include/reflex/typecode_manip.h       \
+          include/reflex/default_member_names.h \
+          include/reflex/dd_traits.h            \
+          include/reflex/enable_if.h            \
+          include/reflex/safe_typecode.h        \
+          include/reflex/safe_enum.h            \
+          include/reflex/disc_union.h           \
+          include/reflex/dd_extra.h             \
+          include/reflex/bounded.h              \
+          include/reflex/tuple_iterator.h       \
+          include/reflex.h
 
-TESTSRCS = test/reflex-test.cxx \
+
+TESTSRCS = test/reflex_test.cxx \
            test/one_member.cxx \
            test/all_types.cxx \
            test/many_members.cxx \

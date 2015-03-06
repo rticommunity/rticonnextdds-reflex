@@ -83,22 +83,22 @@
     <ClCompile Include="..\src\typecode_manip.cxx" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\bounded.h" />
-    <ClInclude Include="..\include\common.h" />
-    <ClInclude Include="..\include\dd2tuple.h" />
     <ClInclude Include="..\include\reflex.h" />
-    <ClInclude Include="..\include\dd_extra.h" />
-    <ClInclude Include="..\include\dd_manip.h" />
-    <ClInclude Include="..\include\dd_traits.h" />
-    <ClInclude Include="..\include\default_member_names.h" />
-    <ClInclude Include="..\include\disc_union.h" />
-    <ClInclude Include="..\include\dllexport.h" />
-    <ClInclude Include="..\include\enable_if.h" />
-    <ClInclude Include="..\include\memberwise.h" />
-    <ClInclude Include="..\include\safe_enum.h" />
-    <ClInclude Include="..\include\safe_typecode.h" />
-    <ClInclude Include="..\include\tuple_iterator.h" />
-    <ClInclude Include="..\include\typecode_manip.h" />
+    <ClInclude Include="..\include\reflex\bounded.h" />
+    <ClInclude Include="..\include\reflex\common.h" />
+    <ClInclude Include="..\include\reflex\dd2tuple.h" />
+    <ClInclude Include="..\include\reflex\dd_extra.h" />
+    <ClInclude Include="..\include\reflex\dd_manip.h" />
+    <ClInclude Include="..\include\reflex\dd_traits.h" />
+    <ClInclude Include="..\include\reflex\default_member_names.h" />
+    <ClInclude Include="..\include\reflex\disc_union.h" />
+    <ClInclude Include="..\include\reflex\dllexport.h" />
+    <ClInclude Include="..\include\reflex\enable_if.h" />
+    <ClInclude Include="..\include\reflex\memberwise.h" />
+    <ClInclude Include="..\include\reflex\safe_enum.h" />
+    <ClInclude Include="..\include\reflex\safe_typecode.h" />
+    <ClInclude Include="..\include\reflex\tuple_iterator.h" />
+    <ClInclude Include="..\include\reflex\typecode_manip.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

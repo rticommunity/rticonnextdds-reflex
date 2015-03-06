@@ -19,13 +19,14 @@ damages arising out of the use or inability to use the software.
 #include <cassert>
 
 #include "ndds/ndds_cpp.h"
-#include "tuple_iterator.h"
-#include "dd_traits.h"
-#include "enable_if.h"
-#include "safe_enum.h"
-#include "dd_extra.h"
-#include "bounded.h"
-#include "common.h"
+
+#include "reflex/tuple_iterator.h"
+#include "reflex/dd_traits.h"
+#include "reflex/enable_if.h"
+#include "reflex/safe_enum.h"
+#include "reflex/dd_extra.h"
+#include "reflex/bounded.h"
+#include "reflex/common.h"
 
 #include <boost/fusion/support/is_sequence.hpp>
 #include <boost/fusion/include/is_sequence.hpp>

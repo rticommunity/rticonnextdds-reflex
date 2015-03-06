@@ -24,52 +24,52 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\typecode_manip.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\bounded.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\common.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\dd_extra.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\dd_manip.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\dd_traits.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\dd2tuple.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\default_member_names.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\disc_union.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\dllexport.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\enable_if.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\memberwise.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\safe_enum.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\safe_typecode.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\tuple_iterator.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\reflex.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\bounded.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\common.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dd_extra.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dd_manip.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dd_traits.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dd2tuple.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\default_member_names.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\disc_union.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dllexport.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\enable_if.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\memberwise.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\safe_enum.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\safe_typecode.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\tuple_iterator.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\typecode_manip.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

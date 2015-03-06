@@ -15,12 +15,12 @@ damages arising out of the use or inability to use the software.
 #include <tuple>
 #include <vector>
 
-#include "dllexport.h"
-#include "dd_manip.h"
-#include "typecode_manip.h"
-#include "memberwise.h"
-#include "default_member_names.h"
-#include "bounded.h"
+#include "reflex/dllexport.h"
+#include "reflex/dd_manip.h"
+#include "reflex/typecode_manip.h"
+#include "reflex/memberwise.h"
+#include "reflex/default_member_names.h"
+#include "reflex/bounded.h"
 
 #include <boost/fusion/sequence/intrinsic/size.hpp>
 #include <boost/fusion/include/size.hpp>
