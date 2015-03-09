@@ -2,7 +2,7 @@
 (c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative works
 of the Software.  Licensee has the right to distribute object form only for use with RTI
-products.  The Software is provided “as is”, with no warranty of any type, including
+products.  The Software is provided "as is", with no warranty of any type, including
 any warranty for fitness for any purpose. RTI is under no obligation to maintain or
 support the Software.  RTI shall not be liable for any incidental or consequential
 damages arising out of the use or inability to use the software.
@@ -142,7 +142,7 @@ namespace reflex {
 
   } // namespace detail
 
-  class DllExport SafeDynamicDataInstance
+  class DllExport AutoDynamicData
   {
   protected:
     DDSDynamicDataTypeSupport * type_support_;
@@ -151,33 +151,33 @@ namespace reflex {
    static DDS_DynamicData * init(DDSDynamicDataTypeSupport * ts);
 
   public:
-    SafeDynamicDataInstance(DDSDynamicDataTypeSupport * typeSupport);
-    SafeDynamicDataInstance(const SafeDynamicDataInstance &);
+    AutoDynamicData(DDSDynamicDataTypeSupport * typeSupport);
+    AutoDynamicData(const AutoDynamicData &);
 
-    SafeDynamicDataInstance & operator = (const SafeDynamicDataInstance &);
+    AutoDynamicData & operator = (const AutoDynamicData &);
 
-    ~SafeDynamicDataInstance();
+    ~AutoDynamicData();
 
-    void swap(SafeDynamicDataInstance &) throw();
+    void swap(AutoDynamicData &) throw();
     DDS_DynamicData * get();
     const DDS_DynamicData * get() const;
   };
 
   template <class T>
-  class SafeDynamicData : public SafeDynamicDataInstance
+  class SafeDynamicData : public AutoDynamicData
   {
     public:
       SafeDynamicData(
           DDSDynamicDataTypeSupport *type_support,
           const T & src)
-        : SafeDynamicDataInstance(type_support)
+        : AutoDynamicData(type_support)
       {
         fill_dd(src, *instance_);
       }
 
       explicit SafeDynamicData(
           DDSDynamicDataTypeSupport *type_support)
-        : SafeDynamicDataInstance(type_support)
+        : AutoDynamicData(type_support)
       { }
 
       SafeDynamicData & operator = (const T & src)
@@ -197,7 +197,7 @@ namespace reflex {
   }
 
   template <class T>
-  void fill_dd(const T & data, SafeDynamicDataInstance &instance)
+  void fill_dd(const T & data, AutoDynamicData &instance)
   {
     detail::fill_dd_impl(
       data,
@@ -218,7 +218,7 @@ namespace reflex {
       
     return reflex::SafeDynamicData<T>(type_support, src);
   }
-
+  
   template <class T>
   SafeTypeCode<T> make_typecode(const char * name /* default 0 */)
   {
@@ -240,7 +240,7 @@ namespace reflex {
   }
 
   template <class T>
-  void extract_dd(const SafeDynamicDataInstance & instance, T & data)
+  void extract_dd(const AutoDynamicData & instance, T & data)
   {
     detail::extract_dd_impl(
       *instance.get(),

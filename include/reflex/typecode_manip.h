@@ -2,7 +2,7 @@
 (c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative works
 of the Software.  Licensee has the right to distribute object form only for use with RTI
-products.  The Software is provided “as is”, with no warranty of any type, including
+products.  The Software is provided "as is", with no warranty of any type, including
 any warranty for fitness for any purpose. RTI is under no obligation to maintain or
 support the Software.  RTI shall not be liable for any incidental or consequential
 damages arising out of the use or inability to use the software.
@@ -32,6 +32,13 @@ namespace reflex {
         const DDS_TypeCode * tc,
         DDS_UnsignedLong indent);
 
+  /**
+  * Creates a <a href="http://community.rti.com/rti-doc/510/ndds.5.1.0/doc/html/api_cpp/structDDS__TypeCode.html">TypeCode</a>
+  * for structured type T.
+  * @param name Optional name for top-level struct type. 
+  *        If none is provided, the unqualified name of type T is used.
+  * @return The TypeCode for type T wrapped in a SafeTypeCode object.
+  */
   template <class T>
   SafeTypeCode<T> make_typecode(const char * name = 0);
 
@@ -176,9 +183,9 @@ namespace reflex {
       }
 
       template <class C, size_t Bound>
-      static SafeTypeCode<reflex::Bounded<C, Bound>> get_typecode(
+      static SafeTypeCode<reflex::match::Bounded<C, Bound>> get_typecode(
             DDS_TypeCodeFactory * factory,
-            const reflex::Bounded<C, Bound> *,
+            const reflex::match::Bounded<C, Bound> *,
             typename enable_if<is_container<C>::value>::type * = 0)
       {
           SafeTypeCode<typename C::value_type> innerTc
@@ -186,7 +193,7 @@ namespace reflex {
                 factory,
                 static_cast<typename C::value_type *>(0));
 
-          return SafeTypeCode<reflex::Bounded<C, Bound>>(factory, innerTc);
+          return SafeTypeCode<reflex::match::Bounded<C, Bound>>(factory, innerTc);
       }
 
       template <class C>
@@ -219,30 +226,30 @@ namespace reflex {
 
 
       template <size_t Bound>
-      static SafeTypeCode<reflex::Bounded<std::string, Bound>>
+      static SafeTypeCode<reflex::match::Bounded<std::string, Bound>>
         get_typecode(
             DDS_TypeCodeFactory * factory,
-            const reflex::Bounded<std::string, Bound> *)
+            const reflex::match::Bounded<std::string, Bound> *)
       {
           SafeTypeCode<std::string> innerTc
             = TC_overload_resolution_helper::get_typecode(
                 factory, 
                 static_cast<std::string *>(0));
 
-          return SafeTypeCode<reflex::Bounded<std::string, Bound>>(factory);
+          return SafeTypeCode<reflex::match::Bounded<std::string, Bound>>(factory);
       }
 
       template <class T>
-      static SafeTypeCode<Range<T>> get_typecode(
+      static SafeTypeCode<match::Range<T>> get_typecode(
         DDS_TypeCodeFactory * factory,
-        const reflex::Range<T> *)
+        const reflex::match::Range<T> *)
       {
         SafeTypeCode<typename remove_reference<T>::type> innerTc
           = TC_overload_resolution_helper::get_typecode(
                   factory,
                   static_cast<typename remove_reference<T>::type *>(0));
 
-        return SafeTypeCode<reflex::Range<T>>(factory, innerTc);
+        return SafeTypeCode<reflex::match::Range<T>>(factory, innerTc);
       }
 
 /*
@@ -300,30 +307,30 @@ namespace reflex {
       }
 
       template <class T, size_t Bound>
-      static SafeTypeCode<BoundedRange<T, Bound>> get_typecode(
+      static SafeTypeCode<match::BoundedRange<T, Bound>> get_typecode(
             DDS_TypeCodeFactory * factory,
-            const reflex::BoundedRange<T, Bound> *)
+            const reflex::match::BoundedRange<T, Bound> *)
       {
           SafeTypeCode<typename remove_reference<T>::type> innerTc
             = TC_overload_resolution_helper::get_typecode(
                 factory,
                 static_cast<typename remove_reference<T>::type *>(0));
 
-          return SafeTypeCode<reflex::BoundedRange<T, Bound>>(
+          return SafeTypeCode<reflex::match::BoundedRange<T, Bound>>(
               factory, innerTc);
       }
       
       template <class... Args>
-      static SafeTypeCode<::reflex::Sparse<Args...>> get_typecode(
+      static SafeTypeCode<::reflex::match::Sparse<Args...>> get_typecode(
           DDS_TypeCodeFactory * factory,
-          const ::reflex::Sparse<Args...> *)
+          const ::reflex::match::Sparse<Args...> *)
       {
-          SafeTypeCode<::reflex::Sparse<Args...>>
+          SafeTypeCode<::reflex::match::Sparse<Args...>>
             sparseTc(factory, 
-                     StructName<::reflex::Sparse<Args...>>::get().c_str());
+                     StructName<::reflex::match::Sparse<Args...>>::get().c_str());
 
           typedef typename 
-            ::reflex::Sparse<Args...>::raw_tuple_type RawTuple;
+            ::reflex::match::Sparse<Args...>::raw_tuple_type RawTuple;
 
           TypelistIterator<RawTuple,
                            0,
@@ -334,10 +341,10 @@ namespace reflex {
       }
     
       template <class TagType, class... Cases>
-      static SafeTypeCode<reflex::Union<TagType, Cases...>>
+      static SafeTypeCode<reflex::match::Union<TagType, Cases...>>
         get_typecode(
             DDS_TypeCodeFactory * factory,
-            const reflex::Union<TagType, Cases...> *)
+            const reflex::match::Union<TagType, Cases...> *)
       {
           SafeTypeCode<TagType> discriminatorTc =
             TC_overload_resolution_helper::get_typecode(
@@ -345,7 +352,7 @@ namespace reflex {
                 static_cast<TagType *>(0));
 
           typedef typename 
-            reflex::Union<TagType, Cases...>::case_tuple_type CaseTuple;
+            reflex::match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
 
           DDS_UnionMemberSeq umember_seq;
           const size_t ncases = Size<CaseTuple>::value;
@@ -354,11 +361,11 @@ namespace reflex {
           TC_overload_resolution_helper::add_union_members(
               factory,
               umember_seq,
-              static_cast<reflex::Union<TagType, Cases...> *>(0));
+              static_cast<reflex::match::Union<TagType, Cases...> *>(0));
 
-          SafeTypeCode<reflex::Union<TagType, Cases...>>
+          SafeTypeCode<reflex::match::Union<TagType, Cases...>>
             unionTc(factory,
-            StructName<reflex::Union<TagType, Cases...>>::get().c_str(),
+            StructName<reflex::match::Union<TagType, Cases...>>::get().c_str(),
             discriminatorTc,
             umember_seq);
 
@@ -375,10 +382,10 @@ namespace reflex {
       static void add_union_members(
           DDS_TypeCodeFactory * factory,
           DDS_UnionMemberSeq & seq,
-          const reflex::Union<TagType, Cases...> *)
+          const reflex::match::Union<TagType, Cases...> *)
       {
         typedef typename 
-          reflex::Union<TagType, Cases...>::case_tuple_type CaseTuple;
+          reflex::match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
         TypelistIterator<CaseTuple,
           0,
           Size<CaseTuple>::value - 1>::add_union_member(factory, seq);
@@ -488,19 +495,19 @@ namespace reflex {
     struct LabelAdder;
 
     template <size_t I, class T, int Head, int... Tail>
-    struct LabelAdder<I, Case<T, Head, Tail...>>
+    struct LabelAdder<I, match::Case<T, Head, Tail...>>
     {
       enum { count = 1 + sizeof...(Tail) };
 
       static void exec(DDS_LongSeq & seq)
       {
         seq[I] = Head;
-        LabelAdder<I + 1, Case<T, Tail...>>::exec(seq);
+        LabelAdder<I + 1, match::Case<T, Tail...>>::exec(seq);
       }
     };
 
     template <size_t I, class T, int Last>
-    struct LabelAdder<I, Case<T, Last>>
+    struct LabelAdder<I, match::Case<T, Last>>
     {
       enum { count = 1 };
 
@@ -511,7 +518,7 @@ namespace reflex {
     };
 
     template <size_t I, class T>
-    struct LabelAdder<I, Case<T>>
+    struct LabelAdder<I, match::Case<T>>
     {
       enum { count = 1 };
 

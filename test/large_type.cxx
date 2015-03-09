@@ -2,7 +2,7 @@
 (c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.    	                             
 RTI grants Licensee a license to use, modify, compile, and create derivative works 
 of the Software.  Licensee has the right to distribute object form only for use with RTI 
-products.  The Software is provided “as is”, with no warranty of any type, including 
+products.  The Software is provided "as is", with no warranty of any type, including 
 any warranty for fitness for any purpose. RTI is under no obligation to maintain or 
 support the Software.  RTI shall not be liable for any incidental or consequential 
 damages arising out of the use or inability to use the software.
@@ -29,12 +29,12 @@ create_ddwriter(const char *type_name,
 
 void write_large_type(int domain_id) 
 {
-    using reflex::MultiDimArray;
+    using reflex::match::MultiDimArray;
     using reflex::octet_t;
-    using reflex::Bounded;
-    using reflex::BoundedRange;
-    using reflex::Range;
-    using reflex::Sparse;
+    using reflex::match::Bounded;
+    using reflex::match::BoundedRange;
+    using reflex::match::Range;
+    using reflex::match::Sparse;
 
     reflex::MAX_STRING_SIZE = 999;
     reflex::MAX_SEQ_SIZE = 9;
@@ -55,13 +55,13 @@ void write_large_type(int domain_id)
     octet_t octet_var = 'A';
     long long ll = 0xFFFFFFF;
     std::string str("Hello World!");
-    reflex::Bounded<std::string, 99> bstr(str);
+    Bounded<std::string, 99> bstr(str);
 
     custom::TupleIntString tis 
       = std::make_tuple(99, std::make_tuple("$99.99"));
 
     vector<int32_t> vl(0, 55555);
-    reflex::Bounded<vector<int32_t>, 77> bvl(vl);
+    Bounded<vector<int32_t>, 77> bvl(vl);
 
     float float_arr[SIZE] = { 1.1f, 2.2f, 3.3f, 4.4f };
     std::list<float>       float_list(float_arr, float_arr + SIZE);
@@ -107,19 +107,19 @@ void write_large_type(int domain_id)
 
 #ifndef RTI_WIN32
     typedef reflex::Union<int16_t, 
-                          reflex::Case<std::string, 20, 19, 18>, 
-                          reflex::Case<char>> UBoolString;
+                          reflex::match::Case<std::string, 20, 19, 18>, 
+                          reflex::match::Case<char>> UBoolString;
 
     typedef reflex::Union<Color,   
-                          reflex::Case<char, red>,
-                          reflex::Case<UBoolString, green>, 
-                          reflex::Case<std::string, blue>> TestUnion;
+                          reflex::match::Case<char, red>,
+                          reflex::match::Case<UBoolString, green>, 
+                          reflex::match::Case<std::string, blue>> TestUnion;
     
     UBoolString ubs;
     std::string rti = "Real-Time Innovations, Inc.";
     ubs.set_caseptr_tuple_for_writing(reflex::make_caseptr_tuple(rti, char_array[0][0]), 1); 
     TestUnion tu;
-    tu = reflex::Case<UBoolString, green>(ubs); 
+    tu = reflex::match::Case<UBoolString, green>(ubs); 
 #endif
     
     MultiDimArray<int16_t,2,3>::type int_array = 
@@ -127,7 +127,7 @@ void write_large_type(int domain_id)
         { { 5,5,5 } } } };
 
     std::list<MultiDimArray<int16_t,2,3>::type> lmda(2, int_array);
-    typedef reflex::Sparse<std::string, 
+    typedef reflex::match::Sparse<std::string, 
                            float, 
                            MultiDimArray<int16_t, 2, 3>::type
                           > SparseSFA;
@@ -173,15 +173,15 @@ void write_large_type(int domain_id)
     /* 4 */   char[2][3],
     /* 5 */   octet_t,
     /* 6 */   long long,
-    /* 7 */   Bounded<std::string, 99>,
+    /* 7 */   reflex::match::Bounded<std::string, 99>,
     /* 8 */   custom::TupleIntString, 
-    /* 9 */   Bounded<vector<int32_t>, 77>, 
+    /* 9 */   reflex::match::Bounded<vector<int32_t>, 77>, 
     /* 10 */  std::list<float>,
     /* 11 */  std::set<double>,
     /* 12 */  vector<bool>,
     /* 13 */  vector<std::string>, 
     /* 14 */  vector<vector<std::list<std::tuple<char>>>>, 
-    /* 15 */  BoundedRange<VectorOfTuples &, 5>,
+    /* 15 */  reflex::match::BoundedRange<VectorOfTuples &, 5>,
     /* 16 */  vector<std::tuple<bool, std::string, std::string>>,
     /* 17 */  std::string[1][2][3], 
     /* 18 */  std::tuple<std::string, octet_t>[2],
@@ -195,7 +195,7 @@ void write_large_type(int domain_id)
 #endif
     /* 25 */  MultiDimArray<int16_t,2,3>::type,
     /* 26 */  std::list<MultiDimArray<int16_t,2,3>::type>,
-    /* 27 */  Sparse<std::string, float, MultiDimArray<int16_t,2,3>::type>,
+    /* 27 */  reflex::match::Sparse<std::string, float, MultiDimArray<int16_t,2,3>::type>,
     /* 28 */  Range<std::tuple<float, bool> &>,
     /* 29 */  std::list<SparseSFA>,
     /* 30 */  std::map<std::string, unsigned> > TupleFull;
@@ -210,10 +210,10 @@ void write_large_type(int domain_id)
 
     reflex::print_IDL(stc.get(), 0);
     
-    reflex::SafeDynamicDataInstance ddi1(safe_typeSupport.get());
-    reflex::SafeDynamicDataInstance ddi2(safe_typeSupport.get());
+    reflex::AutoDynamicData ddi1(safe_typeSupport.get());
+    reflex::AutoDynamicData ddi2(safe_typeSupport.get());
 
-    tuple2dd(t1, *ddi1.get());
+    reflex::tuple2dd(t1, *ddi1.get());
 
 #ifndef RTI_WIN32
     ddi1.get()->print(stdout, 2);
@@ -240,9 +240,9 @@ void write_large_type(int domain_id)
     std::get<28>(t2) = ltfb2;
 #endif
 
-    dd2tuple(*ddi1.get(), t2);
+    reflex::dd2tuple(*ddi1.get(), t2);
     std::cout << "size = " << std::get<29>(t2).size() << std::endl;
-    tuple2dd(t2, *ddi2.get());
+    reflex::tuple2dd(t2, *ddi2.get());
 
 #ifndef RTI_WIN32
     ddi2.get()->print(stdout, 2);

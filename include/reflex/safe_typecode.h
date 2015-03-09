@@ -2,7 +2,7 @@
 (c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative works
 of the Software.  Licensee has the right to distribute object form only for use with RTI
-products.  The Software is provided “as is”, with no warranty of any type, including
+products.  The Software is provided "as is", with no warranty of any type, including
 any warranty for fitness for any purpose. RTI is under no obligation to maintain or
 support the Software.  RTI shall not be liable for any incidental or consequential
 damages arising out of the use or inability to use the software.
@@ -291,7 +291,7 @@ namespace reflex {
   };
 
   template <class C, size_t Bound>
-  class SafeTypeCode<Bounded<C, Bound>,
+  class SafeTypeCode<match::Bounded<C, Bound>,
                      typename detail::enable_if<
                        detail::is_container<C>::value>::type
                     >
@@ -310,7 +310,7 @@ namespace reflex {
   };
 
   template <class T>
-  class SafeTypeCode<Range<T>> : public detail::SafeTypeCodeBase
+  class SafeTypeCode<match::Range<T>> : public detail::SafeTypeCodeBase
   {
   public:
 
@@ -400,7 +400,7 @@ namespace reflex {
   };
 
   template <class T, size_t Bound>
-  class SafeTypeCode<BoundedRange<T, Bound>> : public detail::SafeTypeCodeBase
+  class SafeTypeCode<match::BoundedRange<T, Bound>> : public detail::SafeTypeCodeBase
   {
   public:
 
@@ -412,7 +412,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-  friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class Str>
@@ -434,7 +434,7 @@ namespace reflex {
   };
 
   template <size_t Bound>
-  class SafeTypeCode<Bounded<std::string, Bound>> : public detail::SafeTypeCodeBase
+  class SafeTypeCode<match::Bounded<std::string, Bound>> : public detail::SafeTypeCodeBase
   {
   public:
     SafeTypeCode(DDS_TypeCodeFactory * factory)
@@ -464,7 +464,7 @@ namespace reflex {
   };
 
   template <class... Args>
-  class SafeTypeCode<Sparse<Args...>> : public detail::SafeTypeCodeBase
+  class SafeTypeCode<match::Sparse<Args...>> : public detail::SafeTypeCodeBase
   {
   public:
 
@@ -554,7 +554,7 @@ namespace reflex {
     struct MatchDefaultCase;
 
     template <class Tuple, size_t I, size_t MAX_INDEX, class T, int Tag, int... Tags>
-    struct MatchDefaultCase<Tuple, I, MAX_INDEX, Case<T, Tag, Tags...>>
+    struct MatchDefaultCase<Tuple, I, MAX_INDEX, match::Case<T, Tag, Tags...>>
     {
       enum {
         value =
@@ -567,19 +567,19 @@ namespace reflex {
     };
 
     template <class Tuple, size_t MAX_INDEX, class T, int Tag, int... Tags>
-    struct MatchDefaultCase<Tuple, MAX_INDEX, MAX_INDEX, Case<T, Tag, Tags...>>
+    struct MatchDefaultCase<Tuple, MAX_INDEX, MAX_INDEX, match::Case<T, Tag, Tags...>>
     {
       enum { value = -1 };
     };
 
     template <class Tuple, size_t I, size_t MAX_INDEX, class T>
-    struct MatchDefaultCase<Tuple, I, MAX_INDEX, Case<T>>
+    struct MatchDefaultCase<Tuple, I, MAX_INDEX, match::Case<T>>
     {
       enum { value = I };
     };
 
     template <class Tuple, size_t MAX_INDEX, class T>
-    struct MatchDefaultCase<Tuple, MAX_INDEX, MAX_INDEX, Case<T>>
+    struct MatchDefaultCase<Tuple, MAX_INDEX, MAX_INDEX, match::Case<T>>
     {
       enum { value = MAX_INDEX };
     };
@@ -588,9 +588,9 @@ namespace reflex {
     struct DefaultCaseIndex;
 
     template <class TagType, class... Cases>
-    struct DefaultCaseIndex<Union<TagType, Cases...>>
+    struct DefaultCaseIndex<match::Union<TagType, Cases...>>
     {
-      typedef typename Union<TagType, Cases...>::case_tuple_type CaseTuple;
+      typedef typename match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
       enum {
         value =
          MatchDefaultCase<CaseTuple,
@@ -603,7 +603,7 @@ namespace reflex {
   } // namespace detail
 
   template <class TagType, class... Cases>
-  struct SafeTypeCode<Union<TagType, Cases...>>
+  struct SafeTypeCode<match::Union<TagType, Cases...>>
     : public detail::SafeTypeCodeBase
   {
     SafeTypeCode(DDS_TypeCodeFactory * factory,
@@ -615,7 +615,7 @@ namespace reflex {
       detail::SafeTypeCodeBase::create_union_tc(
           name,
           discTc.get(),
-          detail::DefaultCaseIndex<Union<TagType, Cases...>>::value,
+          detail::DefaultCaseIndex<match::Union<TagType, Cases...>>::value,
           member_seq);
     }
 

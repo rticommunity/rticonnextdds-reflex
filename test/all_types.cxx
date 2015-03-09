@@ -2,7 +2,7 @@
 (c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative works
 of the Software.  Licensee has the right to distribute object form only for use with RTI
-products.  The Software is provided “as is”, with no warranty of any type, including
+products.  The Software is provided "as is", with no warranty of any type, including
 any warranty for fitness for any purpose. RTI is under no obligation to maintain or
 support the Software.  RTI shall not be liable for any incidental or consequential
 damages arising out of the use or inability to use the software.
@@ -24,8 +24,8 @@ void round_trip_test(int domain, const T & source, T & dest)
   std::shared_ptr<DDSDynamicDataTypeSupport>
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
-  reflex::SafeDynamicDataInstance src_dd(safe_typeSupport.get());
-  reflex::SafeDynamicDataInstance dest_dd(safe_typeSupport.get());
+  reflex::AutoDynamicData src_dd(safe_typeSupport.get());
+  reflex::AutoDynamicData dest_dd(safe_typeSupport.get());
 
   reflex::fill_dd(source, src_dd);
 
@@ -43,7 +43,7 @@ void round_trip_test(int domain, const T & source, T & dest)
 
 void test_sparse_type(int domain)
 {
-  reflex::MultiDimArray<int32_t, 2, 3>::type
+  reflex::match::MultiDimArray<int32_t, 2, 3>::type
     int_array = { { { { 0, 0, 0 } },
                     { { 5, 5, 5 } } } };
 

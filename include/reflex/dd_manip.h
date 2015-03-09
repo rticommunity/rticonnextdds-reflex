@@ -2,7 +2,7 @@
 (c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative works
 of the Software.  Licensee has the right to distribute object form only for use with RTI
-products.  The Software is provided “as is”, with no warranty of any type, including
+products.  The Software is provided "as is", with no warranty of any type, including
 any warranty for fitness for any purpose. RTI is under no obligation to maintain or
 support the Software.  RTI shall not be liable for any incidental or consequential
 damages arising out of the use or inability to use the software.
@@ -250,7 +250,7 @@ namespace reflex {
       static void set_member_value_range(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const reflex::Range<T> & range,
+        const reflex::match::Range<T> & range,
         typename enable_if<is_primitive_or_enum<T>::value>::type * = 0)
       {
         typename DynamicDataSeqTraits<T>::type seq;
@@ -273,7 +273,7 @@ namespace reflex {
       static void set_member_value_range(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const reflex::Range<T> & range,
+        const reflex::match::Range<T> & range,
         typename disable_if<is_primitive_or_enum<T>::value>::type * = 0)
       {
         DDS_DynamicData seq_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -290,7 +290,7 @@ namespace reflex {
         set_seq_length(seq_member, size, is_string<T>::value);
 
         size_t i = 0;
-        for (typename Range<T>::const_iterator iter = boost::begin(range);
+        for (typename match::Range<T>::const_iterator iter = boost::begin(range);
           iter != boost::end(range);
           ++iter, ++i)
         {
@@ -305,7 +305,7 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const reflex::Range<T> & range)
+        const reflex::match::Range<T> & range)
       {
         set_member_value_range(instance, ma, range);
       }
@@ -314,7 +314,7 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const reflex::BoundedRange<T, Bound> & range)
+        const reflex::match::BoundedRange<T, Bound> & range)
       {
         set_member_value_range(instance, ma, range);
       }
@@ -323,7 +323,7 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess & ma,
-        const reflex::Sparse<Args...> & val)
+        const reflex::match::Sparse<Args...> & val)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
@@ -335,13 +335,13 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess & ma,
-        const reflex::Union<TagType, Cases...> & val)
+        const reflex::match::Union<TagType, Cases...> & val)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
         typedef typename 
-              Union<TagType, Cases...>::case_tuple_type CaseTuple;
+              match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
 
         typedef TypelistIterator<
                     CaseTuple,
@@ -478,7 +478,7 @@ namespace reflex {
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const reflex::Bounded<T, Bound> & val)
+        const reflex::match::Bounded<T, Bound> & val)
       {
         set_member_value(instance, ma, static_cast<const T &>(val));
       }
@@ -869,7 +869,7 @@ namespace reflex {
       static void get_member_value(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          reflex::Bounded<T, Bound> & val)
+          reflex::match::Bounded<T, Bound> & val)
       {
         get_member_value(instance, ma, static_cast<T &>(val));
       }
@@ -882,7 +882,7 @@ namespace reflex {
       static void get_member_value_range(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          reflex::Range<T> & range,
+          reflex::match::Range<T> & range,
           typename enable_if<
                              is_primitive_or_enum<T>::value
                             >::type * = 0)
@@ -908,7 +908,7 @@ namespace reflex {
             throw std::runtime_error("get_member_value: Insufficient range");
           }
 
-          typename Range<T>::iterator iter = boost::begin(range);
+          typename match::Range<T>::iterator iter = boost::begin(range);
           for (size_t i = 0; i < seq_info.element_count; ++i, ++iter)
           {
             // Possible extra copy of the primitives
@@ -921,7 +921,7 @@ namespace reflex {
       static void get_member_value_range(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          reflex::Range<T> & range,
+          reflex::match::Range<T> & range,
           typename disable_if<
                               is_primitive_or_enum<T>::value
                              >::type * = 0)
@@ -936,7 +936,7 @@ namespace reflex {
           throw std::runtime_error("get_member_value: Insufficient range");
         }
 
-        typename Range<T>::iterator iter = boost::begin(range);
+        typename match::Range<T>::iterator iter = boost::begin(range);
         for (int i = 0; i < seq_info.member_count; ++i, ++iter)
         {
           get_member_value(seq_member, MemberAccess::BY_ID(i + 1), *iter);
@@ -948,7 +948,7 @@ namespace reflex {
       static void get_member_value(
         const DDS_DynamicData & instance,
         const MemberAccess &ma,
-        reflex::Range<T> & range)
+        reflex::match::Range<T> & range)
       {
         get_member_value_range(instance, ma, range);
       }
@@ -957,7 +957,7 @@ namespace reflex {
       static void get_member_value(
         const DDS_DynamicData & instance,
         const MemberAccess &ma,
-        reflex::BoundedRange<T, Bound> & range)
+        reflex::match::BoundedRange<T, Bound> & range)
       {
         get_member_value_range(instance, ma, range);
       }
@@ -966,7 +966,7 @@ namespace reflex {
       static void get_member_value(
         const DDS_DynamicData & instance,
         const MemberAccess &ma,
-        reflex::Sparse<Args...> & val)
+        reflex::match::Sparse<Args...> & val)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
@@ -1071,12 +1071,12 @@ namespace reflex {
       static void get_member_value(
           const DDS_DynamicData & instance,
           const MemberAccess & ma,
-          reflex::Union<TagType, Cases...> & val)
+          reflex::match::Union<TagType, Cases...> & val)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        typedef typename Union<TagType, Cases...>::case_tuple_type CaseTuple;
+        typedef typename match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
         typedef TypelistIterator<
           CaseTuple,
           0,
@@ -1160,30 +1160,30 @@ namespace reflex {
   } // namespace detail
     
   template <class T>
-  Range<typename T::reference> make_range(T &t)
+  match::Range<typename T::reference> make_range(T &t)
   {
-    return Range<typename T::reference>(t);
+    return match::Range<typename T::reference>(t);
   }
 
   template <class Iter>
-  Range<typename Iter::reference> make_range(Iter begin, Iter end)
+  match::Range<typename Iter::reference> make_range(Iter begin, Iter end)
   {
     // iterators are always pass-by-value.
     return boost::make_iterator_range(begin, end);
   }
 
   template <size_t Bound, class Iter>
-  BoundedRange<typename Iter::reference, Bound> 
+  match::BoundedRange<typename Iter::reference, Bound> 
     make_bounded_range(Iter begin, Iter end)
   {
     // iterators are always pass-by-value.
     return boost::make_iterator_range(
-             make_bounded_view_iterator<Bound>(begin),
-             make_bounded_view_iterator<Bound>(end));
+             match::make_bounded_view_iterator<Bound>(begin),
+             match::make_bounded_view_iterator<Bound>(end));
   }
 
   template <size_t Bound, class T>
-  BoundedRange<typename T::reference, Bound> make_bounded_range(T &t)
+  match::BoundedRange<typename T::reference, Bound> make_bounded_range(T &t)
   {
     return make_bounded_range<Bound>(t.begin(), t.end());
   }

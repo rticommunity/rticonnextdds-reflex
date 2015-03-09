@@ -2,7 +2,7 @@
 (c) 2005-2014 Copyright, Real-Time Innovations, Inc.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative works
 of the Software.  Licensee has the right to distribute object form only for use with RTI
-products.  The Software is provided “as is”, with no warranty of any type, including
+products.  The Software is provided "as is", with no warranty of any type, including
 any warranty for fitness for any purpose. RTI is under no obligation to maintain or
 support the Software.  RTI shall not be liable for any incidental or consequential
 damages arising out of the use or inability to use the software.
@@ -36,11 +36,13 @@ namespace reflex {
 
   typedef unsigned char octet_t;
 
-  template <class TagType, class... Cases>
-  struct Union;
+  namespace match {
 
-  template <class... T>
-  struct Sparse;
+    template <class TagType, class... Cases>
+    struct Union;
+
+    template <class... T>
+    struct Sparse;
 
 #ifdef RTI_WIN32
 
@@ -70,14 +72,16 @@ namespace reflex {
 
 #endif
 
-  template <class T, size_t Bound>
-  struct BoundedRange : Range<T>
-  {
-    template <class... U>
-    BoundedRange(U&&... u)
-      : Range<T>(std::forward<U>(u)...)
-    {}
-  };
+    template <class T, size_t Bound>
+    struct BoundedRange : Range<T>
+    {
+      template <class... U>
+      BoundedRange(U&&... u)
+        : Range<T>(std::forward<U>(u)...)
+      {}
+    };
+
+  } // namespace match
 
   namespace detail {
 
@@ -138,7 +142,7 @@ namespace reflex {
     struct is_primitive<std::vector<T>> : false_type{};
 
     template <class TagType, class... Cases>
-    struct is_primitive<reflex::Union<TagType, Cases...>> : false_type{};
+    struct is_primitive<reflex::match::Union<TagType, Cases...>> : false_type{};
 
     template <class T>
     struct is_enum 
@@ -273,34 +277,34 @@ namespace reflex {
     struct is_union : false_type {};
 
     template <class TagType, class... Args>
-    struct is_union<reflex::Union<TagType, Args...>> : true_type {};
+    struct is_union<reflex::match::Union<TagType, Args...>> : true_type {};
 
     template <class TagType, class... Args>
-    struct is_union<const reflex::Union<TagType, Args...>> : true_type {};
+    struct is_union<const reflex::match::Union<TagType, Args...>> : true_type {};
 
     template <class T>
     struct is_sparse : false_type {};
 
     template <class... Args>
-    struct is_sparse<reflex::Sparse<Args...>> : true_type {};
+    struct is_sparse<reflex::match::Sparse<Args...>> : true_type {};
 
     template <class... Args>
-    struct is_sparse<const reflex::Sparse<Args...>> : true_type {};
+    struct is_sparse<const reflex::match::Sparse<Args...>> : true_type {};
 
     template <class T>
     struct is_range : false_type {};
 
     template <class T>
-    struct is_range<reflex::Range<T>> : true_type {};
+    struct is_range<reflex::match::Range<T>> : true_type {};
 
     template <class T>
-    struct is_range<const reflex::Range<T>> : true_type {};
+    struct is_range<const reflex::match::Range<T>> : true_type {};
 
     template <class T, size_t N>
-    struct is_range<reflex::BoundedRange<T, N>> : true_type {};
+    struct is_range<reflex::match::BoundedRange<T, N>> : true_type {};
 
     template <class T, size_t N>
-    struct is_range<const reflex::BoundedRange<T, N>> : true_type {};
+    struct is_range<const reflex::match::BoundedRange<T, N>> : true_type {};
 
     template <class T>
     struct is_optional : false_type {};
@@ -646,22 +650,25 @@ namespace reflex {
 
   } // namespace detail
 
-  template <class T, size_t I, size_t... J>
-  struct MultiDimArray
-  {
-    // using Nested = typename MultiDimArray<T, J...>::type;
-    typedef typename MultiDimArray<T, J...>::type Nested;
-    // using type = std::array<Nested, I>;
-    typedef std::array<Nested, I> type;
-  };
+  namespace match {
 
-  template <class T, size_t I>
-  struct MultiDimArray<T, I>
-  {
-    // using type = std::array<T, I>;
-    typedef std::array<T, I> type;
-  };
+    template <class T, size_t I, size_t... J>
+    struct MultiDimArray
+    {
+      // using Nested = typename MultiDimArray<T, J...>::type;
+      typedef typename MultiDimArray<T, J...>::type Nested;
+      // using type = std::array<Nested, I>;
+      typedef std::array<Nested, I> type;
+    };
 
+    template <class T, size_t I>
+    struct MultiDimArray<T, I>
+    {
+      // using type = std::array<T, I>;
+      typedef std::array<T, I> type;
+    };
+
+  } // namespace match
 } // namespace reflex
 
 #endif // RTIREFLEX_ENABLE_IF_H
