@@ -49,7 +49,7 @@ namespace reflex {
 
       if (ex != DDS_NO_EXCEPTION_CODE) {
         std::cerr << "DataWriterBase: Can't get typecode name. ex = "
-          << get_readable_ex_code(ex) << std::endl;
+          << detail::get_readable_ex_code(ex) << std::endl;
       }
 
       DDS_ReturnCode_t rc =
@@ -61,7 +61,7 @@ namespace reflex {
         stream << "DataWriterBase::DataWriterBase: Unable to register type = "
                << type_name 
                << ". Error = ";
-        check_retcode(stream.str().c_str(), rc);
+        detail::check_retcode(stream.str().c_str(), rc);
       }
 
       DDSTopic * topic = participant->create_topic(
@@ -178,7 +178,7 @@ namespace reflex {
       DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
       type_name = type_name ? type_name : tc->name(ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "DataReaderBase::DataWriterBase: Can't get typecode name. ex = ", 
         ex);
 
@@ -191,7 +191,7 @@ namespace reflex {
         stream << "DataReaderBase::DataReaderBase: Unable to register type = "
                << type_name 
                << ". Error = ";
-        check_retcode(stream.str().c_str(), rc);
+        detail::check_retcode(stream.str().c_str(), rc);
       }
 
       DDSTopic * topic = participant->create_topic(

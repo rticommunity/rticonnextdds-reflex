@@ -19,7 +19,7 @@ void round_trip_test(int domain, const T & source, T & dest)
   reflex::SafeTypeCode<DDS_TypeCode>
     stc(reflex::make_typecode<T>());
 
-  reflex::print_IDL(stc.get(), 0);
+  reflex::detail::print_IDL(stc.get(), 0);
 
   std::shared_ptr<DDSDynamicDataTypeSupport>
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));

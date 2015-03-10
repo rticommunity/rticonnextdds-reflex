@@ -322,7 +322,7 @@ namespace reflex {
         for (int i = 0; i < data_seq.length(); ++i)
         {
           if (info_seq[i].valid_data)
-            dd2tuple(data_seq[i], data[i].data());
+            extract_dd(data_seq[i], data[i].data());
           else
           {
             T temp;

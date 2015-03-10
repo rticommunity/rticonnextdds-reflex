@@ -66,7 +66,7 @@ namespace reflex {
       if (rc != DDS_RETCODE_OK) 
       {
         std::cerr << "~AutoDynamicData: Unable to delete instance data, error = "
-                  << get_readable_retcode(rc) << std::endl;
+                  << detail::get_readable_retcode(rc) << std::endl;
       }
       instance_ = NULL;
     }

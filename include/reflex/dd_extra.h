@@ -45,13 +45,12 @@ namespace reflex {
 
   typedef unsigned char octet_t;
 
-  DllExport const char *get_readable_retcode(DDS_ReturnCode_t rc);
-  DllExport const char *get_readable_ex_code(DDS_ExceptionCode_t ex);
-  DllExport void check_retcode(const char * message, DDS_ReturnCode_t rc);
-  DllExport void check_exception_code(const char * message, DDS_ExceptionCode_t ex);
-
-
   namespace detail {
+
+      DllExport const char *get_readable_retcode(DDS_ReturnCode_t rc);
+      DllExport const char *get_readable_ex_code(DDS_ExceptionCode_t ex);
+      DllExport void check_retcode(const char * message, DDS_ReturnCode_t rc);
+      DllExport void check_exception_code(const char * message, DDS_ExceptionCode_t ex);
 
       class DllExport MemberAccess
       {

@@ -23,7 +23,7 @@ void set_member_overload_resolution_helper::set_member_value(                   
     rc = instance.FUNCTION(ma.get_name(),                                        \
                            DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,               \
                            val);                                                 \
-  check_retcode(#FUNCTION " error = ", rc);                                      \
+  detail::check_retcode(#FUNCTION " error = ", rc);                              \
 }
 
 
@@ -41,7 +41,7 @@ void get_member_overload_resolution_helper::get_member_value(                   
     rc = instance.FUNCTION(out,                                                    \
                            ma.get_name(),                                          \
                            DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);                \
-  check_retcode(#FUNCTION " error = ", rc);                                        \
+  detail::check_retcode(#FUNCTION " error = ", rc);                                \
   val = out;                                                                       \
 }
 
@@ -115,7 +115,7 @@ namespace reflex {
           ma.get_name(),
           DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
 
-        check_retcode("DDS_DynamicData::get_boolean error = ", rc);
+        detail::check_retcode("DDS_DynamicData::get_boolean error = ", rc);
 
         val = out ? true : false;
       }
@@ -156,12 +156,12 @@ namespace reflex {
           char * ptr = 0; // TODO: null or empty?
           size = 0;
           rc = instance.get_string(ptr, &size, member_name, id);
-          check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
+          detail::check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
           val.assign(ptr);
           DDS_String_free(ptr);
         }
         else
-          check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
+          detail::check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
       }
 */
 

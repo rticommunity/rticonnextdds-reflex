@@ -99,7 +99,7 @@ void write_shape_type_extended(int domain_id)
   reflex::SafeTypeCode<DDS_TypeCode>
     shape_ex_tc(reflex::make_typecode<ShapeTypeExtended>());
 
-  reflex::print_IDL(shape_ex_tc.get(), 0);
+  reflex::detail::print_IDL(shape_ex_tc.get(), 0);
 
   participant = DDSDomainParticipantFactory::get_instance()->
     create_participant(
@@ -155,7 +155,9 @@ void write_shape_type_extended(int domain_id)
     rc = writer.write(shape);
     
     if (rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
+      std::cerr << "Write error = " 
+                << reflex::detail::get_readable_retcode(rc) 
+                << std::endl;
       break;
     }
     NDDSUtility::sleep(period);
@@ -183,9 +185,9 @@ void write_shape_type(int domain_id)
 
   typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
   reflex::SafeTypeCode<DDS_TypeCode> 
-    stc(reflex::tuple2typecode<Tuple>());
+    stc(reflex::make_typecode<Tuple>());
   
-  reflex::print_IDL(stc.get(), 0);
+  reflex::detail::print_IDL(stc.get(), 0);
   
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
@@ -237,7 +239,7 @@ void write_shape_type(int domain_id)
     copy(t1, x, y, color, shapesize);
 
     // write the values in a dynamic data instance.
-    reflex::tuple2dd(t1, *dd1.get());
+    reflex::fill_dd(t1, *dd1.get());
 
     // print if you like
     //ddi1.get()->print(stdout, 2);
@@ -245,11 +247,11 @@ void write_shape_type(int domain_id)
 
     // read the dynamic data instance back 
     // in a different tuple
-    reflex::dd2tuple(*dd1.get(), t2);
+    reflex::extract_dd(*dd1.get(), t2);
 
     // write the second tuple again in a
     // different dynamic data instance.
-    reflex::tuple2dd(t2, *dd2.get());
+    reflex::fill_dd(t2, *dd2.get());
 
     // print if you like
     // ddi2.get()->print(stdout, 2);
@@ -260,7 +262,9 @@ void write_shape_type(int domain_id)
     // write it for fun!
     rc = ddWriter->write(*dd2.get(), DDS_HANDLE_NIL);
     if(rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
+      std::cerr << "Write error = " 
+                << reflex::detail::get_readable_retcode(rc) 
+                << std::endl;
       break;
     }
     NDDSUtility::sleep(period);

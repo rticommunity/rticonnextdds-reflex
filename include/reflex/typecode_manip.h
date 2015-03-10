@@ -27,11 +27,6 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
-  DllExport void DECLSPEC
-    print_IDL(
-        const DDS_TypeCode * tc,
-        DDS_UnsignedLong indent);
-
   /**
   * Creates a <a href="http://community.rti.com/rti-doc/510/ndds.5.1.0/doc/html/api_cpp/structDDS__TypeCode.html">TypeCode</a>
   * for structured type T.
@@ -44,6 +39,10 @@ namespace reflex {
 
   namespace detail {
 
+    DllExport void DECLSPEC
+      print_IDL(
+      const DDS_TypeCode * tc,
+      DDS_UnsignedLong indent);
 
     template <class T>
     SafeTypeCode<T> make_typecode_impl(
@@ -418,7 +417,7 @@ namespace reflex {
         flags,
         ex);
       
-      check_exception_code(
+      detail::check_exception_code(
         "add_member: Unable to add inner typecode, error = ", 
         ex);
     }
@@ -454,7 +453,7 @@ namespace reflex {
         flags,
         ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "add_member: Unable to add inner array typecode, error = ",
         ex);
     }
@@ -625,7 +624,7 @@ namespace reflex {
       if (ex != DDS_NO_EXCEPTION_CODE)
       {
         std::cerr << "deleteTc: Unable to delete typecode, error = "
-                  << get_readable_ex_code(ex) 
+                  << detail::get_readable_ex_code(ex) 
                   << std::endl;
         // do not throw
       }

@@ -138,8 +138,8 @@ void write_large_type(int domain_id)
     std::list<std::tuple<float, bool>> ltfb1(SIZE, std::make_tuple(5.55f, true));
     std::list<std::tuple<float, bool>> ltfb2(SIZE);
     //auto range = make_range(ltfb1);
-    auto range = reflex::make_range(ltfb1.begin(), ltfb1.end());
-    auto bounded_range = reflex::make_bounded_range<5>(vvtss.begin(), vvtss.end());
+    auto range = reflex::match::make_range(ltfb1.begin(), ltfb1.end());
+    auto bounded_range = reflex::match::make_bounded_range<5>(vvtss.begin(), vvtss.end());
     std::list<SparseSFA> lssfa(2, sparse);
     Zip::Map zip_map;
     zip_map.insert(std::make_pair("Fremont", 94555));
@@ -201,19 +201,19 @@ void write_large_type(int domain_id)
     /* 30 */  std::map<std::string, unsigned> > TupleFull;
     
     reflex::SafeTypeCode<DDS_TypeCode> 
-      stc(reflex::tuple2typecode<decltype(t1)>());
+      stc(reflex::make_typecode<decltype(t1)>());
     
     typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
 
     std::shared_ptr<DDSDynamicDataTypeSupport> 
       safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
-    reflex::print_IDL(stc.get(), 0);
+    reflex::detail::print_IDL(stc.get(), 0);
     
     reflex::AutoDynamicData ddi1(safe_typeSupport.get());
     reflex::AutoDynamicData ddi2(safe_typeSupport.get());
 
-    reflex::tuple2dd(t1, *ddi1.get());
+    reflex::fill_dd(t1, *ddi1.get());
 
 #ifndef RTI_WIN32
     ddi1.get()->print(stdout, 2);
@@ -240,9 +240,9 @@ void write_large_type(int domain_id)
     std::get<28>(t2) = ltfb2;
 #endif
 
-    reflex::dd2tuple(*ddi1.get(), t2);
+    reflex::extract_dd(*ddi1.get(), t2);
     std::cout << "size = " << std::get<29>(t2).size() << std::endl;
-    reflex::tuple2dd(t2, *ddi2.get());
+    reflex::fill_dd(t2, *ddi2.get());
 
 #ifndef RTI_WIN32
     ddi2.get()->print(stdout, 2);
@@ -269,7 +269,9 @@ void write_large_type(int domain_id)
       {
         rc = ddWriter->write(*ddi2.get(), DDS_HANDLE_NIL);
         if(rc != DDS_RETCODE_OK) {
-          std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
+          std::cerr << "Write error = " 
+                    << reflex::detail::get_readable_retcode(rc) 
+                    << std::endl;
           break;
         }
         NDDSUtility::sleep(period);

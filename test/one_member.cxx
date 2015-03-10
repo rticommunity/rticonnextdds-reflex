@@ -16,7 +16,7 @@ void write_one_member(int)
     reflex::SafeTypeCode<DDS_TypeCode> 
       stc(reflex::make_typecode<one_member>());
     
-    reflex::print_IDL(stc.get(), 0);
+    reflex::detail::print_IDL(stc.get(), 0);
 
     DDS_DynamicDataTypeProperty_t props;
     

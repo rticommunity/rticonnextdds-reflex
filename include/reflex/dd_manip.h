@@ -106,7 +106,7 @@ namespace reflex {
                                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
                                    val.c_str());
         }
-        check_retcode("DDS_DynamicData::set_string error = ", rc);
+        detail::check_retcode("DDS_DynamicData::set_string error = ", rc);
       }
 
       template <class T> // When T is an enum
@@ -126,7 +126,7 @@ namespace reflex {
                         DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
                         val);
 
-        check_retcode("set_member_value: set_long (for enums) error = ", rc);
+        detail::check_retcode("set_member_value: set_long (for enums) error = ", rc);
       }
 
       // Typelist could be
@@ -177,7 +177,7 @@ namespace reflex {
           }
 
           DDS_ReturnCode_t rc = set_sequence(instance, ma, seq);
-          check_retcode("set_member_value: Error setting (bool/enum) seq, error = ", rc);
+          detail::check_retcode("set_member_value: Error setting (bool/enum) seq, error = ", rc);
         }
       }
 
@@ -241,7 +241,7 @@ namespace reflex {
 
           DDS_ReturnCode_t rc = set_sequence(instance, ma, seq);
           seq.unloan();
-          check_retcode("set_member_value: Error setting sequence, error = ", rc);
+          detail::check_retcode("set_member_value: Error setting sequence, error = ", rc);
         }
       }
 
@@ -266,7 +266,7 @@ namespace reflex {
         }
 
         DDS_ReturnCode_t rc = set_sequence(instance, ma, seq);
-        check_retcode("set_member_value: Error setting sequence, error = ", rc);
+        detail::check_retcode("set_member_value: Error setting sequence, error = ", rc);
       }
 
       template <class T>
@@ -396,7 +396,7 @@ namespace reflex {
         DDS_ReturnCode_t rc =
           detail::set_array(instance, ma, array_length(val), arr);
 
-        check_retcode("set_member_value: Error setting array, error = ", rc);
+        detail::check_retcode("set_member_value: Error setting array, error = ", rc);
       }
 
       template <class T, size_t Dim>
@@ -438,7 +438,7 @@ namespace reflex {
         DDS_ReturnCode_t rc =
           detail::set_array(instance, ma, array_length(val), arr);
 
-        check_retcode("set_member_value: Error setting array, error = ", rc);
+        detail::check_retcode("set_member_value: Error setting array, error = ", rc);
       }
 /*
 #ifdef RTI_WIN32
@@ -556,12 +556,12 @@ namespace reflex {
           char * ptr = 0; // TODO: null or empty?
           size = 0;
           rc = instance.get_string(ptr, &size, member_name, id);
-          check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
+          detail::check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
           val.assign(ptr);
           DDS_String_free(ptr);
         }
         else
-          check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
+          detail::check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
       }
 
     public:
@@ -583,7 +583,7 @@ namespace reflex {
           ma.get_id() : DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED;
 
         rc = instance.get_long(out, member_name, id);
-        check_retcode("get_member_value: get_long (for enums) failed, error = ", rc);
+        detail::check_retcode("get_member_value: get_long (for enums) failed, error = ", rc);
         
         // argument dependent lookup here.
         enum_cast(val, out); // cast required for enums
@@ -733,7 +733,7 @@ namespace reflex {
             seq_info.element_count);
 
           DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
-          check_retcode("get_member_value: get_sequence error = ", rc);
+          detail::check_retcode("get_member_value: get_sequence error = ", rc);
           copy_primitive_seq(seq, seq_info.element_count, val);
         }
       }
@@ -861,7 +861,7 @@ namespace reflex {
 
           DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
           seq.unloan();
-          check_retcode("get_member_value: get_sequence error = ", rc);
+          detail::check_retcode("get_member_value: get_sequence error = ", rc);
         }
       }
 
@@ -902,7 +902,7 @@ namespace reflex {
         if (seq_info.element_count > 0)
         {
           DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
-          check_retcode("get_member_value: get_sequence error = ", rc);
+          detail::check_retcode("get_member_value: get_sequence error = ", rc);
 
           if (boost::distance(range) < seq_info.element_count) {
             throw std::runtime_error("get_member_value: Insufficient range");
@@ -1016,7 +1016,7 @@ namespace reflex {
           reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
 
         DDS_ReturnCode_t rc = detail::get_array(instance, arr, &length, ma);
-        check_retcode("get_member_value: get_array error = ", rc);
+        detail::check_retcode("get_member_value: get_array error = ", rc);
       }
 
       template <class T, size_t Dim>
@@ -1064,7 +1064,7 @@ namespace reflex {
           reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
 
         DDS_ReturnCode_t rc = detail::get_array(instance, arr, &length, ma);
-        check_retcode("get_member_value: get_array error = ", rc);
+        detail::check_retcode("get_member_value: get_array error = ", rc);
       }
 
       template <class TagType, class... Cases>
@@ -1159,35 +1159,38 @@ namespace reflex {
 
   } // namespace detail
     
-  template <class T>
-  match::Range<typename T::reference> make_range(T &t)
-  {
-    return match::Range<typename T::reference>(t);
-  }
+  namespace match {
 
-  template <class Iter>
-  match::Range<typename Iter::reference> make_range(Iter begin, Iter end)
-  {
-    // iterators are always pass-by-value.
-    return boost::make_iterator_range(begin, end);
-  }
+    template <class T>
+    match::Range<typename T::reference> make_range(T &t)
+    {
+      return match::Range<typename T::reference>(t);
+    }
 
-  template <size_t Bound, class Iter>
-  match::BoundedRange<typename Iter::reference, Bound> 
-    make_bounded_range(Iter begin, Iter end)
-  {
-    // iterators are always pass-by-value.
-    return boost::make_iterator_range(
-             match::make_bounded_view_iterator<Bound>(begin),
-             match::make_bounded_view_iterator<Bound>(end));
-  }
+    template <class Iter>
+    match::Range<typename Iter::reference> make_range(Iter begin, Iter end)
+    {
+      // iterators are always pass-by-value.
+      return boost::make_iterator_range(begin, end);
+    }
 
-  template <size_t Bound, class T>
-  match::BoundedRange<typename T::reference, Bound> make_bounded_range(T &t)
-  {
-    return make_bounded_range<Bound>(t.begin(), t.end());
-  }
+    template <size_t Bound, class Iter>
+    match::BoundedRange<typename Iter::reference, Bound>
+      make_bounded_range(Iter begin, Iter end)
+    {
+        // iterators are always pass-by-value.
+        return boost::make_iterator_range(
+          match::make_bounded_view_iterator<Bound>(begin),
+          match::make_bounded_view_iterator<Bound>(end));
+      }
 
+    template <size_t Bound, class T>
+    match::BoundedRange<typename T::reference, Bound> make_bounded_range(T &t)
+    {
+      return make_bounded_range<Bound>(t.begin(), t.end());
+    }
+
+  } // namespace match
 } // namespace reflex
 
 #endif //  RTIREFLEX_DD_MANIP_H

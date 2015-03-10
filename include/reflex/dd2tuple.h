@@ -248,25 +248,6 @@ namespace reflex {
       typename detail::InheritanceTraits<T>::has_base());
   }
 
-
-  template <class Tuple>
-  void tuple2dd(const Tuple & tuple, DDS_DynamicData &instance)
-  {
-    fill_dd(tuple, instance);
-  }
-
-  template <class Tuple>
-  void dd2tuple(const DDS_DynamicData & instance, Tuple & tuple)
-  {
-    extract_dd(instance, tuple);
-  }
-
-  template <class Tuple>
-  SafeTypeCode<Tuple> tuple2typecode(const char * name = 0)
-  {
-    return make_typecode<Tuple>(name);
-  }
-
 } // namespace reflex
 
 #endif //  RTIREFLEX_DD2TUPLE_H

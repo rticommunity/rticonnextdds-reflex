@@ -61,7 +61,7 @@ void write_darkart_type(unsigned domain_id)
     top_level_writer(participant, "DarkartTopLevelTopic", "DarkartTopLevelType");
 
   std::cout << "Printing IDL\n";
-  reflex::print_IDL(top_level_writer.get_typecode(), 0);
+  reflex::detail::print_IDL(top_level_writer.get_typecode(), 0);
 
   /* Option 2: using tuple */
   auto all = std::tie(vb, vc, event, sp, truth, vw);
@@ -74,7 +74,7 @@ void write_darkart_type(unsigned domain_id)
   // darkart::AllTuple a = all; 
 
   reflex::SafeTypeCode<DDS_TypeCode> 
-    stc(reflex::tuple2typecode<darkart::AllTuple>());
+    stc(reflex::make_typecode<darkart::AllTuple>());
 
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
@@ -91,13 +91,17 @@ void write_darkart_type(unsigned domain_id)
   {
     rc = top_level_writer.write(toplevel);
     if(rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
+      std::cerr << "Write error = " 
+                << reflex::detail::get_readable_retcode(rc) 
+                << std::endl;
       break;
     }
 
     rc = tuple_writer.write(toplevel);
     if(rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = " << reflex::get_readable_retcode(rc) << std::endl;
+      std::cerr << "Write error = " 
+                << reflex::detail::get_readable_retcode(rc) 
+                << std::endl;
       break;
     }
 

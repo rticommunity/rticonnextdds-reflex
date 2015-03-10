@@ -19,15 +19,15 @@ namespace reflex {
 
   namespace detail {
 
-      GET_TYPECODE_DEF(octet_t, DDS_TK_OCTET)
-      GET_TYPECODE_DEF(bool, DDS_TK_BOOLEAN)
-      GET_TYPECODE_DEF(char, DDS_TK_CHAR)
-      GET_TYPECODE_DEF(int8_t, DDS_TK_CHAR)
-      GET_TYPECODE_DEF(int16_t, DDS_TK_SHORT)
+      GET_TYPECODE_DEF(octet_t,  DDS_TK_OCTET)
+      GET_TYPECODE_DEF(bool,     DDS_TK_BOOLEAN)
+      GET_TYPECODE_DEF(char,     DDS_TK_CHAR)
+      GET_TYPECODE_DEF(int8_t,   DDS_TK_CHAR)
+      GET_TYPECODE_DEF(int16_t,  DDS_TK_SHORT)
       GET_TYPECODE_DEF(uint16_t, DDS_TK_USHORT)
-      GET_TYPECODE_DEF(int32_t, DDS_TK_LONG)
+      GET_TYPECODE_DEF(int32_t,  DDS_TK_LONG)
       GET_TYPECODE_DEF(uint32_t, DDS_TK_ULONG)
-      GET_TYPECODE_DEF(int64_t, DDS_TK_LONGLONG)
+      GET_TYPECODE_DEF(int64_t,  DDS_TK_LONGLONG)
       GET_TYPECODE_DEF(uint64_t, DDS_TK_ULONGLONG)
 
 #ifndef RTI_WIN32
@@ -93,7 +93,7 @@ namespace reflex {
       DDS_TypeCode * arrTc =
         factory_->create_array_tc(dims, inner, ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_array_tc: Unable to create array typecode, error = ", 
         ex);
 
@@ -107,7 +107,7 @@ namespace reflex {
       DDS_TypeCode * seqTc =
         factory_->create_sequence_tc(bound, inner, ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_seq_tc: Unable to create sequence typecode, error = ",
         ex);
 
@@ -120,7 +120,7 @@ namespace reflex {
       DDS_TypeCode * stringTc =
         factory_->create_string_tc(bound, ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_string_tc: Unable to create string typecode, error = ",
         ex);
 
@@ -134,7 +134,7 @@ namespace reflex {
         factory_->create_struct_tc(name,
         DDS_StructMemberSeq(), ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_struct_tc: Unable to create struct typecode, error = ",
         ex);
 
@@ -155,7 +155,7 @@ namespace reflex {
           DDS_ValueMemberSeq(), 
           ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_value_tc: Unable to create valuetype typecode, error = ",
         ex);
 
@@ -169,7 +169,7 @@ namespace reflex {
       DDS_ExceptionCode_t ex;
       DDS_TypeCode * enumTc = factory_->create_enum_tc(name, enum_seq, ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_enum_tc: Unable to create enum typecode, error = ",
         ex);
 
@@ -189,7 +189,7 @@ namespace reflex {
         member_seq,
         ex);
       
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_union_tc: Unable to create union typecode, error = ",
         ex);
 
@@ -202,7 +202,7 @@ namespace reflex {
       DDS_TypeCode *sparseTc =
         factory_->create_sparse_tc(name, DDS_VM_NONE, NULL, ex);
 
-      check_exception_code(
+      detail::check_exception_code(
         "SafeTypeCodeBase::create_sparse_tc: Unable to create sparse typecode, error = ",
         ex);
 
@@ -219,7 +219,7 @@ namespace reflex {
         if (ex != DDS_NO_EXCEPTION_CODE) 
         {
           std::cerr << "~SafeTypeCodeBase: Unable to delete typecode, error = "
-                    << get_readable_ex_code(ex) << std::endl;
+                    << detail::get_readable_ex_code(ex) << std::endl;
           // Do not throw.
         }
       }
