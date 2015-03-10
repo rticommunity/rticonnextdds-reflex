@@ -89,7 +89,7 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
 
     namespace detail {
 
-        void detail::check_retcode(
+        void check_retcode(
           const char * message,
           DDS_ReturnCode_t rc)
         {
