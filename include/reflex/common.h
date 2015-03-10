@@ -11,15 +11,4 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_COMMON_H
 #define RTIREFLEX_COMMON_H
 
-#include "reflex/dllexport.h"
-
-namespace reflex {
-
-  typedef unsigned char octet_t;
-
-  DllExport extern size_t MAX_SEQ_SIZE;    // default 256
-  DllExport extern size_t MAX_STRING_SIZE; // default 256
-
-} // namespace reflex
-
 #endif // RTIREFLEX_COMMON_H

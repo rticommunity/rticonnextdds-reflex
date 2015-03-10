@@ -27,6 +27,42 @@ create_ddwriter(const char *type_name,
                 const char *topic_name,
                 DDSDynamicDataTypeSupport *type_support);
 
+namespace reflex {
+  namespace detail {
+
+    template <>
+    struct static_string_bound<std::string>
+    {
+      enum { value = 999 };
+    };
+
+    template <class T>
+    struct static_container_bound<std::vector<T>>
+    {
+      enum { value = 9 };
+    };
+
+    template <class T>
+    struct static_container_bound<std::list<T>>
+    {
+      enum { value = 9 };
+    };
+
+    template <class T>
+    struct static_container_bound<std::set<T>>
+    {
+      enum { value = 9 };
+    };
+
+    template <class K, class V>
+    struct static_container_bound<std::map<K,V>>
+    {
+      enum { value = 9 };
+    };
+
+  }
+}
+
 void write_large_type(int domain_id) 
 {
     using reflex::match::MultiDimArray;
@@ -35,9 +71,6 @@ void write_large_type(int domain_id)
     using reflex::match::BoundedRange;
     using reflex::match::Range;
     using reflex::match::Sparse;
-
-    reflex::MAX_STRING_SIZE = 999;
-    reflex::MAX_SEQ_SIZE = 9;
 
     using std::vector;
     DDS_ReturnCode_t         rc;

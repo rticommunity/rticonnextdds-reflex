@@ -283,7 +283,9 @@ namespace reflex {
                  SafeTypeCode<typename detail::container_traits<C>::value_type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
-      detail::SafeTypeCodeBase::create_seq_tc(tc.get(), MAX_SEQ_SIZE);
+      detail::SafeTypeCodeBase::create_seq_tc(
+        tc.get(), 
+        detail::static_container_bound<C>::value);
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
@@ -318,7 +320,9 @@ namespace reflex {
                  SafeTypeCode<typename detail::remove_reference<T>::type> & tc)
       : detail::SafeTypeCodeBase(factory)
     {
-        detail::SafeTypeCodeBase::create_seq_tc(tc.get(), MAX_SEQ_SIZE);
+        detail::SafeTypeCodeBase::create_seq_tc(
+          tc.get(), 
+          detail::static_container_bound<match::Range<T>>::value);
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
@@ -426,7 +430,8 @@ namespace reflex {
     SafeTypeCode(DDS_TypeCodeFactory * factory)
       : detail::SafeTypeCodeBase(factory)
     {
-      detail::SafeTypeCodeBase::create_string_tc(MAX_STRING_SIZE);
+        detail::SafeTypeCodeBase::create_string_tc(
+          detail::static_string_bound<std::string>::value);
     }
 
     MAKE_SAFETYPECODE_MOVEONLY

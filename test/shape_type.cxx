@@ -21,6 +21,19 @@ create_ddwriter(const char *type_name,
                 const char *topic_name,
                 DDSDynamicDataTypeSupport *type_support);
 
+namespace reflex {
+  namespace detail {
+
+    // For interoperability with the Shapes Demo string size must be 128
+    template <>
+    struct static_string_bound<std::string>
+    {
+      enum { value = 128 };
+    };
+
+  } 
+}
+
 class MyShapesListener : public reflex::GenericDataReaderListener<ShapeType>
 {
 public:
@@ -92,9 +105,6 @@ void write_shape_type_extended(int domain_id)
   DDSDomainParticipant * participant = NULL;
   DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
   const char *topic_name = "Triangle";
-
-  // For interoperability with the ShapesDemo MAX_STRING_SIZE must be 128
-  reflex::MAX_STRING_SIZE = 128;
 
   reflex::SafeTypeCode<DDS_TypeCode>
     shape_ex_tc(reflex::make_typecode<ShapeTypeExtended>());
@@ -171,9 +181,6 @@ void write_shape_type(int domain_id)
   DDSDynamicDataWriter *ddWriter = NULL;
   DDS_DynamicDataTypeProperty_t props;
   DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
-
-  // For interoperability with the ShapesDemo MAX_STRING_SIZE must be 128
-  reflex::MAX_STRING_SIZE = 128;
 
   int32_t x = 0, y = 0, shapesize = 30;
   std::string color = "BLUE";

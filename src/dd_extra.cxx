@@ -17,18 +17,6 @@ damages arising out of the use or inability to use the software.
 #include "reflex/common.h"
 #include "reflex/dd_manip.h"
 
-#ifdef RTI_WIN32
-namespace reflex {
-  DllExport extern size_t MAX_SEQ_SIZE = 256;
-  DllExport extern size_t MAX_STRING_SIZE = 256;
-} // namespace reflex
-#else
-namespace reflex {
-  size_t MAX_SEQ_SIZE = 256;
-  size_t MAX_STRING_SIZE = 256;
-} // namespace reflex
-#endif
-
 #define SET_SEQUENCE_DEF(DDS_SEQ_TYPE, FUNCTION)                      \
 DDS_ReturnCode_t set_sequence(DDS_DynamicData &instance,              \
                               const MemberAccess &ma,                 \

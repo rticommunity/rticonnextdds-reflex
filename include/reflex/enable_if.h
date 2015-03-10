@@ -32,6 +32,14 @@ damages arising out of the use or inability to use the software.
 #include <stdint.h>
 #endif
 
+#ifndef REFLEX_STATIC_STRING_BOUND
+#define REFLEX_STATIC_STRING_BOUND 256
+#endif
+
+#ifndef REFLEX_STATIC_CONTAINER_BOUND
+#define REFLEX_STATIC_CONTAINER_BOUND 256
+#endif
+
 namespace reflex {
 
   typedef unsigned char octet_t;
@@ -647,6 +655,17 @@ namespace reflex {
       dst = static_cast<T>(src); // cast required for enums         
     }
 
+    template <class T>
+    struct static_string_bound 
+    { 
+      enum { value = REFLEX_STATIC_STRING_BOUND };
+    };
+
+    template <class T>
+    struct static_container_bound 
+    { 
+      enum { value = REFLEX_STATIC_CONTAINER_BOUND };
+    };
 
   } // namespace detail
 
