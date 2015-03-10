@@ -106,18 +106,18 @@ void write_large_type(int domain_id)
     std::list<std::list<Color>> llc(2, std::list<Color>(palette, palette+3));
 
 #ifndef RTI_WIN32
-    typedef reflex::Union<int16_t, 
-                          reflex::match::Case<std::string, 20, 19, 18>, 
-                          reflex::match::Case<char>> UBoolString;
+    typedef reflex::match::Union<int16_t, 
+                                 reflex::match::Case<std::string, 20, 19, 18>, 
+                                 reflex::match::Case<char>> UBoolString;
 
-    typedef reflex::Union<Color,   
-                          reflex::match::Case<char, red>,
-                          reflex::match::Case<UBoolString, green>, 
+    typedef reflex::match::Union<Color,   
+                                 reflex::match::Case<char, red>,
+                                 reflex::match::Case<UBoolString, green>, 
                           reflex::match::Case<std::string, blue>> TestUnion;
     
     UBoolString ubs;
     std::string rti = "Real-Time Innovations, Inc.";
-    ubs.set_caseptr_tuple_for_writing(reflex::make_caseptr_tuple(rti, char_array[0][0]), 1); 
+    ubs.set_caseptr_tuple_for_writing(reflex::match::make_caseptr_tuple(rti, char_array[0][0]), 1); 
     TestUnion tu;
     tu = reflex::match::Case<UBoolString, green>(ubs); 
 #endif
@@ -229,9 +229,9 @@ void write_large_type(int domain_id)
     char st_char;
     UBoolString ubs2;
     ubs2.set_caseptr_tuple_for_reading(
-        reflex::make_caseptr_tuple(st_string, st_char));
+        reflex::match::make_caseptr_tuple(st_string, st_char));
     std::get<24>(t2).set_caseptr_tuple_for_reading(
-        reflex::make_caseptr_tuple(st_char, ubs2, st_string));
+        reflex::match::make_caseptr_tuple(st_char, ubs2, st_string));
 #endif
 
 #ifdef RTI_WIN32
