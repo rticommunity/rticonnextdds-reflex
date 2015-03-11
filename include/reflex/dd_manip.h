@@ -530,13 +530,13 @@ namespace reflex {
 #ifdef RTI_WIN32  
         // NOTE: static
         static char * buf = 
-          new char[detail::static_string_bound<std::string>::value + 1];
+          new char[detail::static_string_bound<Str>::value + 1];
 #else
-        char buffer[MAX_STRING_SIZE + 1];
+        char buffer[detail::static_string_bound<Str>::value + 1];
         char *buf = buffer;
 #endif
         DDS_UnsignedLong size = 
-          detail::static_string_bound<std::string>::value;
+          detail::static_string_bound<Str>::value;
 
         const char * member_name =
           ma.access_by_id() ? NULL : ma.get_name();

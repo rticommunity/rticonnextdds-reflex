@@ -239,7 +239,7 @@ void print_tc()
   reflex::SafeTypeCode<DDS_TypeCode>
           stc(reflex::make_typecode<T>());
           
-  reflex::print_IDL(stc.get(), 0);
+  reflex::detail::print_IDL(stc.get(), 0);
 }
 
 void test_DADataSeq()

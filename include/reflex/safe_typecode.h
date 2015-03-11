@@ -431,7 +431,7 @@ namespace reflex {
       : detail::SafeTypeCodeBase(factory)
     {
         detail::SafeTypeCodeBase::create_string_tc(
-          detail::static_string_bound<std::string>::value);
+          detail::static_string_bound<Str>::value);
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
