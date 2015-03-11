@@ -10,19 +10,22 @@ damages arising out of the use or inability to use the software.
 
 #include <iostream>
 #include "ndds/ndds_cpp.h"
-#include "reflex/dllexport.h"
-#include "reflex/dd2tuple.h"
+#include "reflex/auto_dd.h"
 
 namespace reflex {
 
+  namespace detail {
+    const char * get_readable_retcode(DDS_ReturnCode_t rc);
+  }
+  
   REFLEX_INLINE DDS_DynamicData * AutoDynamicData::init(DDSDynamicDataTypeSupport * ts)
   {
-    if (!ts) 
+    if (!ts)
     {
       throw std::runtime_error("AutoDynamicData::init NULL typeSupport");
     }
     DDS_DynamicData * instance = ts->create_data();
-    if (!instance) 
+    if (!instance)
     {
       throw std::runtime_error(
         "AutoDynamicData::init DynamicDataTypeSupport::create_data failed");
@@ -33,26 +36,42 @@ namespace reflex {
   REFLEX_INLINE AutoDynamicData::AutoDynamicData(
     DDSDynamicDataTypeSupport * typeSupport)
     : type_support_(typeSupport),
-      instance_(0)
-  {
-    instance_ = init(type_support_);
-  }
+      instance_(init(typeSupport))
+  { }
 
   REFLEX_INLINE AutoDynamicData::AutoDynamicData(
-      const AutoDynamicData & sddi)
+    const AutoDynamicData & sddi)
     : type_support_(sddi.type_support_),
-      instance_(0)
+      instance_(init(sddi.type_support_))
   {
-    instance_ = init(type_support_);
     instance_->copy(*sddi.instance_);
   }
 
   REFLEX_INLINE AutoDynamicData & AutoDynamicData::operator = (
-      const AutoDynamicData & rhs)
+    const AutoDynamicData & rhs)
   {
+    // It makes sense to create a temporary replica and swap 
+    // instead of calling DDS_DynamicData::copy because we don't 
+    // check if the *this has the same TypeCode as the rhs.
     AutoDynamicData(rhs).swap(*this);
     return *this;
   }
+
+#ifdef REFLEX_HAS_RVALUE_REF
+  AutoDynamicData::AutoDynamicData(AutoDynamicData && rhs)
+    : type_support_(rhs.type_support_),
+      instance_(rhs.instance_)
+  {
+    rhs.type_support_ = 0;
+    rhs.instance_ = 0;
+  }
+
+  AutoDynamicData & operator = (AutoDynamicData && rhs)
+  {
+    this->swap(rhs);
+    return *this;
+  }
+#endif 
 
   REFLEX_INLINE void AutoDynamicData::swap(AutoDynamicData & other) throw()
   {
@@ -64,10 +83,11 @@ namespace reflex {
   {
     if (instance_ != NULL) {
       DDS_ReturnCode_t rc = type_support_->delete_data(instance_);
-      if (rc != DDS_RETCODE_OK) 
+      if (rc != DDS_RETCODE_OK)
       {
         std::cerr << "~AutoDynamicData: Unable to delete instance data, error = "
-                  << detail::get_readable_retcode(rc) << std::endl;
+                  << detail::get_readable_retcode(rc) 
+                  << std::endl;
       }
       instance_ = NULL;
     }

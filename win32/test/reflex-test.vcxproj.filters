@@ -19,7 +19,9 @@
     <ClCompile Include="..\..\test\all_types.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\reflex_test.cxx" />
+    <ClCompile Include="..\..\test\reflex_test.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\test\darkart.h">

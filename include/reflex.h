@@ -11,512 +11,236 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_H
 #define RTIREFLEX_H
 
-#include "reflex/dd2tuple.h"
-#include "reflex/dllexport.h"
-#include <memory>
+#include <ndds/ndds_cpp.h>
+#include <tuple>
+#include <vector>
 
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT reflex::SafeTypeCode<DDS_TypeCode>;
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataWriter>;
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataReader>;
+#include "reflex/dllexport.h"
+#include "reflex/dd_manip.h"
+#include "reflex/typecode_manip.h"
+#include "reflex/memberwise.h"
+#include "reflex/default_member_names.h"
+#include "reflex/bounded.h"
+#include "reflex/reflex_fwd.h"
+#include "reflex/sample.h"
+#include "reflex/generic_dr.h"
+#include "reflex/generic_dw.h"
+
+#include <boost/fusion/sequence/intrinsic/size.hpp>
+#include <boost/fusion/include/size.hpp>
 
 namespace reflex {
 
-  template <class T>
-  class Sample
-  {
-    T val;
-    DDS_SampleInfo val_info;
+  namespace detail {
 
-  public:
+    template <class T, class U>
+    struct MembersInBasesImpl;
 
-    Sample()
-    { }
-
-    Sample(T &t, DDS_SampleInfo &i)
-      : val(t),
-      val_info(i)
-    { }
-
-    Sample(const Sample &s)
-      : val(s.data()),
-      val_info(s.info())
-    {}
-
-    Sample & operator = (const Sample &s)
+    template <class T>
+    struct MembersInBasesImpl<T, false_type>
     {
-      val = s.data();
-      val_info = s.info();
+      enum { value = 0 };
+    };
+
+    template <class T>
+    struct MembersInBasesImpl<T, true_type>
+    {
+      typedef typename InheritanceTraits<T>::basetype  Base;
+      typedef typename InheritanceTraits<Base>::has_base BaseHasBase;
+
+      enum {
+        value = MembersInBasesImpl<Base, BaseHasBase>::value +
+        Size<Base>::value
+      };
+    };
+
+    template <class T>
+    struct MembersInBases
+    {
+      typedef typename InheritanceTraits<T>::has_base HasBase;
+      enum { value = MembersInBasesImpl<T, HasBase>::value };
+    };
+
+
+    template <class T>
+    void fill_dd_impl(
+      const T & data,
+      DDS_DynamicData &instance,
+      false_type /* T has no base */)
+    {
+      typedef detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1> TIter;
+
+      TIter::set(
+        instance,
+        detail::MemberAccess::BY_ID(1),
+        data);
+    }
+
+    template <class T>
+    void fill_dd_impl(
+      const T & data,
+      DDS_DynamicData &instance,
+      true_type /* T has a base */)
+    {
+      typedef typename InheritanceTraits<T>::basetype Base;
+
+      fill_dd_impl(
+        static_cast<const Base &>(data),
+        instance,
+        typename detail::InheritanceTraits<Base>::has_base());
+
+      typedef detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1> TIter;
+
+      TIter::set(
+        instance,
+        detail::MemberAccess::BY_ID(MembersInBases<T>::value + 1),
+        data);
+    }
+
+    template <class T>
+    void extract_dd_impl(
+      const DDS_DynamicData & instance,
+      T & data,
+      false_type /* T has no base*/)
+    {
+      typedef detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1> TIter;
+
+      TIter::get(
+        instance,
+        detail::MemberAccess::BY_ID(1),
+        data);
+    }
+
+    template <class T>
+    void extract_dd_impl(
+      const DDS_DynamicData & instance,
+      T & data,
+      true_type /* T has a base*/)
+    {
+      typedef typename InheritanceTraits<T>::basetype Base;
+
+      extract_dd_impl(
+        instance,
+        static_cast<Base &>(data),
+        typename InheritanceTraits<Base>::has_base());
+
+      typedef detail::TypelistIterator<
+        T,
+        0,
+        detail::Size<T>::value - 1> TIter;
+
+      TIter::get(
+        instance,
+        detail::MemberAccess::BY_ID(MembersInBases<T>::value + 1),
+        data);
+    }
+
+  } // namespace detail
+
+  template <class T>
+  class SafeDynamicData : public AutoDynamicData
+  {
+  public:
+    SafeDynamicData(
+      DDSDynamicDataTypeSupport *type_support,
+      const T & src)
+      : AutoDynamicData(type_support)
+    {
+      fill_dd(src, *AutoDynamicData::get());
+    }
+
+    explicit SafeDynamicData(
+      DDSDynamicDataTypeSupport *type_support)
+      : AutoDynamicData(type_support)
+    { }
+
+    SafeDynamicData & operator = (const T & src)
+    {
+      fill_dd(src, *AutoDynamicData::get());
       return *this;
     }
 
-    T & data()
+    operator T () const
     {
-      return val;
-    }
-
-    const T & data() const
-    {
-      return val;
-    }
-
-    const DDS_SampleInfo & info() const
-    {
-      return val_info;
-    }
-
-    DDS_SampleInfo & info()
-    {
-      return val_info;
-    }
-
-    T * operator -> ()
-    {
-      return &val;
-    }
-
-    const T * operator -> () const
-    {
-      return &val;
-    }
-  };
-
-  namespace detail {
-
-    class REFLEX_DLL_EXPORT DataWriterBase
-    {
-    protected:
-
-      SafeTypeCode<DDS_TypeCode> safe_typecode_;
-      std::unique_ptr<DDSDynamicDataTypeSupport> safe_typesupport_;
-      std::shared_ptr<DDSDynamicDataWriter> safe_datawriter_;
-      AutoDynamicData dd_instance_;
-
-      DataWriterBase(DDSDomainParticipant *participant,
-        const char * topic_name,
-        const char * type_name,
-        DDS_TypeCode * tc,
-        DDS_DynamicDataTypeProperty_t props =
-        DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-
-      DataWriterBase(DDSDomainParticipant *participant,
-        const DDS_DataWriterQos & dwqos,
-        const char * topic_name,
-        const char * type_name,
-        DDS_TypeCode * tc,
-        void * listener,
-        DDS_DynamicDataTypeProperty_t props =
-        DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-
-      DDSDataWriter * underlying();
-      DDSDataWriter * operator -> ();
-
-      static void deleter(DDSDynamicDataWriter * ddWriter) throw();
-
-    public:
-      DDS_TypeCode * get_typecode() const;
-    };
-
-    class REFLEX_DLL_EXPORT DataReaderBase
-    {
-    protected:
-
-      SafeTypeCode<DDS_TypeCode> safe_typecode_;
-      std::unique_ptr<DDSDynamicDataTypeSupport> safe_typesupport_;
-      std::shared_ptr<DDSDynamicDataReader> safe_datareader_;
-      AutoDynamicData dd_instance_;
-
-      DataReaderBase(DDSDomainParticipant *participant,
-        DDSDataReaderListener * listener,
-        const char * topic_name,
-        const char * type_name,
-        DDS_TypeCode * tc,
-        DDS_DynamicDataTypeProperty_t props =
-        DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-
-      DataReaderBase(DDSDomainParticipant *participant,
-        const DDS_DataReaderQos & drqos,
-        DDSDataReaderListener * listener,
-        const char * topic_name,
-        const char * type_name,
-        DDS_TypeCode * tc,
-        DDS_DynamicDataTypeProperty_t props =
-        DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-
-      DDSDataReader * underlying();
-      DDSDataReader * operator -> ();
-
-      static void deleter(DDSDynamicDataReader * ddReader) throw();
-
-    public:
-      ~DataReaderBase()
-      {
-        safe_datareader_->set_listener(NULL, DDS_STATUS_MASK_ALL);
-      }
-
-      std::shared_ptr<DDSDynamicDataReader> dd_reader()
-      {
-        return safe_datareader_;
-      }
-
-      DDS_TypeCode * get_typecode() const;
-    };
-
-  } // namespace detail
-
-  template <class T>
-  class GenericDataWriter : public detail::DataWriterBase
-  {
-  public:
-    GenericDataWriter(DDSDomainParticipant *participant,
-                      const char * topic_name,
-                      const char * type_name = 0)
-      : detail::DataWriterBase(participant,
-                               topic_name,
-                               type_name,
-                               make_typecode<T>(type_name).release())
-    { }
-
-    GenericDataWriter(DDSDomainParticipant *participant,
-                      DDS_DataWriterQos & dwqos,
-                      const char * topic_name,
-                      const char * type_name = 0,
-                      void * listener = 0)
-      : detail::DataWriterBase(participant,
-                               dwqos,
-                               topic_name,
-                               type_name,
-                               make_typecode<T>(type_name).release(),
-                               listener)
-    { }
-
-    template <class U>
-    DDS_ReturnCode_t write(U & data)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
-    }
-
-    template <class U>
-    DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
-    }
-  };
-
-  template <class... Args>
-  class GenericDataWriter<std::tuple<Args...>>
-    : public detail::DataWriterBase
-  {
-    typedef typename detail::remove_refs<std::tuple<Args...>>::type NoRefsTuple;
-
-  public:
-    GenericDataWriter(DDSDomainParticipant *participant,
-      const char * topic_name,
-      const char * type_name)
-      : DataWriterBase(participant,
-                       topic_name,
-                       type_name,
-                       make_typecode<NoRefsTuple>(type_name).release())
-    { }
-
-    template <class U>
-    DDS_ReturnCode_t write(U & data)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
-    }
-
-    template <class U>
-    DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
+      T data;
+      extract_dd(*AutoDynamicData::get(), data);
+      return data;
     }
   };
 
   template <class T>
-  class GenericDataReader;
+  void fill_dd(const T & data, DDS_DynamicData &instance)
+  {
+    detail::fill_dd_impl(
+      data,
+      instance,
+      typename detail::InheritanceTraits<T>::has_base());
+  }
 
   template <class T>
-  struct GenericDataReaderListener
+  void fill_dd(const T & data, AutoDynamicData &instance)
   {
-    virtual void on_data_available(GenericDataReader<T> & dr) = 0;
-  };
+    detail::fill_dd_impl(
+      data,
+      *instance.get(),
+      typename detail::InheritanceTraits<T>::has_base());
+  }
 
   template <class T>
-  class DataReaderListenerAdapter : public DDSDataReaderListener
+  SafeDynamicData<T> make_dd(const T & src)
   {
-    GenericDataReaderListener<T> * generic_listener_;
-    GenericDataReader<T> * data_reader_;
+    static reflex::SafeTypeCode<DDS_TypeCode>
+      stc(reflex::make_typecode<T>());
 
-  public:
+    static DDS_DynamicDataTypeProperty_t props;
 
-    typedef GenericDataReader<T> DataReaderType;
+    static DDSDynamicDataTypeSupport * type_support =
+      new DDSDynamicDataTypeSupport(stc.get(), props);
 
-    explicit DataReaderListenerAdapter(GenericDataReaderListener<T> * listener)
-      : generic_listener_(listener),
-        data_reader_(0)
-    {
-      if (!listener)
-      {
-        throw std::runtime_error("DataReaderListenerAdapter: NULL listener");
-      }
-    }
-
-    void set_datareader(GenericDataReader<T> * dr)
-    {
-      data_reader_ = dr;
-    }
-
-    virtual void on_data_available(DDSDataReader *reader)
-    {
-#ifdef _DEBUG
-      DDSDynamicDataReader *dd_reader = DDSDynamicDataReader::narrow(reader);
-      if (!dd_reader) {
-        std::cerr << "Not a DynamicDataReader!!!\n";
-      }
-#endif
-      if (generic_listener_ && data_reader_)
-        generic_listener_->on_data_available(*data_reader_);
-      else
-        std::cerr << "Missing Listener or DataReader\n";
-    }
-  };
-
-  namespace detail {
-
-    template <class T>
-    DDS_ReturnCode_t take_impl(std::shared_ptr<DDSDynamicDataReader> dr,
-      std::vector<Sample<T>> & data,
-      int max_samples,
-      DDS_SampleStateMask sample_states,
-      DDS_ViewStateMask view_states,
-      DDS_InstanceStateMask instance_states,
-      DDSReadCondition * cond = 0)
-    {
-      DDS_DynamicDataSeq data_seq;
-      DDS_SampleInfoSeq info_seq;
-      DDS_ReturnCode_t rc;
-
-      if (cond)
-        rc = dr->take_w_condition(data_seq, info_seq, max_samples, cond);
-      else
-        rc = dr->take(data_seq, info_seq, max_samples,
-        sample_states, view_states, instance_states);
-
-      if (rc == DDS_RETCODE_NO_DATA) {
-        return rc;
-      }
-      else if (rc != DDS_RETCODE_OK) {
-        std::cerr << "! Unable to take data from data reader, error "
-          << rc << std::endl;
-        return rc;
-      }
-
-      if (data_seq.length())
-      {
-        data.resize(data_seq.length());
-
-        for (int i = 0; i < data_seq.length(); ++i)
-        {
-          if (info_seq[i].valid_data)
-            extract_dd(data_seq[i], data[i].data());
-          else
-          {
-            T temp;
-            data[i].data() = temp;
-          }
-          data[i].info() = info_seq[i];
-        }
-      }
-
-      rc = dr->return_loan(data_seq, info_seq);
-      if (rc != DDS_RETCODE_OK) {
-        std::cerr << "! Unable to return loan, error "
-          << rc << std::endl;
-      }
-      return rc;
-    }
-
-  } // namespace detail
+    return reflex::SafeDynamicData<T>(type_support, src);
+  }
 
   template <class T>
-  class GenericDataReader : public detail::DataReaderBase
+  SafeTypeCode<T> make_typecode(const char * name /* default 0 */)
   {
-  public:
-    typedef GenericDataReaderListener<T> ListenerType;
-    DataReaderListenerAdapter<T> * listener_adapter_;
-    std::unique_ptr < DataReaderListenerAdapter<T>> safe_listener_adapter_;
+    SafeTypeCode<T> aggregateTc =
+      detail::make_typecode_impl<T>(
+      name,
+      typename detail::InheritanceTraits<T>::has_base());
 
-    GenericDataReader(
-        DDSDomainParticipant *participant,
-        ListenerType * listener,
-        const char * topic_name,
-        const char * type_name = 0,
-        DataReaderListenerAdapter<T> * adapter_placeholder = 0)
+    return move(aggregateTc);
+  }
 
-      : detail::DataReaderBase(
-            participant,
-            listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
-            topic_name,
-            type_name,
-            make_typecode<T>(type_name).release()),
-            safe_listener_adapter_(listener ? adapter_placeholder : 0)
-    {
-      if (safe_listener_adapter_)
-        safe_listener_adapter_->set_datareader(this);
-    }
-
-    GenericDataReader(
-        DDSDomainParticipant *participant,
-        const DDS_DataReaderQos & drqos,
-        ListenerType * listener,
-        const char * topic_name,
-        const char * type_name = 0,
-        DataReaderListenerAdapter<T> * adapter_placeholder = 0)
-
-      : detail::DataReaderBase(
-           participant,
-           drqos,
-           listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
-           topic_name,
-           type_name,
-           make_typecode<T>(type_name).release()),
-           safe_listener_adapter_(listener ? adapter_placeholder : 0)
-    {
-      if (safe_listener_adapter_)
-        safe_listener_adapter_->set_datareader(this);
-    }
-
-    DDS_ReturnCode_t take_w_condition(
-        T& data, DDS_SampleInfo & info, DDSReadCondition * cond = 0)
-    {
-      DDS_DynamicDataSeq data_seq;
-      DDS_SampleInfoSeq info_seq;
-      DDS_ReturnCode_t rc;
-      size_t max_samples = 1;
-
-      if (cond)
-        rc = dd_reader()->take_w_condition(data_seq, info_seq, max_samples, cond);
-      else
-        rc = dd_reader()->take(data_seq, info_seq, max_samples,
-        DDS_ANY_SAMPLE_STATE, DDS_ANY_VIEW_STATE, DDS_ANY_INSTANCE_STATE);
-
-      if (rc == DDS_RETCODE_NO_DATA) {
-        return rc;
-      }
-      else if (rc != DDS_RETCODE_OK) {
-        std::cerr << "! Unable to take data from data reader, error "
-          << rc << std::endl;
-        return rc;
-      }
-
-      if (data_seq.length())
-      {
-        for (int i = 0; i < data_seq.length(); ++i)
-        {
-          if (info_seq[i].valid_data)
-          {
-            dd2tuple(data_seq[i], data);
-            info = info_seq[i];
-          }
-        }
-      }
-
-      rc = dd_reader()->return_loan(data_seq, info_seq);
-      if (rc != DDS_RETCODE_OK) {
-        std::cerr << "! Unable to return loan, error "
-          << rc << std::endl;
-      }
-      return rc;
-    }
-
-    DDS_ReturnCode_t take(
-      std::vector<Sample<T>> & data,
-      int max_samples = DDS_LENGTH_UNLIMITED,
-      DDS_SampleStateMask sample_states = DDS_ANY_SAMPLE_STATE,
-      DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
-      DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
-    {
-      return detail::take_impl<T>(
-        dd_reader(),
-        data,
-        max_samples,
-        sample_states,
-        view_states,
-        instance_states);
-    }
-
-    DDS_ReturnCode_t take_w_condition(std::vector<Sample<T>> & data,
-      int max_samples,
-      DDSReadCondition * cond)
-    {
-      if (!cond)
-        return DDS_RETCODE_PRECONDITION_NOT_MET;
-
-      return detail::take_impl<T>(
-        dd_reader(),
-        data,
-        max_samples,
-        DDS_ANY_SAMPLE_STATE,
-        DDS_ANY_VIEW_STATE,
-        DDS_ANY_INSTANCE_STATE,
-        cond);
-    }
-  };
-
-  // The following class can't inherit from the one above
-  // because it creates a possibility of the class inheriting from
-  // itself!
-  template <class... Args>
-  class GenericDataReader<std::tuple<Args...>>
-    : public detail::DataReaderBase
+  template <class T>
+  void extract_dd(const DDS_DynamicData & instance, T & data)
   {
-    typedef typename 
-      detail::remove_refs<std::tuple<Args...>>::type 
-        NoRefsTuple;
+    detail::extract_dd_impl(
+      instance,
+      data,
+      typename detail::InheritanceTraits<T>::has_base());
+  }
 
-  public:
-    typedef GenericDataReaderListener<NoRefsTuple> ListenerType;
-    DataReaderListenerAdapter<NoRefsTuple> * listener_adapter_;
-    std::unique_ptr < DataReaderListenerAdapter<NoRefsTuple>> safe_listener_adapter_;
-
-    GenericDataReader(DDSDomainParticipant *participant,
-      GenericDataReaderListener<NoRefsTuple> * listener,
-      const char * topic_name,
-      const char * type_name = 0,
-      DataReaderListenerAdapter<NoRefsTuple> * adapter_placeholder = 0)
-      : DataReaderBase(
-      participant,
-      listener ? (adapter_placeholder = new DataReaderListenerAdapter<NoRefsTuple>(listener)) : 0,
-      topic_name,
-      type_name,
-      make_typecode<NoRefsTuple>(type_name).release()),
-      safe_listener_adapter_(listener ? adapter_placeholder : 0)
-    {
-      if (safe_listener_adapter_)
-        safe_listener_adapter_->set_datareader(this);
-    }
-
-    DDS_ReturnCode_t take(std::vector<Sample<NoRefsTuple>> & data,
-      int max_samples = DDS_LENGTH_UNLIMITED,
-      DDS_SampleStateMask sample_states = DDS_ANY_SAMPLE_STATE,
-      DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
-      DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
-    {
-      return detail::take_impl<NoRefsTuple>(
-          dd_reader(),
-          data,
-          max_samples,
-          sample_states,
-          view_states,
-          instance_states);
-    }
-  };
+  template <class T>
+  void extract_dd(const AutoDynamicData & instance, T & data)
+  {
+    detail::extract_dd_impl(
+      *instance.get(),
+      data,
+      typename detail::InheritanceTraits<T>::has_base());
+  }
 
 } // namespace reflex
+
+
 
 #ifndef REFLEX_NO_HEADER_ONLY
 #include "reflex/../../src/reflex.cxx"

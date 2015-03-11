@@ -4,9 +4,6 @@
     <ClCompile Include="..\src\dd_extra.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\dd2tuple.cxx">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\default_member_names.cxx">
       <Filter>sources</Filter>
     </ClCompile>
@@ -20,6 +17,15 @@
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="..\src\dd_manip.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto_dd.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\generic_dr.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\generic_dw.cxx">
       <Filter>sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -70,6 +76,21 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="..\include\reflex\typecode_manip.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\sample.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\reflex_fwd.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\auto_dd.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\generic_dr.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\generic_dw.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

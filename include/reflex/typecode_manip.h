@@ -24,18 +24,9 @@ damages arising out of the use or inability to use the software.
 #include "reflex/tuple_iterator.h"
 #include "reflex/bounded.h"
 #include "reflex/dllexport.h"
+#include "reflex/reflex_fwd.h"
 
 namespace reflex {
-
-  /**
-  * Creates a <a href="http://community.rti.com/rti-doc/510/ndds.5.1.0/doc/html/api_cpp/structDDS__TypeCode.html">TypeCode</a>
-  * for structured type T.
-  * @param name Optional name for top-level struct type. 
-  *        If none is provided, the unqualified name of type T is used.
-  * @return The TypeCode for type T wrapped in a SafeTypeCode object.
-  */
-  template <class T>
-  SafeTypeCode<T> make_typecode(const char * name = 0);
 
   namespace detail {
 

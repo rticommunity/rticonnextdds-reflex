@@ -74,8 +74,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\dd2tuple.cxx" />
+    <ClCompile Include="..\src\auto_dd.cxx" />
     <ClCompile Include="..\src\dd_manip.cxx" />
+    <ClCompile Include="..\src\generic_dr.cxx" />
+    <ClCompile Include="..\src\generic_dw.cxx" />
     <ClCompile Include="..\src\reflex.cxx" />
     <ClCompile Include="..\src\dd_extra.cxx" />
     <ClCompile Include="..\src\default_member_names.cxx" />
@@ -84,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\reflex.h" />
+    <ClInclude Include="..\include\reflex\auto_dd.h" />
     <ClInclude Include="..\include\reflex\bounded.h" />
     <ClInclude Include="..\include\reflex\common.h" />
     <ClInclude Include="..\include\reflex\dd2tuple.h" />
@@ -94,9 +97,13 @@
     <ClInclude Include="..\include\reflex\disc_union.h" />
     <ClInclude Include="..\include\reflex\dllexport.h" />
     <ClInclude Include="..\include\reflex\enable_if.h" />
+    <ClInclude Include="..\include\reflex\generic_dr.h" />
+    <ClInclude Include="..\include\reflex\generic_dw.h" />
     <ClInclude Include="..\include\reflex\memberwise.h" />
+    <ClInclude Include="..\include\reflex\reflex_fwd.h" />
     <ClInclude Include="..\include\reflex\safe_enum.h" />
     <ClInclude Include="..\include\reflex\safe_typecode.h" />
+    <ClInclude Include="..\include\reflex\sample.h" />
     <ClInclude Include="..\include\reflex\tuple_iterator.h" />
     <ClInclude Include="..\include\reflex\typecode_manip.h" />
   </ItemGroup>
