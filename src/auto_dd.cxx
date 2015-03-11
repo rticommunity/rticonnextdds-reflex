@@ -9,6 +9,8 @@ damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
 #include <iostream>
+#include <stdexcept>
+
 #include "ndds/ndds_cpp.h"
 #include "reflex/auto_dd.h"
 

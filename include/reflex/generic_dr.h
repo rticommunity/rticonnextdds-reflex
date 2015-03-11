@@ -16,6 +16,7 @@ damages arising out of the use or inability to use the software.
 #include "reflex/dd2tuple.h"
 #include "reflex/dllexport.h"
 #include "reflex/sample.h"
+#include "reflex/reflex_fwd.h"
 
 #include <memory>
 

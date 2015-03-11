@@ -20,7 +20,7 @@ namespace reflex {
   template <class T>
   class SafeDynamicData;
 
-  template <class T, class = void>
+  template <class T, class>
   class SafeTypeCode;
 
   /**

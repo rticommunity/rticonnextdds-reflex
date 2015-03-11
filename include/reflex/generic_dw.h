@@ -14,11 +14,10 @@ damages arising out of the use or inability to use the software.
 #include "reflex/safe_typecode.h"
 #include "reflex/auto_dd.h"
 #include "reflex/dllexport.h"
+#include "reflex/reflex_fwd.h"
 
 #include <memory>
 
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT reflex::SafeTypeCode<DDS_TypeCode>;
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
 REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataWriter>;
 
 namespace reflex {
