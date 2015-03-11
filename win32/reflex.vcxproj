@@ -78,9 +78,9 @@
     <ClCompile Include="..\src\dd_manip.cxx" />
     <ClCompile Include="..\src\generic_dr.cxx" />
     <ClCompile Include="..\src\generic_dw.cxx" />
-    <ClCompile Include="..\src\reflex.cxx" />
     <ClCompile Include="..\src\dd_extra.cxx" />
     <ClCompile Include="..\src\default_member_names.cxx" />
+    <ClCompile Include="..\src\reflex.cxx" />
     <ClCompile Include="..\src\safe_typecode.cxx" />
     <ClCompile Include="..\src\typecode_manip.cxx" />
   </ItemGroup>
@@ -88,8 +88,6 @@
     <ClInclude Include="..\include\reflex.h" />
     <ClInclude Include="..\include\reflex\auto_dd.h" />
     <ClInclude Include="..\include\reflex\bounded.h" />
-    <ClInclude Include="..\include\reflex\common.h" />
-    <ClInclude Include="..\include\reflex\dd2tuple.h" />
     <ClInclude Include="..\include\reflex\dd_extra.h" />
     <ClInclude Include="..\include\reflex\dd_manip.h" />
     <ClInclude Include="..\include\reflex\dd_traits.h" />

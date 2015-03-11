@@ -15,7 +15,6 @@ damages arising out of the use or inability to use the software.
 
 #include "reflex/dllexport.h"
 #include "reflex/dd_extra.h"
-#include "reflex/common.h"
 #include "reflex/dd_manip.h"
 
 #define SET_SEQUENCE_DEF(DDS_SEQ_TYPE, FUNCTION)                      \

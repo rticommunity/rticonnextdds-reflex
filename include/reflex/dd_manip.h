@@ -26,7 +26,6 @@ damages arising out of the use or inability to use the software.
 #include "reflex/safe_enum.h"
 #include "reflex/dd_extra.h"
 #include "reflex/bounded.h"
-#include "reflex/common.h"
 
 #include <boost/fusion/support/is_sequence.hpp>
 #include <boost/fusion/include/is_sequence.hpp>

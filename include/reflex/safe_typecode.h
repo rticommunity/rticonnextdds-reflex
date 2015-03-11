@@ -22,7 +22,6 @@ damages arising out of the use or inability to use the software.
 #include "reflex/safe_enum.h"
 #include "reflex/disc_union.h" 
 #include "reflex/bounded.h"
-#include "reflex/common.h"
 
 #define MAKE_SAFETYPECODE_MOVEONLY                        \
 private:                                                  \
