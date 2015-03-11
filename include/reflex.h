@@ -15,10 +15,10 @@ damages arising out of the use or inability to use the software.
 #include "reflex/dllexport.h"
 #include <memory>
 
-EXPIMP_TEMPLATE template class DllExport reflex::SafeTypeCode<DDS_TypeCode>;
-EXPIMP_TEMPLATE template class DllExport std::unique_ptr<DDSDynamicDataTypeSupport>;
-EXPIMP_TEMPLATE template class DllExport std::shared_ptr<DDSDynamicDataWriter>;
-EXPIMP_TEMPLATE template class DllExport std::shared_ptr<DDSDynamicDataReader>;
+REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT reflex::SafeTypeCode<DDS_TypeCode>;
+REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
+REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataWriter>;
+REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataReader>;
 
 namespace reflex {
 
@@ -83,7 +83,7 @@ namespace reflex {
 
   namespace detail {
 
-    class DllExport DataWriterBase
+    class REFLEX_DLL_EXPORT DataWriterBase
     {
     protected:
 
@@ -117,7 +117,7 @@ namespace reflex {
       DDS_TypeCode * get_typecode() const;
     };
 
-    class DllExport DataReaderBase
+    class REFLEX_DLL_EXPORT DataReaderBase
     {
     protected:
 
@@ -517,6 +517,11 @@ namespace reflex {
   };
 
 } // namespace reflex
+
+#ifndef REFLEX_NO_HEADER_ONLY
+#include "reflex/../../src/reflex.cxx"
+#endif
+
 
 #endif // RTIREFLEX_H
 

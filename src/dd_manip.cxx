@@ -8,10 +8,11 @@ support the Software.  RTI shall not be liable for any incidental or consequenti
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
+#include "reflex/dllexport.h"
 #include "reflex/dd_manip.h"
 
 #define SET_MEMBER_VALUE_DEF(TYPE, FUNCTION)                                     \
-void set_member_overload_resolution_helper::set_member_value(                    \
+REFLEX_INLINE void set_member_overload_resolution_helper::set_member_value(      \
       DDS_DynamicData & instance,                                                \
       const MemberAccess &ma,                                                    \
       const TYPE & val)                                                          \
@@ -28,7 +29,7 @@ void set_member_overload_resolution_helper::set_member_value(                   
 
 
 #define GET_MEMBER_VALUE_DEF(DDS_TYPE, TYPE, FUNCTION)                             \
-void get_member_overload_resolution_helper::get_member_value(                      \
+REFLEX_INLINE void get_member_overload_resolution_helper::get_member_value(        \
         const DDS_DynamicData & instance,                                          \
         const MemberAccess &ma,                                                    \
         TYPE & val)                                                                \
@@ -95,7 +96,7 @@ namespace reflex {
       GET_MEMBER_VALUE_DEF(DDS_LongLong, long long, get_longlong)
 #endif
 
-      void get_member_overload_resolution_helper::get_member_value(
+      REFLEX_INLINE void get_member_overload_resolution_helper::get_member_value(
               const DDS_DynamicData & instance,
               const MemberAccess &ma,
               bool & val)

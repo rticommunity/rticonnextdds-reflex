@@ -10,11 +10,12 @@ damages arising out of the use or inability to use the software.
 
 #include <iostream>
 #include "ndds/ndds_cpp.h"
+#include "reflex/dllexport.h"
 #include "reflex/dd2tuple.h"
 
 namespace reflex {
 
-  DDS_DynamicData * AutoDynamicData::init(DDSDynamicDataTypeSupport * ts)
+  REFLEX_INLINE DDS_DynamicData * AutoDynamicData::init(DDSDynamicDataTypeSupport * ts)
   {
     if (!ts) 
     {
@@ -29,7 +30,7 @@ namespace reflex {
     return instance;
   }
 
-  AutoDynamicData::AutoDynamicData(
+  REFLEX_INLINE AutoDynamicData::AutoDynamicData(
     DDSDynamicDataTypeSupport * typeSupport)
     : type_support_(typeSupport),
       instance_(0)
@@ -37,7 +38,7 @@ namespace reflex {
     instance_ = init(type_support_);
   }
 
-  AutoDynamicData::AutoDynamicData(
+  REFLEX_INLINE AutoDynamicData::AutoDynamicData(
       const AutoDynamicData & sddi)
     : type_support_(sddi.type_support_),
       instance_(0)
@@ -46,20 +47,20 @@ namespace reflex {
     instance_->copy(*sddi.instance_);
   }
 
-  AutoDynamicData & AutoDynamicData::operator = (
+  REFLEX_INLINE AutoDynamicData & AutoDynamicData::operator = (
       const AutoDynamicData & rhs)
   {
     AutoDynamicData(rhs).swap(*this);
     return *this;
   }
 
-  void AutoDynamicData::swap(AutoDynamicData & other) throw()
+  REFLEX_INLINE void AutoDynamicData::swap(AutoDynamicData & other) throw()
   {
     std::swap(type_support_, other.type_support_);
     std::swap(instance_, other.instance_);
   }
 
-  AutoDynamicData::~AutoDynamicData()
+  REFLEX_INLINE AutoDynamicData::~AutoDynamicData()
   {
     if (instance_ != NULL) {
       DDS_ReturnCode_t rc = type_support_->delete_data(instance_);
@@ -72,11 +73,11 @@ namespace reflex {
     }
   }
 
-  DDS_DynamicData * AutoDynamicData::get() {
+  REFLEX_INLINE DDS_DynamicData * AutoDynamicData::get() {
     return instance_;
   }
 
-  const DDS_DynamicData * AutoDynamicData::get() const {
+  REFLEX_INLINE const DDS_DynamicData * AutoDynamicData::get() const {
     return instance_;
   }
 

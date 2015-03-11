@@ -13,12 +13,14 @@ damages arising out of the use or inability to use the software.
 #include <stdexcept>
 #include <sstream>
 
+#include "reflex/dllexport.h"
 #include "reflex/dd_extra.h"
 #include "reflex/common.h"
 #include "reflex/dd_manip.h"
 
 #define SET_SEQUENCE_DEF(DDS_SEQ_TYPE, FUNCTION)                      \
-DDS_ReturnCode_t set_sequence(DDS_DynamicData &instance,              \
+REFLEX_INLINE DDS_ReturnCode_t set_sequence(                          \
+                              DDS_DynamicData &instance,              \
                               const MemberAccess &ma,                 \
                               const DDS_SEQ_TYPE &value)              \
 {                                                                     \
@@ -31,7 +33,8 @@ DDS_ReturnCode_t set_sequence(DDS_DynamicData &instance,              \
 }
 
 #define GET_SEQUENCE_DEF(DDS_SEQ_TYPE, FUNCTION)                      \
-DDS_ReturnCode_t get_sequence(const DDS_DynamicData & instance,       \
+REFLEX_INLINE DDS_ReturnCode_t get_sequence(                          \
+                              const DDS_DynamicData & instance,       \
                               DDS_SEQ_TYPE &seq,                      \
                               const MemberAccess &ma)                 \
 {                                                                     \
@@ -43,7 +46,8 @@ DDS_ReturnCode_t get_sequence(const DDS_DynamicData & instance,       \
 }
 
 #define SET_ARRAY_DEF(BASIC_TYPE, DDS_TYPE, FUNCTION)                     \
-DDS_ReturnCode_t set_array(DDS_DynamicData &instance,                     \
+REFLEX_INLINE DDS_ReturnCode_t set_array(                                 \
+                           DDS_DynamicData &instance,                     \
                            const MemberAccess &ma,                        \
                            DDS_UnsignedLong length,                       \
                            const BASIC_TYPE *array)                       \
@@ -59,7 +63,8 @@ DDS_ReturnCode_t set_array(DDS_DynamicData &instance,                     \
 }
 
 #define GET_ARRAY_DEF(BASIC_TYPE, DDS_TYPE, FUNCTION)                 \
-DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
+REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
+                           const DDS_DynamicData & instance,          \
                            BASIC_TYPE *array,                         \
                            DDS_UnsignedLong *length,                  \
                            const MemberAccess &ma)                    \
@@ -77,7 +82,7 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
 
     namespace detail {
 
-        void check_retcode(
+        REFLEX_INLINE void check_retcode(
           const char * message,
           DDS_ReturnCode_t rc)
         {
@@ -89,7 +94,7 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
           }
         }
 
-        void check_exception_code(
+        REFLEX_INLINE void check_exception_code(
           const char * message,
           DDS_ExceptionCode_t ex)
         {
@@ -171,11 +176,11 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
         GET_ARRAY_DEF(long long, DDS_LongLong,        get_longlong_array)
 #endif
         
-      SafeBinder::SafeBinder()
+      REFLEX_INLINE SafeBinder::SafeBinder()
         : outer_(0), inner_(0)
       {}
 
-      SafeBinder::SafeBinder(const DDS_DynamicData & outer,
+      REFLEX_INLINE SafeBinder::SafeBinder(const DDS_DynamicData & outer,
         DDS_DynamicData & inner,
         const char * member_name,
         DDS_Long member_id)
@@ -188,7 +193,7 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
         detail::check_retcode("SafeBinder::bind_complex_member error = ", rc);
       }
 
-      SafeBinder::SafeBinder(const DDS_DynamicData & outer,
+      REFLEX_INLINE SafeBinder::SafeBinder(const DDS_DynamicData & outer,
         DDS_DynamicData & inner,
         const MemberAccess &ma)
         : outer_(&const_cast<DDS_DynamicData &>(outer)),
@@ -207,37 +212,37 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
         detail::check_retcode("SafeBinder::bind_complex_member error = ", rc);
       }
 
-      SafeBinder::~SafeBinder() throw() {
+      REFLEX_INLINE SafeBinder::~SafeBinder() throw() {
         if (outer_)
           outer_->unbind_complex_member(*inner_);
       }
 
-      SafeBinder::SafeBinder(SafeBinder::proxy p) throw()
+      REFLEX_INLINE SafeBinder::SafeBinder(SafeBinder::proxy p) throw()
         : outer_(p.outer_),
         inner_(p.inner_)
       {}
 
-      void SafeBinder::swap(SafeBinder & sb) throw() {
+      REFLEX_INLINE void SafeBinder::swap(SafeBinder & sb) throw() {
         std::swap(outer_, sb.outer_);
         std::swap(inner_, sb.inner_);
       }
 
-      SafeBinder & SafeBinder::operator = (SafeBinder::proxy p) throw() {
+      REFLEX_INLINE SafeBinder & SafeBinder::operator = (SafeBinder::proxy p) throw() {
         SafeBinder(p).swap(*this);
         return *this;
       }
 
-      SafeBinder::operator SafeBinder::proxy() throw() {
+      REFLEX_INLINE SafeBinder::operator SafeBinder::proxy() throw() {
         SafeBinder::proxy p{ outer_, inner_ };
         inner_ = outer_ = 0;
         return p;
       }
 
-      SafeBinder move(SafeBinder & sb) throw() {
+      REFLEX_INLINE SafeBinder move(SafeBinder & sb) throw() {
         return SafeBinder(SafeBinder::proxy(sb));
       }
 
-      MemberAccess::MemberAccess(bool is_valid_id,
+      REFLEX_INLINE MemberAccess::MemberAccess(bool is_valid_id,
         int id,
         const char *name)
         : is_valid_id_(is_valid_id),
@@ -245,27 +250,27 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
         name_(name)
       {}
 
-      bool MemberAccess::access_by_id() const
+      REFLEX_INLINE bool MemberAccess::access_by_id() const
       {
         return is_valid_id_;
       }
 
-      bool MemberAccess::access_by_name() const
+      REFLEX_INLINE bool MemberAccess::access_by_name() const
       {
         return !is_valid_id_;
       }
 
-      int MemberAccess::get_id() const
+      REFLEX_INLINE int MemberAccess::get_id() const
       {
         return id_;
       }
 
-      const char * MemberAccess::get_name() const
+      REFLEX_INLINE const char * MemberAccess::get_name() const
       {
         return name_;
       }
 
-      MemberAccess MemberAccess::operator + (int i) const {
+      REFLEX_INLINE MemberAccess MemberAccess::operator + (int i) const {
         if (is_valid_id_) {
           return MemberAccess::BY_ID(id_ + i);
         }
@@ -275,15 +280,15 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
       }
 
 
-      MemberAccess MemberAccess::BY_ID(int id) {
+      REFLEX_INLINE MemberAccess MemberAccess::BY_ID(int id) {
         return MemberAccess(true, id, 0);
       }
 
-      MemberAccess MemberAccess::BY_NAME(const char *name) {
+      REFLEX_INLINE MemberAccess MemberAccess::BY_NAME(const char *name) {
         return MemberAccess(false, -1, name);
       }
 
-      void set_seq_length(DDS_DynamicData & seq,
+      REFLEX_INLINE void set_seq_length(DDS_DynamicData & seq,
         size_t size,
         bool is_string)
       {
@@ -297,7 +302,7 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
         SafeBinder binder(seq, item, NULL, size);
       }
 
-      std::string remove_parenthesis(std::string s)
+      REFLEX_INLINE std::string remove_parenthesis(std::string s)
       {
         std::string::iterator end = s.end();
 
@@ -307,7 +312,7 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
           return s;
       }
 
-      const char *get_readable_retcode(DDS_ReturnCode_t rc)
+      REFLEX_INLINE const char *get_readable_retcode(DDS_ReturnCode_t rc)
       {
         switch (rc) 
         {
@@ -342,7 +347,7 @@ DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,          \
         }
       }
 
-      const char *get_readable_ex_code(DDS_ExceptionCode_t ex)
+      REFLEX_INLINE const char *get_readable_ex_code(DDS_ExceptionCode_t ex)
       {
         switch (ex) 
         {

@@ -32,14 +32,14 @@ damages arising out of the use or inability to use the software.
 #include <boost/fusion/include/is_sequence.hpp>
 
 #define SET_MEMBER_VALUE_DECL(TYPE)        \
-  DllExport static void set_member_value(  \
+  REFLEX_DLL_EXPORT static void set_member_value(  \
       DDS_DynamicData & instance,          \
       const MemberAccess &ma,              \
       const TYPE & val)
 
 
 #define GET_MEMBER_VALUE_DECL(TYPE)        \
-  DllExport static void get_member_value(  \
+  REFLEX_DLL_EXPORT static void get_member_value(  \
       const DDS_DynamicData & instance,    \
       const MemberAccess &ma,              \
       TYPE & val)
@@ -1194,6 +1194,10 @@ namespace reflex {
 
   } // namespace match
 } // namespace reflex
+
+#ifndef REFLEX_NO_HEADER_ONLY
+#include "reflex/../../src/dd_manip.cxx"
+#endif
 
 #endif //  RTIREFLEX_DD_MANIP_H
 

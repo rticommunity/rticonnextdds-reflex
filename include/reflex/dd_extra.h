@@ -20,23 +20,23 @@ damages arising out of the use or inability to use the software.
 #endif
 
 #define SET_SEQUENCE_DECL(DDS_SEQ_TYPE)                               \
-DllExport DDS_ReturnCode_t set_sequence(DDS_DynamicData &instance,    \
+REFLEX_DLL_EXPORT DDS_ReturnCode_t set_sequence(DDS_DynamicData &instance,    \
                               const MemberAccess & ma,                \
                               const DDS_SEQ_TYPE &value);
 
 #define GET_SEQUENCE_DECL(DDS_SEQ_TYPE)                                   \
-DllExport DDS_ReturnCode_t get_sequence(const DDS_DynamicData & instance, \
+REFLEX_DLL_EXPORT DDS_ReturnCode_t get_sequence(const DDS_DynamicData & instance, \
                               DDS_SEQ_TYPE &seq,                          \
                               const MemberAccess & ma);
 
 #define SET_ARRAY_DECL(BASIC_TYPE)                                    \
-DllExport DDS_ReturnCode_t set_array(DDS_DynamicData &instance,       \
+REFLEX_DLL_EXPORT DDS_ReturnCode_t set_array(DDS_DynamicData &instance,       \
                            const MemberAccess & ma,                   \
                            DDS_UnsignedLong length,                   \
                            const BASIC_TYPE *array);
 
 #define GET_ARRAY_DECL(BASIC_TYPE)                                     \
-DllExport DDS_ReturnCode_t get_array(const DDS_DynamicData & instance, \
+REFLEX_DLL_EXPORT DDS_ReturnCode_t get_array(const DDS_DynamicData & instance, \
                            BASIC_TYPE *array,                          \
                            DDS_UnsignedLong *length,                   \
                            const MemberAccess & ma);
@@ -47,12 +47,12 @@ namespace reflex {
 
   namespace detail {
 
-      DllExport const char *get_readable_retcode(DDS_ReturnCode_t rc);
-      DllExport const char *get_readable_ex_code(DDS_ExceptionCode_t ex);
-      DllExport void check_retcode(const char * message, DDS_ReturnCode_t rc);
-      DllExport void check_exception_code(const char * message, DDS_ExceptionCode_t ex);
+      REFLEX_DLL_EXPORT const char *get_readable_retcode(DDS_ReturnCode_t rc);
+      REFLEX_DLL_EXPORT const char *get_readable_ex_code(DDS_ExceptionCode_t ex);
+      REFLEX_DLL_EXPORT void check_retcode(const char * message, DDS_ReturnCode_t rc);
+      REFLEX_DLL_EXPORT void check_exception_code(const char * message, DDS_ExceptionCode_t ex);
 
-      class DllExport MemberAccess
+      class REFLEX_DLL_EXPORT MemberAccess
       {
         bool is_valid_id_;
         int id_;
@@ -74,7 +74,7 @@ namespace reflex {
         static MemberAccess BY_NAME(const char *name = 0);
       };
 
-      class DllExport SafeBinder
+      class REFLEX_DLL_EXPORT SafeBinder
       {
       private:
         struct proxy {
@@ -216,17 +216,23 @@ namespace reflex {
               DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
       }
 
-      DllExport void set_seq_length(
+      REFLEX_DLL_EXPORT void set_seq_length(
           DDS_DynamicData & seq,
           size_t size,
           bool is_string);
 
-      DllExport std::string remove_parenthesis(
+      REFLEX_DLL_EXPORT std::string remove_parenthesis(
           std::string);
 
   } // namespace detail
 
 } // namespace reflex
+
+
+#ifndef REFLEX_NO_HEADER_ONLY
+#include "reflex/../../src/dd_extra.cxx"
+#endif
+
 
 #endif // RTIREFLEX_DD_EXTRA_H
 

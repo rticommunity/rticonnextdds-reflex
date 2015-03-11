@@ -142,7 +142,7 @@ namespace reflex {
 
   } // namespace detail
 
-  class DllExport AutoDynamicData
+  class REFLEX_DLL_EXPORT AutoDynamicData
   {
   protected:
     DDSDynamicDataTypeSupport * type_support_;
@@ -249,6 +249,10 @@ namespace reflex {
   }
 
 } // namespace reflex
+
+#ifndef REFLEX_NO_HEADER_ONLY
+#include "reflex/../../src/dd2tuple.cxx"
+#endif
 
 #endif //  RTIREFLEX_DD2TUPLE_H
 

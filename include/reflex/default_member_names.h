@@ -37,18 +37,17 @@ namespace reflex {
       MemberInfo() {}
 
       MemberInfo(std::string n,
-        unsigned char v)
+                 unsigned char v)
         : name(remove_parenthesis(n)), value(v)
       {}
     };
 
     struct DefaultMemberNames
     {
-      DllExport static const MemberInfo members [];
-
-      DllExport static const char * basename(const char *);
-      DllExport static std::string type_name(const char * prefix);
-      DllExport static std::string demangle(const char* name);
+      REFLEX_DLL_EXPORT static MemberInfo get_member_info(int i);
+      REFLEX_DLL_EXPORT static const char * basename(const char *);
+      REFLEX_DLL_EXPORT static std::string type_name(const char * prefix);
+      REFLEX_DLL_EXPORT static std::string demangle(const char* name);
     };
 
     template <class T>
@@ -69,7 +68,7 @@ namespace reflex {
     struct MemberTraits
     {
       static MemberInfo member_info() {
-        return DefaultMemberNames::members[I];
+        return DefaultMemberNames::get_member_info(I);
       }
     };
 
@@ -366,6 +365,9 @@ BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL,       \
 #define RTI_ADAPT_ENUM(EnumType, Attributes)                  \
         RTI_ADAPT_ENUM_NAME(EnumType, #EnumType, Attributes)
 
+#ifndef REFLEX_NO_HEADER_ONLY
+#include "reflex/../../src/default_member_names.cxx"
+#endif
 
 #endif // RTIREFLEX_DEFAULT_MEMBER_NAMES_H
 

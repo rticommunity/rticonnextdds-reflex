@@ -13,15 +13,13 @@
     <ClCompile Include="..\..\test\many_members.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\reflex-test.cxx">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\one_member.cxx">
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\all_types.cxx">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\reflex_test.cxx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\test\darkart.h">

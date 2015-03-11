@@ -39,7 +39,7 @@ namespace reflex {
 
   namespace detail {
 
-    DllExport void DECLSPEC
+    REFLEX_DLL_EXPORT void REFLEX_DECLSPEC
       print_IDL(
       const DDS_TypeCode * tc,
       DDS_UnsignedLong indent);
@@ -118,7 +118,7 @@ namespace reflex {
     struct TC_overload_resolution_helper 
     {
       /*
-      DllExport static SafeTypeCode<std::string> DECLSPEC
+      REFLEX_DLL_EXPORT static SafeTypeCode<std::string> REFLEX_DECLSPEC
         get_typecode(
             DDS_TypeCodeFactory * factory,
             const std::string *);
@@ -641,6 +641,10 @@ namespace reflex {
   } // namespace detail
 
 } // namespace reflex
+
+#ifndef REFLEX_NO_HEADER_ONLY
+  #include "reflex/../../src/typecode_manip.cxx"
+#endif
 
 #endif // RTIREFLEX_TYPECODE_MANIP_H
 

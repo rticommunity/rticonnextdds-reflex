@@ -11,20 +11,31 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_DLLEXPORT_H
 #define RTIREFLEX_DLLEXPORT_H
 
+#ifdef REFLEX_NO_HEADER_ONLY
+
 #ifdef RTI_WIN32
   #ifdef BUILD_DD2TUPLE_DLL
-    #define DllExport   __declspec( dllexport ) 
-    #define DECLSPEC    __cdecl 
-    #define EXPIMP_TEMPLATE
+    #define REFLEX_DLL_EXPORT   __declspec( dllexport ) 
+    #define REFLEX_DECLSPEC    __cdecl 
+    #define REFLEX_EXPIMP_TEMPLATE
   #else
-    #define DllExport   __declspec( dllimport ) 
-    #define DECLSPEC    __cdecl 
-    #define EXPIMP_TEMPLATE extern
+    #define REFLEX_DLL_EXPORT   __declspec( dllimport ) 
+    #define REFLEX_DECLSPEC    __cdecl 
+    #define REFLEX_EXPIMP_TEMPLATE extern
   #endif
 #else
-  #define DllExport  
-  #define DECLSPEC
-  #define EXPIMP_TEMPLATE
+  #define REFLEX_DLL_EXPORT  
+  #define REFLEX_DECLSPEC
+  #define REFLEX_EXPIMP_TEMPLATE
 #endif
+
+#define REFLEX_INLINE 
+
+#else
+  #define REFLEX_DLL_EXPORT 
+  #define REFLEX_DECLSPEC
+  #define REFLEX_EXPIMP_TEMPLATE 
+  #define REFLEX_INLINE inline
+#endif // REFLEX_NO_HEADER_ONLY
 
 #endif // RTIREFLEX_DLLEXPORT_H

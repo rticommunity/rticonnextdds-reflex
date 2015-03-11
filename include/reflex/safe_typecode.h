@@ -79,7 +79,7 @@ namespace reflex {
       { }
     };
 
-    class DllExport SafeTypeCodeBase
+    class REFLEX_DLL_EXPORT SafeTypeCodeBase
     {
       SafeTypeCodeBase & operator = (const SafeTypeCodeBase &);
       SafeTypeCodeBase(const SafeTypeCodeBase &);
@@ -186,7 +186,7 @@ namespace reflex {
   };
 
   template <>
-  class DllExport SafeTypeCode<DDS_TypeCode>
+  class REFLEX_DLL_EXPORT SafeTypeCode<DDS_TypeCode>
     : public detail::SafeTypeCodeBase
   {
   public:
@@ -632,6 +632,11 @@ namespace reflex {
 
 #undef GET_TYPECODE_DECL
 #undef MAKE_THIS_CLASS_MOVEONLY
+
+#ifndef REFLEX_NO_HEADER_ONLY
+#include "reflex/../../src/safe_typecode.cxx"
+#endif
+
 
 #endif // RTIREFLEX_SAFE_TYPECODE_H
 

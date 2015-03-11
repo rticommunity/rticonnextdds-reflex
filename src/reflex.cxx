@@ -16,7 +16,7 @@ namespace reflex {
 
   namespace detail {
 
-    DataWriterBase::DataWriterBase(
+    REFLEX_INLINE DataWriterBase::DataWriterBase(
                        DDSDomainParticipant *participant,
                        const char * topic_name,
                        const char * type_name,
@@ -31,7 +31,7 @@ namespace reflex {
                        props)
     { }
 
-    DataWriterBase::DataWriterBase(
+    REFLEX_INLINE DataWriterBase::DataWriterBase(
                       DDSDomainParticipant *participant,
                       const DDS_DataWriterQos & dwqos,
                       const char * topic_name,
@@ -119,7 +119,7 @@ namespace reflex {
       safe_datawriter_.reset(ddWriter, &DataWriterBase::deleter);
     }
 
-    void DataWriterBase::deleter(DDSDynamicDataWriter * ddWriter) throw()
+    REFLEX_INLINE void DataWriterBase::deleter(DDSDynamicDataWriter * ddWriter) throw()
     {
       DDS_ReturnCode_t rc =
         ddWriter->get_publisher()->delete_datawriter(ddWriter);
@@ -131,21 +131,21 @@ namespace reflex {
       }
     }
 
-    DDS_TypeCode * DataWriterBase::get_typecode() const
+    REFLEX_INLINE DDS_TypeCode * DataWriterBase::get_typecode() const
     {
       return safe_typecode_.get();
     }
 
-    DDSDataWriter * DataWriterBase::underlying()
+    REFLEX_INLINE DDSDataWriter * DataWriterBase::underlying()
     {
       return safe_datawriter_.get();
     }
 
-    DDSDataWriter * DataWriterBase::operator -> () {
+    REFLEX_INLINE DDSDataWriter * DataWriterBase::operator -> () {
       return underlying();
     }
 
-    DataReaderBase::DataReaderBase(
+    REFLEX_INLINE DataReaderBase::DataReaderBase(
                       DDSDomainParticipant *participant,
                       DDSDataReaderListener * listener,
                       const char * topic_name,
@@ -161,7 +161,7 @@ namespace reflex {
                        props)
     {}
 
-    DataReaderBase::DataReaderBase(
+    REFLEX_INLINE DataReaderBase::DataReaderBase(
       DDSDomainParticipant *participant,
       const DDS_DataReaderQos & drqos,
       DDSDataReaderListener * listener,
@@ -249,7 +249,7 @@ namespace reflex {
       safe_datareader_.reset(ddReader, &DataReaderBase::deleter);
     }
 
-    void DataReaderBase::deleter(DDSDynamicDataReader * ddReader) throw()
+    REFLEX_INLINE void DataReaderBase::deleter(DDSDynamicDataReader * ddReader) throw()
     {
       DDS_ReturnCode_t rc =
         ddReader->get_subscriber()->delete_datareader(ddReader);
@@ -260,17 +260,17 @@ namespace reflex {
       }
     }
 
-    DDS_TypeCode * DataReaderBase::get_typecode() const
+    REFLEX_INLINE DDS_TypeCode * DataReaderBase::get_typecode() const
     {
       return safe_typecode_.get();
     }
 
-    DDSDataReader * DataReaderBase::underlying()
+    REFLEX_INLINE DDSDataReader * DataReaderBase::underlying()
     {
       return safe_datareader_.get();
     }
 
-    DDSDataReader * DataReaderBase::operator -> ()
+    REFLEX_INLINE DDSDataReader * DataReaderBase::operator -> ()
     {
       return underlying();
     }

@@ -13,14 +13,13 @@ damages arising out of the use or inability to use the software.
 #include <string>
 
 #include "reflex/typecode_manip.h"
-#include "reflex/safe_typecode.h"
 #include "reflex/dllexport.h"
 
 namespace reflex {
 
   namespace detail {
 
-    static void print_recursive_IDL(
+    REFLEX_INLINE static void print_recursive_IDL(
         const DDS_TypeCode * tc,
         DDS_UnsignedLong indent,
         std::set<std::string> & visited)
@@ -74,7 +73,7 @@ namespace reflex {
       }
     }
 
-    DllExport void DECLSPEC print_IDL(
+    REFLEX_DLL_EXPORT REFLEX_INLINE void REFLEX_DECLSPEC print_IDL(
         const DDS_TypeCode *tc,
         DDS_UnsignedLong indent)
     {
