@@ -60,9 +60,6 @@
     <ClInclude Include="..\include\reflex\memberwise.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\reflex\safe_enum.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\reflex\safe_typecode.h">
       <Filter>headers</Filter>
     </ClInclude>

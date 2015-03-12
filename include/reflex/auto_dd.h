@@ -19,7 +19,7 @@ struct DDS_DynamicData;
 namespace reflex {
 
   /**
-  * @brief Automatically manages the memory of an DDS_DynamicData instance. 
+  * @brief Automatically manages the memory of a DynamicData instance. 
   * 
   * AutoDynamicData behaves like a value-type and therefore copying
   * an AutoDynamicData instance makes a deep copy of the underlying
@@ -83,6 +83,11 @@ namespace reflex {
     */
     const DDS_DynamicData * get() const;
   };
+
+  /**
+  * Swap the contents (shallow)
+  */
+  void swap(AutoDynamicData & lhs, AutoDynamicData & rhs) throw();
 
 } // namespace reflex
 

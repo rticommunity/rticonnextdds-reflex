@@ -63,61 +63,58 @@ namespace reflex {
       ~DataReaderBase();
 
       std::shared_ptr<DDSDynamicDataReader> dd_reader();
-      DDS_TypeCode * get_typecode() const;
+      DDS_TypeCode * get_typecode(); 
+      const DDS_TypeCode * get_typecode() const;
     };
 
-  } // namespace detail
+    template <class T>
+    class GenericDataReader;
 
-  template <class T>
-  class GenericDataReader;
-
-  template <class T>
-  struct GenericDataReaderListener
-  {
-    virtual void on_data_available(GenericDataReader<T> & dr) = 0;
-  };
-
-  template <class T>
-  class DataReaderListenerAdapter : public DDSDataReaderListener
-  {
-    GenericDataReaderListener<T> * generic_listener_;
-    GenericDataReader<T> * data_reader_;
-
-  public:
-
-    typedef GenericDataReader<T> DataReaderType;
-
-    explicit DataReaderListenerAdapter(GenericDataReaderListener<T> * listener)
-      : generic_listener_(listener),
-      data_reader_(0)
+    template <class T>
+    struct GenericDataReaderListener
     {
-      if (!listener)
+      virtual void on_data_available(GenericDataReader<T> & dr) = 0;
+    };
+
+    template <class T>
+    class DataReaderListenerAdapter : public DDSDataReaderListener
+    {
+      GenericDataReaderListener<T> * generic_listener_;
+      GenericDataReader<T> * data_reader_;
+
+    public:
+
+      typedef GenericDataReader<T> DataReaderType;
+
+      explicit DataReaderListenerAdapter(GenericDataReaderListener<T> * listener)
+        : generic_listener_(listener),
+        data_reader_(0)
       {
-        throw std::runtime_error("DataReaderListenerAdapter: NULL listener");
+        if (!listener)
+        {
+          throw std::runtime_error("DataReaderListenerAdapter: NULL listener");
+        }
       }
-    }
 
-    void set_datareader(GenericDataReader<T> * dr)
-    {
-      data_reader_ = dr;
-    }
+      void set_datareader(GenericDataReader<T> * dr)
+      {
+        data_reader_ = dr;
+      }
 
-    virtual void on_data_available(DDSDataReader *reader)
-    {
+      virtual void on_data_available(DDSDataReader *reader)
+      {
 #ifdef _DEBUG
-      DDSDynamicDataReader *dd_reader = DDSDynamicDataReader::narrow(reader);
-      if (!dd_reader) {
-        std::cerr << "Not a DynamicDataReader!!!\n";
-      }
+        DDSDynamicDataReader *dd_reader = DDSDynamicDataReader::narrow(reader);
+        if (!dd_reader) {
+          std::cerr << "Not a DynamicDataReader!!!\n";
+        }
 #endif
-      if (generic_listener_ && data_reader_)
-        generic_listener_->on_data_available(*data_reader_);
-      else
-        std::cerr << "Missing Listener or DataReader\n";
-    }
-  };
-
-  namespace detail {
+        if (generic_listener_ && data_reader_)
+          generic_listener_->on_data_available(*data_reader_);
+        else
+          std::cerr << "Missing Listener or DataReader\n";
+      }
+    };
 
     template <class T>
     DDS_ReturnCode_t take_impl(
@@ -173,182 +170,181 @@ namespace reflex {
       return rc;
     }
 
-  } // namespace detail
-
-  template <class T>
-  class GenericDataReader : public detail::DataReaderBase
-  {
-  public:
-    typedef GenericDataReaderListener<T> ListenerType;
-    DataReaderListenerAdapter<T> * listener_adapter_;
-    std::unique_ptr < DataReaderListenerAdapter<T>> safe_listener_adapter_;
-
-    GenericDataReader(
-      DDSDomainParticipant *participant,
-      ListenerType * listener,
-      const char * topic_name,
-      const char * type_name = 0,
-      DataReaderListenerAdapter<T> * adapter_placeholder = 0)
-
-      : detail::DataReaderBase(
-      participant,
-      listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
-      topic_name,
-      type_name,
-      make_typecode<T>(type_name).release()),
-      safe_listener_adapter_(listener ? adapter_placeholder : 0)
+    template <class T>
+    class GenericDataReader : public detail::DataReaderBase
     {
-        if (safe_listener_adapter_)
-          safe_listener_adapter_->set_datareader(this);
-      }
+    public:
+      typedef GenericDataReaderListener<T> ListenerType;
+      DataReaderListenerAdapter<T> * listener_adapter_;
+      std::unique_ptr < DataReaderListenerAdapter<T>> safe_listener_adapter_;
 
-    GenericDataReader(
-      DDSDomainParticipant *participant,
-      const DDS_DataReaderQos & drqos,
-      ListenerType * listener,
-      const char * topic_name,
-      const char * type_name = 0,
-      DataReaderListenerAdapter<T> * adapter_placeholder = 0)
+      GenericDataReader(
+        DDSDomainParticipant *participant,
+        ListenerType * listener,
+        const char * topic_name,
+        const char * type_name = 0,
+        DataReaderListenerAdapter<T> * adapter_placeholder = 0)
 
-      : detail::DataReaderBase(
-      participant,
-      drqos,
-      listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
-      topic_name,
-      type_name,
-      make_typecode<T>(type_name).release()),
-      safe_listener_adapter_(listener ? adapter_placeholder : 0)
-    {
-        if (safe_listener_adapter_)
-          safe_listener_adapter_->set_datareader(this);
-      }
-
-    DDS_ReturnCode_t take_w_condition(
-      T& data, DDS_SampleInfo & info, DDSReadCondition * cond = 0)
-    {
-      DDS_DynamicDataSeq data_seq;
-      DDS_SampleInfoSeq info_seq;
-      DDS_ReturnCode_t rc;
-      size_t max_samples = 1;
-
-      if (cond)
-        rc = dd_reader()->take_w_condition(data_seq, info_seq, max_samples, cond);
-      else
-        rc = dd_reader()->take(data_seq, info_seq, max_samples,
-        DDS_ANY_SAMPLE_STATE, DDS_ANY_VIEW_STATE, DDS_ANY_INSTANCE_STATE);
-
-      if (rc == DDS_RETCODE_NO_DATA) {
-        return rc;
-      }
-      else if (rc != DDS_RETCODE_OK) {
-        std::cerr << "! Unable to take data from data reader, error "
-          << rc << std::endl;
-        return rc;
-      }
-
-      if (data_seq.length())
+        : detail::DataReaderBase(
+        participant,
+        listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
+        topic_name,
+        type_name,
+        make_typecode<T>(type_name).release()),
+        safe_listener_adapter_(listener ? adapter_placeholder : 0)
       {
-        for (int i = 0; i < data_seq.length(); ++i)
+          if (safe_listener_adapter_)
+            safe_listener_adapter_->set_datareader(this);
+        }
+
+      GenericDataReader(
+        DDSDomainParticipant *participant,
+        const DDS_DataReaderQos & drqos,
+        ListenerType * listener,
+        const char * topic_name,
+        const char * type_name = 0,
+        DataReaderListenerAdapter<T> * adapter_placeholder = 0)
+
+        : detail::DataReaderBase(
+        participant,
+        drqos,
+        listener ? (adapter_placeholder = new DataReaderListenerAdapter<T>(listener)) : 0,
+        topic_name,
+        type_name,
+        make_typecode<T>(type_name).release()),
+        safe_listener_adapter_(listener ? adapter_placeholder : 0)
+      {
+          if (safe_listener_adapter_)
+            safe_listener_adapter_->set_datareader(this);
+        }
+
+      DDS_ReturnCode_t take_w_condition(
+        T& data, DDS_SampleInfo & info, DDSReadCondition * cond = 0)
+      {
+        DDS_DynamicDataSeq data_seq;
+        DDS_SampleInfoSeq info_seq;
+        DDS_ReturnCode_t rc;
+        size_t max_samples = 1;
+
+        if (cond)
+          rc = dd_reader()->take_w_condition(data_seq, info_seq, max_samples, cond);
+        else
+          rc = dd_reader()->take(data_seq, info_seq, max_samples,
+          DDS_ANY_SAMPLE_STATE, DDS_ANY_VIEW_STATE, DDS_ANY_INSTANCE_STATE);
+
+        if (rc == DDS_RETCODE_NO_DATA) {
+          return rc;
+        }
+        else if (rc != DDS_RETCODE_OK) {
+          std::cerr << "! Unable to take data from data reader, error "
+            << rc << std::endl;
+          return rc;
+        }
+
+        if (data_seq.length())
         {
-          if (info_seq[i].valid_data)
+          for (int i = 0; i < data_seq.length(); ++i)
           {
-            dd2tuple(data_seq[i], data);
-            info = info_seq[i];
+            if (info_seq[i].valid_data)
+            {
+              dd2tuple(data_seq[i], data);
+              info = info_seq[i];
+            }
           }
         }
+
+        rc = dd_reader()->return_loan(data_seq, info_seq);
+        if (rc != DDS_RETCODE_OK) {
+          std::cerr << "! Unable to return loan, error "
+            << rc << std::endl;
+        }
+        return rc;
       }
 
-      rc = dd_reader()->return_loan(data_seq, info_seq);
-      if (rc != DDS_RETCODE_OK) {
-        std::cerr << "! Unable to return loan, error "
-          << rc << std::endl;
+      DDS_ReturnCode_t take(
+        std::vector<Sample<T>> & data,
+        int max_samples = DDS_LENGTH_UNLIMITED,
+        DDS_SampleStateMask sample_states = DDS_ANY_SAMPLE_STATE,
+        DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
+        DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
+      {
+        return detail::take_impl<T>(
+          dd_reader(),
+          data,
+          max_samples,
+          sample_states,
+          view_states,
+          instance_states);
       }
-      return rc;
-    }
 
-    DDS_ReturnCode_t take(
-      std::vector<Sample<T>> & data,
-      int max_samples = DDS_LENGTH_UNLIMITED,
-      DDS_SampleStateMask sample_states = DDS_ANY_SAMPLE_STATE,
-      DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
-      DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
+      DDS_ReturnCode_t take_w_condition(std::vector<Sample<T>> & data,
+        int max_samples,
+        DDSReadCondition * cond)
+      {
+        if (!cond)
+          return DDS_RETCODE_PRECONDITION_NOT_MET;
+
+        return detail::take_impl<T>(
+          dd_reader(),
+          data,
+          max_samples,
+          DDS_ANY_SAMPLE_STATE,
+          DDS_ANY_VIEW_STATE,
+          DDS_ANY_INSTANCE_STATE,
+          cond);
+      }
+    };
+
+    // The following class can't inherit from the one above
+    // because it creates a possibility of the class inheriting from
+    // itself!
+    template <class... Args>
+    class GenericDataReader<std::tuple<Args...>>
+      : public detail::DataReaderBase
     {
-      return detail::take_impl<T>(
-        dd_reader(),
-        data,
-        max_samples,
-        sample_states,
-        view_states,
-        instance_states);
-    }
+      typedef typename
+      detail::remove_refs<std::tuple<Args...>>::type
+      NoRefsTuple;
 
-    DDS_ReturnCode_t take_w_condition(std::vector<Sample<T>> & data,
-      int max_samples,
-      DDSReadCondition * cond)
-    {
-      if (!cond)
-        return DDS_RETCODE_PRECONDITION_NOT_MET;
+    public:
+      typedef GenericDataReaderListener<NoRefsTuple> ListenerType;
+      DataReaderListenerAdapter<NoRefsTuple> * listener_adapter_;
+      std::unique_ptr < DataReaderListenerAdapter<NoRefsTuple>> safe_listener_adapter_;
 
-      return detail::take_impl<T>(
-        dd_reader(),
-        data,
-        max_samples,
-        DDS_ANY_SAMPLE_STATE,
-        DDS_ANY_VIEW_STATE,
-        DDS_ANY_INSTANCE_STATE,
-        cond);
-    }
-  };
+      GenericDataReader(DDSDomainParticipant *participant,
+        GenericDataReaderListener<NoRefsTuple> * listener,
+        const char * topic_name,
+        const char * type_name = 0,
+        DataReaderListenerAdapter<NoRefsTuple> * adapter_placeholder = 0)
+        : DataReaderBase(
+        participant,
+        listener ? (adapter_placeholder = new DataReaderListenerAdapter<NoRefsTuple>(listener)) : 0,
+        topic_name,
+        type_name,
+        make_typecode<NoRefsTuple>(type_name).release()),
+        safe_listener_adapter_(listener ? adapter_placeholder : 0)
+      {
+        if (safe_listener_adapter_)
+          safe_listener_adapter_->set_datareader(this);
+      }
 
-  // The following class can't inherit from the one above
-  // because it creates a possibility of the class inheriting from
-  // itself!
-  template <class... Args>
-  class GenericDataReader<std::tuple<Args...>>
-    : public detail::DataReaderBase
-  {
-    typedef typename
-    detail::remove_refs<std::tuple<Args...>>::type
-    NoRefsTuple;
+      DDS_ReturnCode_t take(std::vector<Sample<NoRefsTuple>> & data,
+        int max_samples = DDS_LENGTH_UNLIMITED,
+        DDS_SampleStateMask sample_states = DDS_ANY_SAMPLE_STATE,
+        DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
+        DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
+      {
+        return detail::take_impl<NoRefsTuple>(
+          dd_reader(),
+          data,
+          max_samples,
+          sample_states,
+          view_states,
+          instance_states);
+      }
+    };
 
-  public:
-    typedef GenericDataReaderListener<NoRefsTuple> ListenerType;
-    DataReaderListenerAdapter<NoRefsTuple> * listener_adapter_;
-    std::unique_ptr < DataReaderListenerAdapter<NoRefsTuple>> safe_listener_adapter_;
-
-    GenericDataReader(DDSDomainParticipant *participant,
-      GenericDataReaderListener<NoRefsTuple> * listener,
-      const char * topic_name,
-      const char * type_name = 0,
-      DataReaderListenerAdapter<NoRefsTuple> * adapter_placeholder = 0)
-      : DataReaderBase(
-      participant,
-      listener ? (adapter_placeholder = new DataReaderListenerAdapter<NoRefsTuple>(listener)) : 0,
-      topic_name,
-      type_name,
-      make_typecode<NoRefsTuple>(type_name).release()),
-      safe_listener_adapter_(listener ? adapter_placeholder : 0)
-    {
-      if (safe_listener_adapter_)
-        safe_listener_adapter_->set_datareader(this);
-    }
-
-    DDS_ReturnCode_t take(std::vector<Sample<NoRefsTuple>> & data,
-      int max_samples = DDS_LENGTH_UNLIMITED,
-      DDS_SampleStateMask sample_states = DDS_ANY_SAMPLE_STATE,
-      DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
-      DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
-    {
-      return detail::take_impl<NoRefsTuple>(
-        dd_reader(),
-        data,
-        max_samples,
-        sample_states,
-        view_states,
-        instance_states);
-    }
-  };
-
+  } // namespace detail
 } // namespace reflex
 
 #ifndef REFLEX_NO_HEADER_ONLY

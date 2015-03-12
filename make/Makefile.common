@@ -127,7 +127,6 @@ HEADERS = include/reflex/reflex_fwd.h           \
           include/reflex/dd_traits.h            \
           include/reflex/enable_if.h            \
           include/reflex/safe_typecode.h        \
-          include/reflex/safe_enum.h            \
           include/reflex/disc_union.h           \
           include/reflex/dd_extra.h             \
           include/reflex/bounded.h              \

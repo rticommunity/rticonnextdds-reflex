@@ -99,7 +99,6 @@
     <ClInclude Include="..\include\reflex\generic_dw.h" />
     <ClInclude Include="..\include\reflex\memberwise.h" />
     <ClInclude Include="..\include\reflex\reflex_fwd.h" />
-    <ClInclude Include="..\include\reflex\safe_enum.h" />
     <ClInclude Include="..\include\reflex\safe_typecode.h" />
     <ClInclude Include="..\include\reflex\sample.h" />
     <ClInclude Include="..\include\reflex\tuple_iterator.h" />

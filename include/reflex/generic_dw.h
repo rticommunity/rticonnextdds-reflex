@@ -20,6 +20,10 @@ damages arising out of the use or inability to use the software.
 
 REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataWriter>;
 
+#ifdef RTI_WIN32
+REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
+#endif
+
 namespace reflex {
 
   namespace detail {
@@ -55,83 +59,83 @@ namespace reflex {
       static void deleter(DDSDynamicDataWriter * ddWriter) throw();
 
     public:
-      DDS_TypeCode * get_typecode() const;
+      const DDS_TypeCode * get_typecode() const;
+      DDS_TypeCode * get_typecode();
+    };
+
+    template <class T>
+    class GenericDataWriter : public detail::DataWriterBase
+    {
+    public:
+      GenericDataWriter(DDSDomainParticipant *participant,
+        const char * topic_name,
+        const char * type_name = 0)
+        : detail::DataWriterBase(participant,
+        topic_name,
+        type_name,
+        make_typecode<T>(type_name).release())
+      { }
+
+      GenericDataWriter(DDSDomainParticipant *participant,
+        DDS_DataWriterQos & dwqos,
+        const char * topic_name,
+        const char * type_name = 0,
+        void * listener = 0)
+        : detail::DataWriterBase(participant,
+        dwqos,
+        topic_name,
+        type_name,
+        make_typecode<T>(type_name).release(),
+        listener)
+      { }
+
+      template <class U>
+      DDS_ReturnCode_t write(U & data)
+      {
+        fill_dd(data, *dd_instance_.get());
+        return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
+      }
+
+      template <class U>
+      DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
+      {
+        fill_dd(data, *dd_instance_.get());
+        return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
+      }
+    };
+
+    template <class... Args>
+    class GenericDataWriter<std::tuple<Args...>>
+      : public detail::DataWriterBase
+    {
+      typedef typename detail::remove_refs<std::tuple<Args...>>::type NoRefsTuple;
+
+    public:
+      GenericDataWriter(DDSDomainParticipant *participant,
+        const char * topic_name,
+        const char * type_name)
+        : DataWriterBase(participant,
+        topic_name,
+        type_name,
+        make_typecode<NoRefsTuple>(type_name).release())
+      { }
+
+      template <class U>
+      DDS_ReturnCode_t write(U & data)
+      {
+        fill_dd(data, *dd_instance_.get());
+        return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
+      }
+
+      template <class U>
+      DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
+      {
+        fill_dd(data, *dd_instance_.get());
+        return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
+      }
     };
 
   } // namespace detail
-
-  template <class T>
-  class GenericDataWriter : public detail::DataWriterBase
-  {
-  public:
-    GenericDataWriter(DDSDomainParticipant *participant,
-      const char * topic_name,
-      const char * type_name = 0)
-      : detail::DataWriterBase(participant,
-      topic_name,
-      type_name,
-      make_typecode<T>(type_name).release())
-    { }
-
-    GenericDataWriter(DDSDomainParticipant *participant,
-      DDS_DataWriterQos & dwqos,
-      const char * topic_name,
-      const char * type_name = 0,
-      void * listener = 0)
-      : detail::DataWriterBase(participant,
-      dwqos,
-      topic_name,
-      type_name,
-      make_typecode<T>(type_name).release(),
-      listener)
-    { }
-
-    template <class U>
-    DDS_ReturnCode_t write(U & data)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
-    }
-
-    template <class U>
-    DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
-    }
-  };
-
-  template <class... Args>
-  class GenericDataWriter<std::tuple<Args...>>
-    : public detail::DataWriterBase
-  {
-    typedef typename detail::remove_refs<std::tuple<Args...>>::type NoRefsTuple;
-
-  public:
-    GenericDataWriter(DDSDomainParticipant *participant,
-      const char * topic_name,
-      const char * type_name)
-      : DataWriterBase(participant,
-      topic_name,
-      type_name,
-      make_typecode<NoRefsTuple>(type_name).release())
-    { }
-
-    template <class U>
-    DDS_ReturnCode_t write(U & data)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
-    }
-
-    template <class U>
-    DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
-    {
-      fill_dd(data, *dd_instance_.get());
-      return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
-    }
-  };
-
 } // namespace reflex
 
 #ifndef REFLEX_NO_HEADER_ONLY

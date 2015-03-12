@@ -23,24 +23,23 @@ damages arising out of the use or inability to use the software.
 #include "reflex/tuple_iterator.h"
 #include "reflex/dd_traits.h"
 #include "reflex/enable_if.h"
-#include "reflex/safe_enum.h"
 #include "reflex/dd_extra.h"
 #include "reflex/bounded.h"
 
 #include <boost/fusion/support/is_sequence.hpp>
 #include <boost/fusion/include/is_sequence.hpp>
 
-#define SET_MEMBER_VALUE_DECL(TYPE)        \
+#define SET_MEMBER_VALUE_DECL(TYPE)                \
   REFLEX_DLL_EXPORT static void set_member_value(  \
-      DDS_DynamicData & instance,          \
-      const MemberAccess &ma,              \
+      DDS_DynamicData & instance,                  \
+      const MemberAccess &ma,                      \
       const TYPE & val)
 
 
-#define GET_MEMBER_VALUE_DECL(TYPE)        \
+#define GET_MEMBER_VALUE_DECL(TYPE)                \
   REFLEX_DLL_EXPORT static void get_member_value(  \
-      const DDS_DynamicData & instance,    \
-      const MemberAccess &ma,              \
+      const DDS_DynamicData & instance,            \
+      const MemberAccess &ma,                      \
       TYPE & val)
 
 
@@ -70,7 +69,7 @@ namespace reflex {
     {
     public:
 
-      SET_MEMBER_VALUE_DECL(reflex::octet_t); // also uint8_t
+      SET_MEMBER_VALUE_DECL(match::octet_t); // also uint8_t
       SET_MEMBER_VALUE_DECL(bool);
       SET_MEMBER_VALUE_DECL(char);
       SET_MEMBER_VALUE_DECL(int8_t);
@@ -499,7 +498,7 @@ namespace reflex {
     struct get_member_overload_resolution_helper
     {
     public:
-      GET_MEMBER_VALUE_DECL(octet_t);    // also uint8_t
+      GET_MEMBER_VALUE_DECL(match::octet_t);    // also uint8_t
       GET_MEMBER_VALUE_DECL(bool);
       GET_MEMBER_VALUE_DECL(char);
       GET_MEMBER_VALUE_DECL(int8_t);

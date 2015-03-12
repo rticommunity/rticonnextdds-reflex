@@ -11,17 +11,17 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_REFLEX_FWD_H
 #define RTIREFLEX_REFLEX_FWD_H
 
-#include "reflex/auto_dd.h"
-
 struct DDS_DynamicData;
 
 namespace reflex {
 
+  class AutoDynamicData; // See auto_dd.h
+
   template <class T>
-  class SafeDynamicData;
+  class SafeDynamicData; // See reflex.h 
 
   template <class T, class>
-  class SafeTypeCode;
+  class SafeTypeCode;   // See safe_typecode.h
 
   /**
   * Creates a <a href="http://community.rti.com/rti-doc/510/ndds.5.1.0/doc/html/api_cpp/structDDS__TypeCode.html">TypeCode</a>

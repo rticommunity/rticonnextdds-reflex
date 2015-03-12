@@ -43,7 +43,11 @@ REFLEX_DLL_EXPORT DDS_ReturnCode_t get_array(const DDS_DynamicData & instance, \
 
 namespace reflex {
 
-  typedef unsigned char octet_t;
+  namespace match {
+   
+    typedef unsigned char octet_t;
+
+  }
 
   namespace detail {
 
@@ -127,7 +131,7 @@ namespace reflex {
       SET_SEQUENCE_DECL(DDS_LongLongSeq)
       SET_SEQUENCE_DECL(DDS_UnsignedLongLongSeq)
 
-      SET_ARRAY_DECL(octet_t)    // also uint8_t
+      SET_ARRAY_DECL(match::octet_t)    // also uint8_t
       SET_ARRAY_DECL(bool)
       SET_ARRAY_DECL(char)
       SET_ARRAY_DECL(int8_t)
@@ -157,7 +161,7 @@ namespace reflex {
       GET_SEQUENCE_DECL(DDS_FloatSeq)
       GET_SEQUENCE_DECL(DDS_DoubleSeq)
 
-      GET_ARRAY_DECL(octet_t)    // also uint8_t
+      GET_ARRAY_DECL(match::octet_t)    // also uint8_t
       GET_ARRAY_DECL(bool)
       GET_ARRAY_DECL(int8_t)
       GET_ARRAY_DECL(char)

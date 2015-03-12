@@ -66,7 +66,7 @@ namespace reflex {
 void write_large_type(int domain_id) 
 {
     using reflex::match::MultiDimArray;
-    using reflex::octet_t;
+    using reflex::match::octet_t;
     using reflex::match::Bounded;
     using reflex::match::BoundedRange;
     using reflex::match::Range;

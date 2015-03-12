@@ -21,7 +21,9 @@ struct DynamicDataSeqTraits<BASIC_TYPE> {                \
 
 namespace reflex {
 
-  typedef unsigned char octet_t;
+  namespace match {
+    typedef unsigned char octet_t;
+  }
 
   namespace detail {
 
@@ -31,23 +33,23 @@ namespace reflex {
       typedef DDS_LongSeq type;
     };
 
-    DYNAMIC_DATA_SEQ_TRAITS(octet_t, DDS_OctetSeq)  // also uint8_t
-      DYNAMIC_DATA_SEQ_TRAITS(bool, DDS_BooleanSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(int8_t, DDS_CharSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(char, DDS_CharSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(match::octet_t, DDS_OctetSeq)  // also uint8_t
+      DYNAMIC_DATA_SEQ_TRAITS(bool,           DDS_BooleanSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(int8_t,         DDS_CharSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(char,           DDS_CharSeq)
 
 #ifndef RTI_WIN32
       DYNAMIC_DATA_SEQ_TRAITS(char32_t,           DDS_WcharSeq)
 #endif
 
-      DYNAMIC_DATA_SEQ_TRAITS(int16_t, DDS_ShortSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(uint16_t, DDS_UnsignedShortSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(int32_t, DDS_LongSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(uint32_t, DDS_UnsignedLongSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(int64_t, DDS_LongLongSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(uint64_t, DDS_UnsignedLongLongSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(float, DDS_FloatSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(double, DDS_DoubleSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(int16_t,   DDS_ShortSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(uint16_t,  DDS_UnsignedShortSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(int32_t,   DDS_LongSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(uint32_t,  DDS_UnsignedLongSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(int64_t,   DDS_LongLongSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(uint64_t,  DDS_UnsignedLongLongSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(float,     DDS_FloatSeq)
+      DYNAMIC_DATA_SEQ_TRAITS(double,    DDS_DoubleSeq)
 
   } // namespace detail
 

@@ -19,7 +19,6 @@ damages arising out of the use or inability to use the software.
 #include "reflex/safe_typecode.h"
 #include "reflex/default_member_names.h"
 #include "reflex/enable_if.h"
-#include "reflex/safe_enum.h"
 #include "reflex/disc_union.h" 
 #include "reflex/tuple_iterator.h"
 #include "reflex/bounded.h"

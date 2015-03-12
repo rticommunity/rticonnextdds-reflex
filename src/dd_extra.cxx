@@ -118,7 +118,7 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         SET_SEQUENCE_DEF(DDS_LongLongSeq,         set_longlong_seq)
         SET_SEQUENCE_DEF(DDS_UnsignedLongLongSeq, set_ulonglong_seq)
 
-        SET_ARRAY_DEF(octet_t, DDS_Octet,         set_octet_array)    // also uint8_t
+        SET_ARRAY_DEF(match::octet_t, DDS_Octet,  set_octet_array)    // also uint8_t
         SET_ARRAY_DEF(bool, DDS_Boolean,          set_boolean_array)
         SET_ARRAY_DEF(int8_t, DDS_Char,           set_char_array)
         SET_ARRAY_DEF(char, DDS_Char,             set_char_array)
@@ -153,10 +153,10 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         GET_SEQUENCE_DEF(DDS_FloatSeq,            get_float_seq)
         GET_SEQUENCE_DEF(DDS_DoubleSeq,           get_double_seq)
 
-        GET_ARRAY_DEF(octet_t, DDS_Octet,    get_octet_array)    // also uint8_t
-        GET_ARRAY_DEF(bool,    DDS_Boolean,  get_boolean_array)
-        GET_ARRAY_DEF(char,    DDS_Char,     get_char_array)
-        GET_ARRAY_DEF(int8_t,  DDS_Char,     get_char_array)
+        GET_ARRAY_DEF(match::octet_t, DDS_Octet,    get_octet_array)    // also uint8_t
+        GET_ARRAY_DEF(bool,           DDS_Boolean,  get_boolean_array)
+        GET_ARRAY_DEF(char,           DDS_Char,     get_char_array)
+        GET_ARRAY_DEF(int8_t,         DDS_Char,     get_char_array)
 
 #ifndef RTI_WIN32
         GET_ARRAY_DEF(char32_t,  DDS_Wchar,           get_wchar_array) 

@@ -199,7 +199,7 @@ extern "C" int publisher_main(bool noreflex, int domainId, int sample_count, Dom
     {
       const char * darkart_topic = "DarkartChannelTopic";
       const char * channel_typename = "DarkartChannelType";
-      reflex::GenericDataWriter<darkart::Channel>
+      reflex::detail::GenericDataWriter<darkart::Channel>
         channel_reflex_writer(participant, darkart_topic, channel_typename);
 
       char buffer[32];

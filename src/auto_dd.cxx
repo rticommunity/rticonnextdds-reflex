@@ -103,4 +103,9 @@ namespace reflex {
     return instance_;
   }
 
+  REFLEX_INLINE void swap(AutoDynamicData & lhs, AutoDynamicData & rhs) throw()
+  {
+    lhs.swap(rhs);
+  }
+
 } // namespace reflex

@@ -21,7 +21,8 @@ namespace reflex {
 
   namespace detail {
 
-      GET_TYPECODE_DEF(octet_t,  DDS_TK_OCTET)
+      GET_TYPECODE_DEF(match::octet_t,  DDS_TK_OCTET)
+
       GET_TYPECODE_DEF(bool,     DDS_TK_BOOLEAN)
       GET_TYPECODE_DEF(char,     DDS_TK_CHAR)
       GET_TYPECODE_DEF(int8_t,   DDS_TK_CHAR)
@@ -227,22 +228,27 @@ namespace reflex {
       }
     }
 
-      REFLEX_INLINE DDS_TypeCode * SafeTypeCodeBase::get() const
-    {
-      return typecode_;
-    }
+      REFLEX_INLINE const DDS_TypeCode * SafeTypeCodeBase::get() const
+      {
+        return typecode_;
+      }
+
+      REFLEX_INLINE DDS_TypeCode * SafeTypeCodeBase::get()
+      {
+        return typecode_;
+      }
 
       REFLEX_INLINE DDS_TypeCode * SafeTypeCodeBase::release() {
-      release_ = false;
-      return typecode_;
-    }
+        release_ = false;
+        return typecode_;
+      }
 
       REFLEX_INLINE void SafeTypeCodeBase::swap(SafeTypeCodeBase & stc) throw()
-    {
-      std::swap(factory_, stc.factory_);
-      std::swap(typecode_, stc.typecode_);
-      std::swap(release_, stc.release_);
-    }
+      {
+        std::swap(factory_, stc.factory_);
+        std::swap(typecode_, stc.typecode_);
+        std::swap(release_, stc.release_);
+      }
 
   } // namespace detail
 

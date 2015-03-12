@@ -34,12 +34,12 @@ namespace reflex {
   } 
 }
 
-class MyShapesListener : public reflex::GenericDataReaderListener<ShapeType>
+class MyShapesListener : public reflex::detail::GenericDataReaderListener<ShapeType>
 {
 public:
-  void on_data_available(reflex::GenericDataReader<ShapeType> & dr) override
+  void on_data_available(reflex::detail::GenericDataReader<ShapeType> & dr) override
   {
-    std::vector<reflex::Sample<ShapeType>> samples;
+    std::vector<reflex::detail::Sample<ShapeType>> samples;
     dr.take(samples);
     for (auto &ss : samples)
     {
@@ -70,7 +70,7 @@ void read_shape_type(int domain_id)
   }
 
   MyShapesListener shapes_listener;
-  reflex::GenericDataReader<ShapeType>
+  reflex::detail::GenericDataReader<ShapeType>
     shapes_data_reader(participant, &shapes_listener, "Square");
 
   std::cout << "Subscribed to Square\n";
@@ -122,7 +122,7 @@ void write_shape_type_extended(int domain_id)
     return;
   }
 
-  reflex::GenericDataWriter<ShapeTypeExtended>
+  reflex::detail::GenericDataWriter<ShapeTypeExtended>
     writer(participant, topic_name, "ShapeType");
 
   srand((unsigned int) time(NULL));

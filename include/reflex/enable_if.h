@@ -42,9 +42,9 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
-  typedef unsigned char octet_t;
-
   namespace match {
+
+    typedef unsigned char octet_t;
 
     template <class TagType, class... Cases>
     struct Union;
@@ -118,9 +118,9 @@ namespace reflex {
     template <class T>
     struct is_primitive : false_type {}; // enum
 
-    template <> struct is_primitive<reflex::octet_t>    : true_type {};
-    template <> struct is_primitive<bool>               : true_type {};
-    template <> struct is_primitive<char>               : true_type {};
+    template <> struct is_primitive<match::octet_t>  : true_type {};
+    template <> struct is_primitive<bool>            : true_type {};
+    template <> struct is_primitive<char>            : true_type {};
 
 #ifndef RTI_WIN32
     template <> struct is_primitive<char32_t>           : true_type {};

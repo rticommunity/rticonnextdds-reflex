@@ -131,7 +131,12 @@ namespace reflex {
       }
     }
 
-    REFLEX_INLINE DDS_TypeCode * DataWriterBase::get_typecode() const
+    REFLEX_INLINE const DDS_TypeCode * DataWriterBase::get_typecode() const
+    {
+      return safe_typecode_.get();
+    }
+
+    REFLEX_INLINE DDS_TypeCode * DataWriterBase::get_typecode()
     {
       return safe_typecode_.get();
     }

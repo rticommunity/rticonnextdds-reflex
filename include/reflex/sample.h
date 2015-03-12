@@ -11,67 +11,72 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_SAMPLE_H
 #define RTIREFLEX_SAMPLE_H
 
+struct DDS_SampleInfo;
+
 namespace reflex {
 
-  template <class T>
-  class Sample
-  {
-    T val;
-    DDS_SampleInfo val_info;
+  namespace detail {
 
-  public:
-
-    Sample()
-    { }
-
-    Sample(T &t, DDS_SampleInfo &i)
-      : val(t),
-      val_info(i)
-    { }
-
-    Sample(const Sample &s)
-      : val(s.data()),
-      val_info(s.info())
-    {}
-
-    Sample & operator = (const Sample &s)
+    template <class T>
+    class Sample
     {
-      val = s.data();
-      val_info = s.info();
-      return *this;
-    }
+      T val;
+      DDS_SampleInfo val_info;
 
-    T & data()
-    {
-      return val;
-    }
+    public:
 
-    const T & data() const
-    {
-      return val;
-    }
+      Sample()
+      { }
 
-    const DDS_SampleInfo & info() const
-    {
-      return val_info;
-    }
+      Sample(T &t, DDS_SampleInfo &i)
+        : val(t),
+        val_info(i)
+      { }
 
-    DDS_SampleInfo & info()
-    {
-      return val_info;
-    }
+      Sample(const Sample &s)
+        : val(s.data()),
+        val_info(s.info())
+      {}
 
-    T * operator -> ()
-    {
-      return &val;
-    }
+      Sample & operator = (const Sample &s)
+      {
+        val = s.data();
+        val_info = s.info();
+        return *this;
+      }
 
-    const T * operator -> () const
-    {
-      return &val;
-    }
-  };
+      T & data()
+      {
+        return val;
+      }
 
+      const T & data() const
+      {
+        return val;
+      }
+
+      const DDS_SampleInfo & info() const
+      {
+        return val_info;
+      }
+
+      DDS_SampleInfo & info()
+      {
+        return val_info;
+      }
+
+      T * operator -> ()
+      {
+        return &val;
+      }
+
+      const T * operator -> () const
+      {
+        return &val;
+      }
+    };
+
+  } // namespace detail
 } // namespace reflex
 
 

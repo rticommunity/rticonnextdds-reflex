@@ -15,16 +15,17 @@ damages arising out of the use or inability to use the software.
 #include <tuple>
 #include <vector>
 
+#include "reflex/sample.h"
+#include "reflex/auto_dd.h"
 #include "reflex/dllexport.h"
 #include "reflex/dd_manip.h"
 #include "reflex/typecode_manip.h"
 #include "reflex/memberwise.h"
 #include "reflex/default_member_names.h"
 #include "reflex/bounded.h"
-#include "reflex/reflex_fwd.h"
-#include "reflex/sample.h"
 #include "reflex/generic_dr.h"
 #include "reflex/generic_dw.h"
+#include "reflex/reflex_fwd.h"
 
 #include <boost/fusion/sequence/intrinsic/size.hpp>
 #include <boost/fusion/include/size.hpp>
@@ -146,10 +147,31 @@ namespace reflex {
 
   } // namespace detail
 
+  /**
+   * @brief Typesafe, exception-safe, poulated DynamicData
+   *
+   * The objects of SafeDynamicData are guaranteed to contain an initialized 
+   * and fully populated DynamicData instance of type T. SafeDynamicData
+   * is a value-type, which means copying SafeDynamicData would result in a
+   * deep copy of the underlying DynamicData instance.
+   *
+   * @see reflex::fill_dd
+   * @see reflex::extract_dd
+   * @see reflex::make_dd
+   */
   template <class T>
   class SafeDynamicData : public AutoDynamicData
   {
   public:
+    /**
+     * Create a SafeDynamicData object from an object of type T.
+     * @param type_support Type support that is tied to the typecode
+     *        given by reflex::make_typecode.
+     * @param src The source object
+     * @pre The type support must include the typecode obtained from 
+     *      reflex::make_typecode for type T.
+     * @see reflex::make_dd
+     */
     SafeDynamicData(
       DDSDynamicDataTypeSupport *type_support,
       const T & src)
@@ -158,24 +180,23 @@ namespace reflex {
       fill_dd(src, *AutoDynamicData::get());
     }
 
-    explicit SafeDynamicData(
-      DDSDynamicDataTypeSupport *type_support)
-      : AutoDynamicData(type_support)
-    { }
-
-    SafeDynamicData & operator = (const T & src)
+    /**
+     * Swap the contents (shallow)
+     */
+    void swap(SafeDynamicData<T> & rhs) throw()
     {
-      fill_dd(src, *AutoDynamicData::get());
-      return *this;
-    }
-
-    operator T () const
-    {
-      T data;
-      extract_dd(*AutoDynamicData::get(), data);
-      return data;
+      this->AutoDynamicData::swap(rhs);
     }
   };
+
+  /**
+  * Swap the contents (shallow)
+  */
+  template <class T>
+  void swap(SafeDynamicData<T> & lhs, SafeDynamicData<T> & rhs) throw()
+  {
+    lhs.swap(rhs);
+  }
 
   template <class T>
   void fill_dd(const T & data, DDS_DynamicData &instance)

@@ -19,7 +19,6 @@ damages arising out of the use or inability to use the software.
 
 #include <ndds/ndds_cpp.h>
 #include "reflex/enable_if.h"
-#include "reflex/safe_enum.h"
 #include "reflex/disc_union.h" 
 #include "reflex/bounded.h"
 
@@ -97,7 +96,7 @@ namespace reflex {
                                 DDS_TypeCode * typecode = 0,
                                 bool release = true);
 
-      GET_TYPECODE_DECL(reflex::octet_t,    DDS_TK_OCTET)
+      GET_TYPECODE_DECL(match::octet_t,     DDS_TK_OCTET)
       GET_TYPECODE_DECL(bool,               DDS_TK_BOOLEAN)
       GET_TYPECODE_DECL(char,               DDS_TK_CHAR)
       GET_TYPECODE_DECL(int8_t,             DDS_TK_CHAR)
@@ -146,7 +145,8 @@ namespace reflex {
       ~SafeTypeCodeBase();
 
     public:
-      DDS_TypeCode * get() const;
+      DDS_TypeCode * get();
+      const DDS_TypeCode * get() const;
       DDS_TypeCode * release();
       void swap(SafeTypeCodeBase & stc) throw();
     };
@@ -266,7 +266,7 @@ namespace reflex {
     }
 
     MAKE_SAFETYPECODE_MOVEONLY
-      friend class SafeTypeCode<DDS_TypeCode>;
+    friend class SafeTypeCode<DDS_TypeCode>;
   };
 
   template <class C>
@@ -375,7 +375,11 @@ namespace reflex {
     }
 
   public:
-    DDS_TypeCode * get() const {
+    const DDS_TypeCode * get() const {
+      return innerTc.get();
+    }
+
+    DDS_TypeCode * get() {
       return innerTc.get();
     }
 
@@ -630,7 +634,7 @@ namespace reflex {
 } // namespace reflex
 
 #undef GET_TYPECODE_DECL
-#undef MAKE_THIS_CLASS_MOVEONLY
+#undef MAKE_SAFETYPECODE_MOVEONLY
 
 #ifndef REFLEX_NO_HEADER_ONLY
 #include "reflex/../../src/safe_typecode.cxx"
