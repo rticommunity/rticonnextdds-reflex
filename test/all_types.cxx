@@ -16,7 +16,7 @@ void round_trip_test(int domain, const T & source, T & dest)
 {
   DDS_DynamicDataTypeProperty_t props;
 
-  reflex::SafeTypeCode<DDS_TypeCode>
+  reflex::SafeTypeCode<T>
     stc(reflex::make_typecode<T>());
 
   reflex::detail::print_IDL(stc.get(), 0);

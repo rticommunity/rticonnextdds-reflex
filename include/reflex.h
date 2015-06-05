@@ -20,8 +20,8 @@ damages arising out of the use or inability to use the software.
 #include "reflex/dllexport.h"
 #include "reflex/dd_manip.h"
 #include "reflex/typecode_manip.h"
-#include "reflex/memberwise.h"
 #include "reflex/default_member_names.h"
+#include "reflex/memberwise.h"
 #include "reflex/bounded.h"
 #include "reflex/generic_dr.h"
 #include "reflex/generic_dw.h"
@@ -219,7 +219,7 @@ namespace reflex {
   template <class T>
   SafeDynamicData<T> make_dd(const T & src)
   {
-    static reflex::SafeTypeCode<DDS_TypeCode>
+    static reflex::SafeTypeCode<T>
       stc(reflex::make_typecode<T>());
 
     static DDS_DynamicDataTypeProperty_t props;
@@ -234,11 +234,11 @@ namespace reflex {
   SafeTypeCode<T> make_typecode(const char * name /* default 0 */)
   {
     SafeTypeCode<T> aggregateTc =
-      detail::make_typecode_impl<T>(
-      name,
-      typename detail::InheritanceTraits<T>::has_base());
+      detail::TC_overload_resolution_helper::get_typecode_struct<T>(
+        name,
+        typename detail::InheritanceTraits<T>::has_base());
 
-    return move(aggregateTc);
+    return aggregateTc;
   }
 
   template <class T>

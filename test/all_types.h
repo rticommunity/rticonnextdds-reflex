@@ -47,6 +47,7 @@ RTI_ADAPT_STRUCT(
 
 
 typedef reflex::match::Bounded<std::string, 128> string128;
+
 struct MyShapeType {
   int32_t x, y, shapesize;
   std::string color_src;

@@ -15,6 +15,41 @@ damages arising out of the use or inability to use the software.
 #pragma warning(disable: 4351) 
 #endif
 
+#include <string>
+
+namespace reflex {
+  namespace detail {
+
+    template <class T> struct static_string_bound;
+    // For interoperability with the Shapes Demo string size must be 128
+    template <>
+    struct static_string_bound<std::string>
+    {
+      enum { value = 128 };
+    };
+
+    template <>
+    struct static_string_bound<const std::string>
+    {
+      enum { value = 128 };
+    };
+
+    template <>
+    struct static_string_bound<std::string &>
+    {
+      enum { value = 128 };
+    };
+
+    template <>
+    struct static_string_bound<const std::string &>
+    {
+      enum { value = 128 };
+    };
+
+  }
+}
+
+
 #include "reflex.h"
 
 class ShapeType
@@ -69,12 +104,12 @@ public:
   ShapeTypeExtended() {}
 
   ShapeTypeExtended(
-    const std::string & color,
-    int x,
-    int y,
-    int shapesize,
-    ShapeFillKind fill,
-    float ang)
+        const std::string & color,
+        int x,
+        int y,
+        int shapesize,
+        ShapeFillKind fill,
+        float ang)
     : ShapeType(color, x, y, shapesize),
       fillKind_(fill),
       angle_(ang)

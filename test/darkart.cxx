@@ -73,7 +73,7 @@ void write_darkart_type(unsigned domain_id)
   // If they are =deleted, compiler error will arise.
   // darkart::AllTuple a = all; 
 
-  reflex::SafeTypeCode<DDS_TypeCode> 
+  reflex::SafeTypeCode<darkart::AllTuple>
     stc(reflex::make_typecode<darkart::AllTuple>());
 
   std::shared_ptr<DDSDynamicDataTypeSupport> 
@@ -82,7 +82,9 @@ void write_darkart_type(unsigned domain_id)
   reflex::AutoDynamicData ddi1(safe_typeSupport.get());
   reflex::fill_dd(all, *ddi1.get());
   std::cout << "Printing Data\n";
-  ddi1.get()->print(stdout, 2);
+
+  // FIXME: Causes a run-time crash.
+  // ddi1.get()->print(stdout, 2);
 
   reflex::detail::GenericDataWriter<decltype(all)>
     tuple_writer(participant, "DarkartTopic", "DarkartAllTupleType");

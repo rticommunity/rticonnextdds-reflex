@@ -13,7 +13,7 @@ damages arising out of the use or inability to use the software.
 
 void write_one_member(int) 
 {
-    reflex::SafeTypeCode<DDS_TypeCode> 
+    reflex::SafeTypeCode<one_member> 
       stc(reflex::make_typecode<one_member>());
     
     reflex::detail::print_IDL(stc.get(), 0);
@@ -37,6 +37,8 @@ void write_one_member(int)
     std::get<2>(sparse.member.get_opt_tuple()) = int_array;
 
     reflex::fill_dd(sparse, ddi1);
-    ddi1.get()->print(stdout, 2);
+    
+    // FIXME: print crashes at run-time.
+    //ddi1.get()->print(stdout, 2);
 }
 

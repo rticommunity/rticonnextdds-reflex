@@ -9,8 +9,10 @@ damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
 #include <sstream>
+#include <iostream>
 
 #include "reflex/generic_dw.h"
+#include "reflex/dd_extra.h"
 
 namespace reflex {
 

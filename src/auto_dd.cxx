@@ -60,7 +60,7 @@ namespace reflex {
   }
 
 #ifdef REFLEX_HAS_RVALUE_REF
-  AutoDynamicData::AutoDynamicData(AutoDynamicData && rhs)
+  REFLEX_INLINE AutoDynamicData::AutoDynamicData(AutoDynamicData && rhs)
     : type_support_(rhs.type_support_),
       instance_(rhs.instance_)
   {
@@ -68,7 +68,7 @@ namespace reflex {
     rhs.instance_ = 0;
   }
 
-  AutoDynamicData & operator = (AutoDynamicData && rhs)
+  REFLEX_INLINE AutoDynamicData & AutoDynamicData::operator = (AutoDynamicData && rhs)
   {
     this->swap(rhs);
     return *this;

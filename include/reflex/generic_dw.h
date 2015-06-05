@@ -15,20 +15,21 @@ damages arising out of the use or inability to use the software.
 #include "reflex/auto_dd.h"
 #include "reflex/dllexport.h"
 #include "reflex/reflex_fwd.h"
+#include "reflex/enable_if.h"
 
 #include <memory>
 
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataWriter>;
+//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataWriter>;
 
 #ifdef RTI_WIN32
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
+//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
 #endif
 
 namespace reflex {
 
   namespace detail {
 
-    class REFLEX_DLL_EXPORT DataWriterBase
+    class DataWriterBase
     {
     protected:
 
@@ -37,14 +38,14 @@ namespace reflex {
       std::shared_ptr<DDSDynamicDataWriter> safe_datawriter_;
       AutoDynamicData dd_instance_;
 
-      DataWriterBase(DDSDomainParticipant *participant,
+      REFLEX_DLL_EXPORT DataWriterBase(DDSDomainParticipant *participant,
         const char * topic_name,
         const char * type_name,
         DDS_TypeCode * tc,
         DDS_DynamicDataTypeProperty_t props =
         DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
 
-      DataWriterBase(DDSDomainParticipant *participant,
+      REFLEX_DLL_EXPORT DataWriterBase(DDSDomainParticipant *participant,
         const DDS_DataWriterQos & dwqos,
         const char * topic_name,
         const char * type_name,
@@ -59,8 +60,8 @@ namespace reflex {
       static void deleter(DDSDynamicDataWriter * ddWriter) throw();
 
     public:
-      const DDS_TypeCode * get_typecode() const;
-      DDS_TypeCode * get_typecode();
+      REFLEX_DLL_EXPORT const DDS_TypeCode * get_typecode() const;
+      REFLEX_DLL_EXPORT DDS_TypeCode * get_typecode();
     };
 
     template <class T>
@@ -70,10 +71,11 @@ namespace reflex {
       GenericDataWriter(DDSDomainParticipant *participant,
         const char * topic_name,
         const char * type_name = 0)
-        : detail::DataWriterBase(participant,
-        topic_name,
-        type_name,
-        make_typecode<T>(type_name).release())
+        : detail::DataWriterBase(
+            participant,
+            topic_name,
+            type_name,
+            make_typecode<T>(type_name).release())
       { }
 
       GenericDataWriter(DDSDomainParticipant *participant,
@@ -81,12 +83,13 @@ namespace reflex {
         const char * topic_name,
         const char * type_name = 0,
         void * listener = 0)
-        : detail::DataWriterBase(participant,
-        dwqos,
-        topic_name,
-        type_name,
-        make_typecode<T>(type_name).release(),
-        listener)
+        : detail::DataWriterBase(
+            participant,
+            dwqos,
+            topic_name,
+            type_name,
+            make_typecode<T>(type_name).release(),
+            listener)
       { }
 
       template <class U>

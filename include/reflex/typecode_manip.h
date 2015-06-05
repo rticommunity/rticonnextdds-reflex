@@ -25,6 +25,13 @@ damages arising out of the use or inability to use the software.
 #include "reflex/dllexport.h"
 #include "reflex/reflex_fwd.h"
 
+#define GET_PRIMITIVE_TC_DEF(BASIC_TYPE, TYPECODE)      \
+static const DDS_TypeCode *                             \
+  get_primitive_tc(DDS_TypeCodeFactory * factory,       \
+                   const BASIC_TYPE *) {                \
+    return factory->get_primitive_tc(TYPECODE);         \
+}
+
 namespace reflex {
 
   namespace detail {
@@ -33,87 +40,260 @@ namespace reflex {
       print_IDL(
       const DDS_TypeCode * tc,
       DDS_UnsignedLong indent);
+    /*
+    DDS_TypeCode * create_array_tc(DDS_TypeCode * inner,
+      const DDS_UnsignedLongSeq &dims);
+
+    DDS_TypeCode * create_seq_tc(DDS_TypeCode *inner,
+      size_t bound);
+
+    DDS_TypeCode * create_string_tc(size_t bound);
+    DDS_TypeCode * create_struct_tc(const char * name);
+    DDS_TypeCode * create_sparse_tc(const char * name);
+    DDS_TypeCode * create_value_tc(const char * name,
+                                   DDS_TypeCode * basetc);
+
+    DDS_TypeCode * create_enum_tc(
+      const char * name,
+      const DDS_EnumMemberSeq & enum_seq,
+      const std::vector<MemberInfo> &);
+
+    DDS_TypeCode * create_union_tc(
+      const char * name,
+      DDS_TypeCode * discTc,
+      DDS_UnsignedLong default_case,
+      DDS_UnionMemberSeq & member_seq);
+      */
+
+    template <size_t I, class DimList>
+    struct CopyDims;
+
+    template <size_t I, size_t Head, size_t... Tail>
+    struct CopyDims <I, dim_list<Head, Tail...>>
+    {
+      static void exec(DDS_UnsignedLongSeq & seq)
+      {
+        seq[I] = Head;
+        detail::CopyDims<I + 1, dim_list<Tail...>>::exec(seq);
+      }
+    };
+
+    template <size_t I, size_t Last>
+    struct CopyDims<I, dim_list<Last>>
+    {
+      static void exec(DDS_UnsignedLongSeq & seq)
+      {
+        seq[I] = Last;
+      }
+    };
+
+    template <class Tuple, size_t I, size_t MAX_INDEX, class Case>
+    struct MatchDefaultCase;
+
+    template <class Tuple, size_t I, size_t MAX_INDEX, class T, int Tag, int... Tags>
+    struct MatchDefaultCase<Tuple, I, MAX_INDEX, match::Case<T, Tag, Tags...>>
+    {
+      enum {
+        value =
+        detail::MatchDefaultCase<Tuple,
+        I + 1,
+        MAX_INDEX,
+        typename std::tuple_element<I + 1, Tuple>::type
+        >::value
+      };
+    };
+
+    template <class Tuple, size_t MAX_INDEX, class T, int Tag, int... Tags>
+    struct MatchDefaultCase<Tuple, MAX_INDEX, MAX_INDEX, match::Case<T, Tag, Tags...>>
+    {
+      enum { value = -1 };
+    };
+
+    template <class Tuple, size_t I, size_t MAX_INDEX, class T>
+    struct MatchDefaultCase<Tuple, I, MAX_INDEX, match::Case<T>>
+    {
+      enum { value = I };
+    };
+
+    template <class Tuple, size_t MAX_INDEX, class T>
+    struct MatchDefaultCase<Tuple, MAX_INDEX, MAX_INDEX, match::Case<T>>
+    {
+      enum { value = MAX_INDEX };
+    };
+
+    template <class TagType, class... Cases>
+    struct DefaultCaseIndex;
+
+    template <class TagType, class... Cases>
+    struct DefaultCaseIndex<match::Union<TagType, Cases...>>
+    {
+      typedef typename match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
+      enum {
+        value =
+        MatchDefaultCase<CaseTuple,
+        1,
+        Size<CaseTuple>::value - 1,
+        typename std::tuple_element<1, CaseTuple>::type>::value
+      };
+    };
+
+    struct Primitive_TC_Helper
+    {
+      GET_PRIMITIVE_TC_DEF(match::octet_t, DDS_TK_OCTET)
+      GET_PRIMITIVE_TC_DEF(bool,           DDS_TK_BOOLEAN)
+      GET_PRIMITIVE_TC_DEF(char,           DDS_TK_CHAR)
+      GET_PRIMITIVE_TC_DEF(int8_t,         DDS_TK_CHAR)
+      GET_PRIMITIVE_TC_DEF(int16_t,        DDS_TK_SHORT)
+      GET_PRIMITIVE_TC_DEF(uint16_t,       DDS_TK_USHORT)
+      GET_PRIMITIVE_TC_DEF(int32_t,        DDS_TK_LONG)
+      GET_PRIMITIVE_TC_DEF(uint32_t,       DDS_TK_ULONG)
+      GET_PRIMITIVE_TC_DEF(int64_t,        DDS_TK_LONGLONG)
+      GET_PRIMITIVE_TC_DEF(uint64_t,       DDS_TK_ULONGLONG)
+      GET_PRIMITIVE_TC_DEF(float,          DDS_TK_FLOAT)
+      GET_PRIMITIVE_TC_DEF(double,         DDS_TK_DOUBLE)
+      GET_PRIMITIVE_TC_DEF(long double,    DDS_TK_LONGDOUBLE)
+
+#ifndef RTI_WIN32
+      GET_PRIMITIVE_TC_DEF(char32_t,       DDS_TK_WCHAR)
+#endif
+
+#if __x86_64__
+      GET_PRIMITIVE_TC_DEF(long long,          DDS_TK_LONGLONG)
+      GET_PRIMITIVE_TC_DEF(unsigned long long, DDS_TK_ULONGLONG)
+#endif
+    };
 
     template <class T>
-    SafeTypeCode<T> make_typecode_impl(
-      const char * name,
-      false_type /* T has no base */)
+    struct Enum_TC_Helper
     {
-      DDS_TypeCodeFactory * factory =
-        DDS_TypeCodeFactory::get_instance();
+      template <size_t I, size_t MAX>
+      struct SetEnumMembers
+      {
+        static void exec(DDS_EnumMemberSeq & enum_seq,
+                         std::vector<detail::MemberInfo> & info_seq)
+        {
+          using namespace detail;
 
-      std::string type_name_string =
-        detail::StructName<typename detail::remove_refs<T>::type>::get();
+          info_seq[I] = EnumDef<T>::template EnumMember<I>::info();
+          enum_seq[I].name = const_cast<char *>(info_seq[I].name.c_str());
+          enum_seq[I].ordinal = info_seq[I].value;
+          SetEnumMembers<I + 1, MAX>::exec(enum_seq, info_seq);
+        }
+      };
 
-      const char * type_name =
-        name ? name : type_name_string.c_str();
+      template <size_t MAX>
+      struct SetEnumMembers<MAX, MAX>
+      {
+        static void exec(DDS_EnumMemberSeq & enum_seq,
+                         std::vector<detail::MemberInfo> & info_seq)
+        {
+          using namespace detail;
 
-      SafeTypeCode<T> structTc(factory, type_name);
+          info_seq[MAX] = EnumDef<T>::template EnumMember<MAX>::info();
+          enum_seq[MAX].name = const_cast<char *>(info_seq[MAX].name.c_str());
+          enum_seq[MAX].ordinal = info_seq[MAX].value;
+        }
+      };
 
-      detail::TypelistIterator<
-        T,
-        0,
-        detail::Size<T>::value - 1>::add(
-        factory, structTc.get());
-
-      return move(structTc);
-    }
-
-    template <class T>
-    SafeTypeCode<T> make_typecode_impl(
-      const char * name,
-      true_type /* T has base */)
-    {
-      DDS_TypeCodeFactory * factory =
-        DDS_TypeCodeFactory::get_instance();
-
-      std::string type_name_string =
-        detail::StructName<typename detail::remove_refs<T>::type>::get();
-
-      const char * type_name =
-        name ? name : type_name_string.c_str();
-
-      typedef typename InheritanceTraits<T>::basetype BaseType;
-
-      SafeTypeCode<BaseType> baseTc =
-        make_typecode_impl<BaseType>(
-        0,
-        typename InheritanceTraits<BaseType>::has_base());
-
-      SafeTypeCode<T> aggregateTc(factory, type_name, baseTc.get());
-
-      detail::TypelistIterator<
-        T,
-        0,
-        detail::Size<T>::value - 1>
-        ::add(factory, aggregateTc.get());
-
-      return move(aggregateTc);
-    }
-
+    };
 
     /* TypeCode Overload Resolution Helper */
     /* Overload resolution of several free primary template 
-     * functions can be notoriously brittle because of the 
-     * ordering issues. If general, a function must be declared
+     * functions can be notoriously brittle due to
+     * ordering issues. In general, a function must be declared
      * before it is called. Sounds simple but in a set of mutually
      * recursive primary template functions, it is easy to lose
      * grip on the what's declared before and what's not. In 
      * general, all the functions should be declared beforehand.
-     * There is an alternative solution. Put all the functions
-     * in a class and make them static and use their fully
-     * qualified name to call them. No upfront declarations 
-     * are necessary if this idiom is used. 
+     * There is an alternative solution that is used here.
+     * Put all the functions in a class and make them static 
+     * and use their fully qualified name to call them. 
+     * No upfront declarations are necessary if this idiom is used. 
      * */
     struct TC_overload_resolution_helper 
-    {
-      /*
-      REFLEX_DLL_EXPORT static SafeTypeCode<std::string> REFLEX_DECLSPEC
-        get_typecode(
-            DDS_TypeCodeFactory * factory,
-            const std::string *);
-      */
+    {      
       
+      template <class T>
+      static SafeTypeCode<T> get_typecode_struct(
+        const char * name,
+        false_type /* T has no base */)
+      {
+        DDS_TypeCodeFactory * factory =
+          DDS_TypeCodeFactory::get_instance();
+
+        std::string struct_name =
+          detail::StructName<typename detail::remove_refs<T>::type>::get();
+
+        const char * type_name =
+          name ? name : struct_name.c_str();
+
+        //SafeTypeCode<T> structTc(factory, type_name);
+        DDS_ExceptionCode_t ex;
+        DDS_TypeCode *structTc =
+          factory->create_struct_tc(type_name,
+                                    DDS_StructMemberSeq(), ex);
+
+        SafeTypeCode<T> safetc(factory, structTc);
+
+        check_exception_code(
+          "get_typecode_struct: Unable to create struct typecode, error = ",
+          ex);
+
+        detail::TypelistIterator<
+          T,
+          0,
+          detail::Size<T>::value - 1>::add(
+            factory, safetc.get());
+
+        return safetc;
+      }
+
+      template <class T>
+      static SafeTypeCode<T> get_typecode_struct(
+        const char * name,
+        true_type /* T has base */)
+      {
+        DDS_TypeCodeFactory * factory =
+          DDS_TypeCodeFactory::get_instance();
+
+        std::string struct_name =
+          detail::StructName<typename detail::remove_refs<T>::type>::get();
+
+        const char * type_name =
+          name ? name : struct_name.c_str();
+
+        typedef typename InheritanceTraits<T>::basetype BaseType;
+
+        SafeTypeCode<BaseType> baseTc =
+          get_typecode_struct<BaseType>(
+             0,
+             typename InheritanceTraits<BaseType>::has_base());
+
+        DDS_ExceptionCode_t ex;
+        DDS_TypeCode *valueTc =
+          factory->create_value_tc(
+            type_name,
+            DDS_EXTENSIBLE_EXTENSIBILITY,
+            DDS_VM_NONE,
+            baseTc.get(),
+            DDS_ValueMemberSeq(),
+            ex);
+
+        SafeTypeCode<T> aggregateTc(factory, valueTc);
+
+        check_exception_code(
+          "get_typecode_struct: Unable to create valuetype typecode, error = ",
+          ex);
+
+        detail::TypelistIterator<
+          T,
+          0,
+          detail::Size<T>::value - 1>
+          ::add(factory, aggregateTc.get());
+
+        return aggregateTc;
+      }
+
       template <class Str>
       static SafeTypeCode<Str> 
         get_typecode(
@@ -121,7 +301,18 @@ namespace reflex {
             const Str *,
             typename enable_if<is_string<Str>::value>::type * = 0)
       {
-         return SafeTypeCode<Str>(factory);
+          DDS_ExceptionCode_t ex;
+
+          SafeTypeCode<Str> stringTc(
+            factory, 
+            factory->create_string_tc(detail::static_string_bound<Str>::value, 
+                                      ex));
+          
+          check_exception_code(
+            "InnerTypeCodeBase::create_string_tc: Unable to create string typecode, error = ",
+            ex);
+
+          return stringTc;
       }
 
       template <class T>
@@ -138,27 +329,20 @@ namespace reflex {
                             is_string<T>::value       ||
                             is_stdarray<T>::value>::type * = 0)
       {
-        SafeTypeCode<T> structTc = reflex::make_typecode<T>();
-        /*SafeTypeCode<T>
-          structTc(factory, StructName<T>::get().c_str());
-
-        TypelistIterator<
-          T,
-          0,
-          Size<T>::value - 1>
-            ::add(factory, structTc.get());*/
-
-        return move(structTc);
+        return get_typecode_struct<T>(
+                0 /* name */,
+                typename detail::InheritanceTraits<T>::has_base());
       }
 
       template <class T>
       // overload for all the primitive types.
       static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
-        const T *,
+        const T * primitive,
         typename enable_if<is_primitive<T>::value>::type * = 0)
       {
-        return SafeTypeCode<T>(factory);
+        return SafeTypeCode<T>(factory, 
+                               Primitive_TC_Helper::get_primitive_tc(factory, primitive));
       }
 
       template <class T>
@@ -168,7 +352,24 @@ namespace reflex {
         const T *,
         typename enable_if<detail::is_enum<T>::value>::type * = 0)
       {
-        return SafeTypeCode<T>(factory, EnumDef<T>::name());
+        // The lifetime of info_seq must be until create_enum_tc is invoked
+        // because enum_seq[i].name is just a pointer to MemberInfo.name strings
+
+        DDS_ExceptionCode_t ex;
+        DDS_EnumMemberSeq enum_seq;
+        std::vector<MemberInfo> info_seq(EnumDef<T>::size);
+        enum_seq.ensure_length(EnumDef<T>::size, EnumDef<T>::size);
+        Enum_TC_Helper<T>::SetEnumMembers<0, EnumDef<T>::size - 1>::exec(enum_seq, info_seq);
+        
+        SafeTypeCode<T> enumTc(
+          factory, 
+          factory->create_enum_tc(EnumDef<T>::name(), enum_seq, ex));
+
+        check_exception_code(
+          "get_typecode: Unable to create enum typecode, error = ",
+          ex);
+        
+        return enumTc;
       }
 
       template <class C, size_t Bound>
@@ -182,7 +383,16 @@ namespace reflex {
                 factory,
                 static_cast<typename C::value_type *>(0));
 
-          return SafeTypeCode<reflex::match::Bounded<C, Bound>>(factory, innerTc);
+          DDS_ExceptionCode_t ex;
+          SafeTypeCode<reflex::match::Bounded<C, Bound>> seqTc
+            (factory,
+             factory->create_sequence_tc(Bound, innerTc.get(), ex));
+
+          check_exception_code(
+            "get_typecode: Unable to create sequence typecode, error = ",
+            ex);
+
+          return seqTc;
       }
 
       template <class C>
@@ -196,7 +406,18 @@ namespace reflex {
                 factory,
                 static_cast<typename container_traits<C>::value_type *>(0));
 
-          return SafeTypeCode<C>(factory, innerTc);
+          DDS_ExceptionCode_t ex;
+          SafeTypeCode<C> seqTc(
+            factory, 
+            factory->create_sequence_tc(detail::static_container_bound<C>::value, 
+                                        innerTc.get(), 
+                                        ex));
+
+          check_exception_code(
+            "get_typecode: Unable to create sequence typecode, error = ",
+            ex);
+
+          return seqTc;
       }
 
       template <class T, size_t N>
@@ -210,9 +431,23 @@ namespace reflex {
                 factory, 
                 static_cast<BasicType *>(0));
 
-          return SafeTypeCode<std::array<T, N>>(factory, basicTc);
-      }
+          DDS_UnsignedLongSeq dims;
+          typedef typename
+            detail::make_dim_list<std::array<T, N>>::type DimList;
+          dims.ensure_length(DimList::size, DimList::size);
+          detail::CopyDims<0, DimList>::exec(dims);
 
+          DDS_ExceptionCode_t ex;
+          SafeTypeCode<std::array<T, N>> arrayTc(
+             factory,
+             factory->create_array_tc(dims, basicTc.get(), ex));
+
+          check_exception_code(
+            "InnerTypeCodeBase::create_array_tc: Unable to create array typecode, error = ",
+            ex);
+
+          return arrayTc;
+      }
 
       template <size_t Bound>
       static SafeTypeCode<reflex::match::Bounded<std::string, Bound>>
@@ -220,12 +455,16 @@ namespace reflex {
             DDS_TypeCodeFactory * factory,
             const reflex::match::Bounded<std::string, Bound> *)
       {
-          SafeTypeCode<std::string> innerTc
-            = TC_overload_resolution_helper::get_typecode(
-                factory, 
-                static_cast<std::string *>(0));
+        DDS_ExceptionCode_t ex;
 
-          return SafeTypeCode<reflex::match::Bounded<std::string, Bound>>(factory);
+        SafeTypeCode<match::Bounded<std::string, Bound>> 
+          stringTc(factory, factory->create_string_tc(Bound, ex));
+
+        check_exception_code(
+          "get_typecode::create_string_tc: Unable to create string typecode, error = ",
+          ex);
+
+        return stringTc;
       }
 
       template <class T>
@@ -238,7 +477,19 @@ namespace reflex {
                   factory,
                   static_cast<typename remove_reference<T>::type *>(0));
 
-        return SafeTypeCode<reflex::match::Range<T>>(factory, innerTc);
+        DDS_ExceptionCode_t ex;
+        SafeTypeCode<match::Range<T>> seqTc(
+          factory,
+          factory->create_sequence_tc(
+            detail::static_container_bound<match::Range<T>>::value, 
+            innerTc.get(), 
+            ex));
+
+        check_exception_code(
+          "get_typecode: Unable to create sequence typecode, error = ",
+          ex);
+
+        return seqTc;
       }
 
 /*
@@ -292,7 +543,16 @@ namespace reflex {
             factory,
             static_cast<OptValuetype *>(0));
 
-        return SafeTypeCode<Opt>(factory, move(innerTc));
+        DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+        SafeTypeCode<Opt> optionalTc(
+          factory, 
+          factory->clone_tc(innerTc.get(), ex));
+
+        check_exception_code(
+          "get_typecode<optional>: Unable to clone typecode, error = ",
+          ex);
+
+        return optionalTc;
       }
 
       template <class T, size_t Bound>
@@ -305,18 +565,34 @@ namespace reflex {
                 factory,
                 static_cast<typename remove_reference<T>::type *>(0));
 
-          return SafeTypeCode<reflex::match::BoundedRange<T, Bound>>(
-              factory, innerTc);
+          DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+          SafeTypeCode<match::BoundedRange<T, Bound>> seqTc(
+            factory,
+            factory->create_sequence_tc(Bound, innerTc.get(), ex));
+
+          check_exception_code(
+            "get_typecode<BoundedRange>: Unable to create sequence typecode, error = ",
+            ex);
+
+          return seqTc;
       }
       
       template <class... Args>
-      static SafeTypeCode<::reflex::match::Sparse<Args...>> get_typecode(
+      static SafeTypeCode<reflex::match::Sparse<Args...>> get_typecode(
           DDS_TypeCodeFactory * factory,
-          const ::reflex::match::Sparse<Args...> *)
+          const reflex::match::Sparse<Args...> *)
       {
-          SafeTypeCode<::reflex::match::Sparse<Args...>>
-            sparseTc(factory, 
-                     StructName<::reflex::match::Sparse<Args...>>::get().c_str());
+          DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+          SafeTypeCode<reflex::match::Sparse<Args...>> sparseTc(
+            factory,
+            factory->create_sparse_tc(StructName<reflex::match::Sparse<Args...>>::get().c_str(), 
+                                      DDS_VM_NONE,
+                                      NULL, 
+                                      ex));
+
+          check_exception_code(
+            "get_typecode<Sparse>: Unable to create sparse typecode, error = ",
+            ex);
 
           typedef typename 
             ::reflex::match::Sparse<Args...>::raw_tuple_type RawTuple;
@@ -326,7 +602,7 @@ namespace reflex {
                            Size<RawTuple>::value - 1>::add(
                              factory, sparseTc.get());
 
-          return move(sparseTc);
+          return sparseTc;
       }
     
       template <class TagType, class... Cases>
@@ -335,7 +611,7 @@ namespace reflex {
             DDS_TypeCodeFactory * factory,
             const reflex::match::Union<TagType, Cases...> *)
       {
-          SafeTypeCode<TagType> discriminatorTc =
+          SafeTypeCode<TagType> discTc =
             TC_overload_resolution_helper::get_typecode(
                 factory, 
                 static_cast<TagType *>(0));
@@ -352,17 +628,55 @@ namespace reflex {
               umember_seq,
               static_cast<reflex::match::Union<TagType, Cases...> *>(0));
 
-          SafeTypeCode<reflex::match::Union<TagType, Cases...>>
-            unionTc(factory,
-            StructName<reflex::match::Union<TagType, Cases...>>::get().c_str(),
-            discriminatorTc,
-            umember_seq);
+          DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+          SafeTypeCode<reflex::match::Union<TagType, Cases...>> unionTc(
+            factory,
+            factory_->create_union_tc(StructName<reflex::match::Union<TagType, Cases...>>::get().c_str(),
+                                      discTc.get(),
+                                      detail::DefaultCaseIndex<match::Union<TagType, Cases...>>::value,
+                                      umember_seq,
+                                      ex));
+
+          check_exception_code(
+            "get_typecode<Union>: Unable to create union typecode, error = ",
+            ex);
 
           TypelistIterator<CaseTuple,
             0,
             Size<CaseTuple>::value - 1>::delete_typecodes(factory, umember_seq);
 
-          return move(unionTc);
+          return unionTc;
+      }
+
+      template<class T>
+      static SafeTypeCode<T> get_typecode(
+        DDS_TypeCodeFactory * factory,
+        T *,
+        typename detail::enable_if<is_builtin_array<T>::value>::type * = 0)
+      {
+        typedef typename remove_all_extents<T>::type InnerType;
+
+        SafeTypeCode<InnerType> innerTc =
+          TC_overload_resolution_helper::get_typecode(
+          factory,
+          static_cast<InnerType *>(0));
+
+        typedef typename make_dim_list<T>::type DimList;
+
+        DDS_UnsignedLongSeq dims;
+        dims.ensure_length(DimList::size, DimList::size);
+        detail::CopyDims<0, DimList>::exec(dims);
+
+        DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+        SafeTypeCode<T> arrayTc(
+          factory,
+          factory->create_array_tc(dims, innerTc.get(), ex));
+
+        check_exception_code(
+          "add_member_impl<BuiltInArray>: Unable to create array typecode, error = ",
+          ex);
+
+        return arrayTc;
       }
 
       private:
@@ -389,8 +703,8 @@ namespace reflex {
       const char * member_name,
       unsigned char flags,
       int id,
-      const T *,
-      typename disable_if<is_builtin_array<T>::value>::type * = 0)
+      T *)//,
+      //typename disable_if<is_builtin_array<T>::value>::type * = 0)
     {
       DDS_ExceptionCode_t ex;
       SafeTypeCode<T> innerTc =
@@ -402,16 +716,16 @@ namespace reflex {
         (outerTc->kind(ex) == DDS_TK_SPARSE) ? id : DDS_TYPECODE_MEMBER_ID_INVALID;
 
       outerTc->add_member(member_name,
-        member_id,
-        innerTc.get(),
-        flags,
-        ex);
+                          member_id,
+                          innerTc.get(),
+                          flags,
+                          ex);
       
       detail::check_exception_code(
-        "add_member: Unable to add inner typecode, error = ", 
+        "add_member_impl<T>: Unable to add inner typecode, error = ", 
         ex);
     }
-
+    /*
     template <class T>
     void add_member_impl(
       DDS_TypeCodeFactory * factory,
@@ -425,29 +739,41 @@ namespace reflex {
       // Simple overloading is not used to get typecode for built-in
       // arrays because square brackets must be expanded syntactically.
       // I.e., For N-dimensional array you have to write a template of N 
-      // paramters because there is no way to say [0...N]. Sigh!
-      typedef typename remove_all_extents<T>::type BasicType;
+      // integral parameters because there is no way to say [0...N]. Sigh!
+      typedef typename remove_all_extents<T>::type InnerType;
 
-      SafeTypeCode<BasicType> basicTc =
+      SafeTypeCode<InnerType> innerTc =
         TC_overload_resolution_helper::get_typecode(
             factory, 
-            static_cast<BasicType *>(0));
+            static_cast<InnerType *>(0));
 
-      SafeTypeCode<BasicType, typename make_dim_list<T>::type>
-        arrayTc(factory, basicTc);
+      typedef typename make_dim_list<T>::type DimList;
 
-      DDS_ExceptionCode_t ex;
-      outerTc->add_member(member_name,
-        DDS_TYPECODE_MEMBER_ID_INVALID,
-        arrayTc.get(),
-        flags,
+      DDS_UnsignedLongSeq dims;
+      dims.ensure_length(DimList::size, DimList::size);
+      detail::CopyDims<0, DimList::exec(dims);
+
+      DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+      SafeTypeCode<T> arrayTc(
+        factory,
+        factory->create_array_tc(dims, innerTc.get(), ex);
+
+      check_exception_code(
+        "add_member_impl<BuiltInArray>: Unable to create array typecode, error = ",
         ex);
+
+      DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+      outerTc->add_member(member_name,
+                          DDS_TYPECODE_MEMBER_ID_INVALID,
+                          arrayTc.get(),
+                          flags,
+                          ex);
 
       detail::check_exception_code(
-        "add_member: Unable to add inner array typecode, error = ",
+        "add_member_impl<BuiltInArray>: Unable to add inner array typecode, error = ",
         ex);
     }
-
+    */
     template <class T>
     void add_member_forward(
       DDS_TypeCodeFactory * factory,
@@ -522,10 +848,10 @@ namespace reflex {
     void case_add_impl(
         DDS_TypeCodeFactory * factory,
         const char * member_name,
-        DDS_UnionMember & umember,
-        typename disable_if<
-                            is_builtin_array<typename Case::type
-                           >::value>::type * = 0)
+        DDS_UnionMember & umember)//,
+        //typename disable_if<
+        //                    is_builtin_array<typename Case::type
+        //                   >::value>::type * = 0)
     {
       DDS_LongSeq label_seq;
       label_seq.ensure_length(
@@ -538,7 +864,7 @@ namespace reflex {
         is_pointer<typename Case::type>::value;
 
       typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
-      // typecodes is deleted in get_typecode() overload for Union.
+      // typecodes are deleted in get_typecode() overload for Union.
       umember.type =
         TC_overload_resolution_helper::get_typecode(
             factory, 
@@ -546,7 +872,7 @@ namespace reflex {
 
       umember.labels = label_seq;
     };
-
+    /*
     template <class Case>
     void case_add_impl(
         DDS_TypeCodeFactory * factory,
@@ -583,7 +909,7 @@ namespace reflex {
 
       umember.labels = label_seq;
     };
-
+    */
     template <class Case>
     void case_add_forward(
         DDS_TypeCodeFactory * factory,

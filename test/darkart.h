@@ -96,7 +96,7 @@ namespace darkart
     // Default constructor
     EventInfo() { Clear(); }
     // Reset all member data to default values
-    void Clear() {}
+    void Clear() { status = NORMAL; }
     // All the identifier info we want to store for each event
     int              run_id; //id of the run this event is from
     int            event_id; //id of this event

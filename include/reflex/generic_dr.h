@@ -17,18 +17,19 @@ damages arising out of the use or inability to use the software.
 #include "reflex/dllexport.h"
 #include "reflex/sample.h"
 #include "reflex/reflex_fwd.h"
+#include "reflex/enable_if.h"
 
 #include <memory>
 
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT reflex::SafeTypeCode<DDS_TypeCode>;
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
-REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataReader>;
+//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT reflex::SafeTypeCode<DDS_TypeCode>;
+//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
+//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataReader>;
 
 namespace reflex {
 
   namespace detail {
 
-    class REFLEX_DLL_EXPORT DataReaderBase
+    class DataReaderBase
     {
     protected:
 
@@ -37,7 +38,8 @@ namespace reflex {
       std::shared_ptr<DDSDynamicDataReader> safe_datareader_;
       AutoDynamicData dd_instance_;
 
-      DataReaderBase(DDSDomainParticipant *participant,
+      REFLEX_DLL_EXPORT DataReaderBase(
+        DDSDomainParticipant *participant,
         DDSDataReaderListener * listener,
         const char * topic_name,
         const char * type_name,
@@ -45,7 +47,8 @@ namespace reflex {
         DDS_DynamicDataTypeProperty_t props =
         DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
 
-      DataReaderBase(DDSDomainParticipant *participant,
+      REFLEX_DLL_EXPORT DataReaderBase(
+        DDSDomainParticipant *participant,
         const DDS_DataReaderQos & drqos,
         DDSDataReaderListener * listener,
         const char * topic_name,
@@ -62,9 +65,9 @@ namespace reflex {
     public:
       ~DataReaderBase();
 
-      std::shared_ptr<DDSDynamicDataReader> dd_reader();
-      DDS_TypeCode * get_typecode(); 
-      const DDS_TypeCode * get_typecode() const;
+      REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataReader> dd_reader();
+      REFLEX_DLL_EXPORT DDS_TypeCode * get_typecode();
+      REFLEX_DLL_EXPORT const DDS_TypeCode * get_typecode() const;
     };
 
     template <class T>

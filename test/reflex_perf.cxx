@@ -8,10 +8,9 @@ support the Software.  RTI shall not be liable for any incidental or consequenti
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
+#include <cstdio>
 
 #ifndef RTI_WIN32
   #include <sys/time.h>

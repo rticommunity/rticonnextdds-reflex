@@ -12,7 +12,7 @@ damages arising out of the use or inability to use the software.
 
 void write_many_members(int) 
 {
-    reflex::SafeTypeCode<DDS_TypeCode> stc(reflex::make_typecode<many_members>());
+    reflex::SafeTypeCode<many_members> stc(reflex::make_typecode<many_members>());
     reflex::detail::print_IDL(stc.get(), 0);
 }
 

@@ -7,13 +7,15 @@ any warranty for fitness for any purpose. RTI is under no obligation to maintain
 support the Software.  RTI shall not be liable for any incidental or consequential
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
+#include "reflex/safe_typecode.h"
 
+/*
 #include "reflex/dllexport.h"
 #include "reflex/safe_typecode.h"
 
 #define GET_TYPECODE_DEF(BASIC_TYPE, TYPECODE)          \
 REFLEX_INLINE const DDS_TypeCode *                      \
-  SafeTypeCodeBase::get_typecode(const BASIC_TYPE *) {  \
+  InnerTypeCodeBase::get_typecode(const BASIC_TYPE *) {  \
     return factory_->get_primitive_tc(TYPECODE);        \
 }
 
@@ -47,23 +49,23 @@ namespace reflex {
 
 #undef GET_TYPECODE_DEF
 
-      REFLEX_INLINE void SafeTypeCodeBase::set_typecode(const DDS_TypeCode * tc) {
+      REFLEX_INLINE void InnerTypeCodeBase::set_typecode(const DDS_TypeCode * tc) {
         typecode_ = const_cast<DDS_TypeCode *>(tc);
         release_ = false; // Native type. Don't release
       }
 
-      REFLEX_INLINE void SafeTypeCodeBase::set_typecode(DDS_TypeCode * tc) {
+      REFLEX_INLINE void InnerTypeCodeBase::set_typecode(DDS_TypeCode * tc) {
         typecode_ = tc;
         release_ = true;
       }
 
       REFLEX_INLINE void check_factory(DDS_TypeCodeFactory * factory) {
         if (factory == NULL) {
-          throw std::runtime_error("SafeTypeCodeBase: Invalid DDS_TypeCodeFactory");
+          throw std::runtime_error("InnerTypeCodeBase: Invalid DDS_TypeCodeFactory");
         }
       }
 
-      REFLEX_INLINE SafeTypeCodeBase::SafeTypeCodeBase(DDS_TypeCode * typecode)
+      REFLEX_INLINE InnerTypeCodeBase::InnerTypeCodeBase(DDS_TypeCode * typecode)
       : factory_(DDS_TypeCodeFactory::get_instance()),
         typecode_(typecode),
         release_(true)
@@ -71,7 +73,7 @@ namespace reflex {
       check_factory(factory_);
     }
 
-      REFLEX_INLINE SafeTypeCodeBase::SafeTypeCodeBase(const DDS_TypeCode * typecode)
+      REFLEX_INLINE InnerTypeCodeBase::InnerTypeCodeBase(const DDS_TypeCode * typecode)
       : factory_(DDS_TypeCodeFactory::get_instance()),
         typecode_(const_cast<DDS_TypeCode *>(typecode)),
         release_(false)
@@ -79,7 +81,7 @@ namespace reflex {
       check_factory(factory_);
     }
 
-      REFLEX_INLINE SafeTypeCodeBase::SafeTypeCodeBase(DDS_TypeCodeFactory * factory,
+      REFLEX_INLINE InnerTypeCodeBase::InnerTypeCodeBase(DDS_TypeCodeFactory * factory,
                                        DDS_TypeCode * typecode,
                                        bool release)
       : factory_(factory),
@@ -89,62 +91,62 @@ namespace reflex {
       check_factory(factory_);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_array_tc(DDS_TypeCode * inner,
+      REFLEX_INLINE void InnerTypeCodeBase::create_array_tc(DDS_TypeCode * inner,
       const DDS_UnsignedLongSeq &dims)
     {
       DDS_ExceptionCode_t ex;
       DDS_TypeCode * arrTc =
         factory_->create_array_tc(dims, inner, ex);
 
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_array_tc: Unable to create array typecode, error = ", 
+      check_exception_code(
+        "InnerTypeCodeBase::create_array_tc: Unable to create array typecode, error = ", 
         ex);
 
       set_typecode(arrTc);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_seq_tc(DDS_TypeCode *inner,
+      REFLEX_INLINE void InnerTypeCodeBase::create_seq_tc(DDS_TypeCode *inner,
       size_t bound)
     {
       DDS_ExceptionCode_t ex;
       DDS_TypeCode * seqTc =
         factory_->create_sequence_tc(bound, inner, ex);
 
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_seq_tc: Unable to create sequence typecode, error = ",
+      check_exception_code(
+        "InnerTypeCodeBase::create_seq_tc: Unable to create sequence typecode, error = ",
         ex);
 
       set_typecode(seqTc);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_string_tc(size_t bound)
+      REFLEX_INLINE void InnerTypeCodeBase::create_string_tc(size_t bound)
     {
       DDS_ExceptionCode_t ex;
       DDS_TypeCode * stringTc =
         factory_->create_string_tc(bound, ex);
 
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_string_tc: Unable to create string typecode, error = ",
+      check_exception_code(
+        "InnerTypeCodeBase::create_string_tc: Unable to create string typecode, error = ",
         ex);
 
       set_typecode(stringTc);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_struct_tc(const char * name)
+      REFLEX_INLINE void InnerTypeCodeBase::create_struct_tc(const char * name)
     {
       DDS_ExceptionCode_t ex;
       DDS_TypeCode *structTc =
         factory_->create_struct_tc(name,
         DDS_StructMemberSeq(), ex);
 
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_struct_tc: Unable to create struct typecode, error = ",
+      check_exception_code(
+        "InnerTypeCodeBase::create_struct_tc: Unable to create struct typecode, error = ",
         ex);
 
       set_typecode(structTc);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_value_tc(
+      REFLEX_INLINE void InnerTypeCodeBase::create_value_tc(
         const char * name, 
         DDS_TypeCode * basetc)
     {
@@ -158,28 +160,28 @@ namespace reflex {
           DDS_ValueMemberSeq(), 
           ex);
 
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_value_tc: Unable to create valuetype typecode, error = ",
+      check_exception_code(
+        "InnerTypeCodeBase::create_value_tc: Unable to create valuetype typecode, error = ",
         ex);
 
       set_typecode(valueTc);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_enum_tc(const char * name,
+      REFLEX_INLINE void InnerTypeCodeBase::create_enum_tc(const char * name,
       const DDS_EnumMemberSeq & enum_seq,
       const std::vector<MemberInfo> &)
     {
       DDS_ExceptionCode_t ex;
       DDS_TypeCode * enumTc = factory_->create_enum_tc(name, enum_seq, ex);
 
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_enum_tc: Unable to create enum typecode, error = ",
+      check_exception_code(
+        "InnerTypeCodeBase::create_enum_tc: Unable to create enum typecode, error = ",
         ex);
 
       set_typecode(enumTc);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_union_tc(const char * name,
+      REFLEX_INLINE void InnerTypeCodeBase::create_union_tc(const char * name,
       DDS_TypeCode * discTc,
       DDS_UnsignedLong default_case,
       DDS_UnionMemberSeq & member_seq)
@@ -192,27 +194,27 @@ namespace reflex {
         member_seq,
         ex);
       
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_union_tc: Unable to create union typecode, error = ",
+      check_exception_code(
+        "InnerTypeCodeBase::create_union_tc: Unable to create union typecode, error = ",
         ex);
 
       set_typecode(unionTc);
     }
 
-      REFLEX_INLINE void SafeTypeCodeBase::create_sparse_tc(const char * name)
+      REFLEX_INLINE void InnerTypeCodeBase::create_sparse_tc(const char * name)
     {
       DDS_ExceptionCode_t ex;
       DDS_TypeCode *sparseTc =
         factory_->create_sparse_tc(name, DDS_VM_NONE, NULL, ex);
 
-      detail::check_exception_code(
-        "SafeTypeCodeBase::create_sparse_tc: Unable to create sparse typecode, error = ",
+      check_exception_code(
+        "InnerTypeCodeBase::create_sparse_tc: Unable to create sparse typecode, error = ",
         ex);
 
       set_typecode(sparseTc);
     }
 
-      REFLEX_INLINE SafeTypeCodeBase::~SafeTypeCodeBase()
+      REFLEX_INLINE InnerTypeCodeBase::~InnerTypeCodeBase()
     {
       DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
       if (factory_ && typecode_ && release_)
@@ -221,72 +223,72 @@ namespace reflex {
 
         if (ex != DDS_NO_EXCEPTION_CODE) 
         {
-          std::cerr << "~SafeTypeCodeBase: Unable to delete typecode, error = "
-                    << detail::get_readable_ex_code(ex) << std::endl;
+          std::cerr << "~InnerTypeCodeBase: Unable to delete typecode, error = "
+                    << get_readable_ex_code(ex) << std::endl;
           // Do not throw.
         }
       }
     }
 
-      REFLEX_INLINE const DDS_TypeCode * SafeTypeCodeBase::get() const
+      REFLEX_INLINE const DDS_TypeCode * InnerTypeCodeBase::get() const
       {
         return typecode_;
       }
 
-      REFLEX_INLINE DDS_TypeCode * SafeTypeCodeBase::get()
+      REFLEX_INLINE DDS_TypeCode * InnerTypeCodeBase::get()
       {
         return typecode_;
       }
 
-      REFLEX_INLINE DDS_TypeCode * SafeTypeCodeBase::release() {
+      REFLEX_INLINE DDS_TypeCode * InnerTypeCodeBase::release() {
         release_ = false;
         return typecode_;
       }
 
-      REFLEX_INLINE void SafeTypeCodeBase::swap(SafeTypeCodeBase & stc) throw()
+      REFLEX_INLINE void InnerTypeCodeBase::swap(InnerTypeCodeBase & stc) throw()
       {
         std::swap(factory_, stc.factory_);
         std::swap(typecode_, stc.typecode_);
         std::swap(release_, stc.release_);
       }
 
-  } // namespace detail
+    REFLEX_INLINE InnerTypeCode<DDS_TypeCode>::InnerTypeCode(DDS_TypeCode * tc)
+      : InnerTypeCodeBase(tc)
+    {}
 
-  REFLEX_INLINE SafeTypeCode<DDS_TypeCode>::SafeTypeCode(DDS_TypeCode * tc)
-    : SafeTypeCodeBase(tc)
-  {}
+    REFLEX_INLINE InnerTypeCode<DDS_TypeCode>::InnerTypeCode(const DDS_TypeCode * tc)
+      : InnerTypeCodeBase(tc)
+    { }
 
-  REFLEX_INLINE SafeTypeCode<DDS_TypeCode>::SafeTypeCode(const DDS_TypeCode * tc)
-    : SafeTypeCodeBase(tc)
-  { }
+    REFLEX_INLINE InnerTypeCode<DDS_TypeCode>::InnerTypeCode(
+        proxy< InnerTypeCode<DDS_TypeCode>> p) throw()
+      : InnerTypeCodeBase(
+           p.factory_,
+           p.typecode_,
+           p.release_)
+    {}
 
-  REFLEX_INLINE SafeTypeCode<DDS_TypeCode>::SafeTypeCode(
-      detail::proxy< SafeTypeCode<DDS_TypeCode>> p) throw()
-    : SafeTypeCodeBase(
-         p.factory_,
-         p.typecode_,
-         p.release_)
-  {}
+    REFLEX_INLINE InnerTypeCode<DDS_TypeCode> &
+      InnerTypeCode<DDS_TypeCode>::operator = (
+        proxy < InnerTypeCode < DDS_TypeCode >> p) throw()
+    {
+        InnerTypeCode<DDS_TypeCode>(p).swap(*this);
+        return *this;
+      }
 
-  REFLEX_INLINE SafeTypeCode<DDS_TypeCode> &
-    SafeTypeCode<DDS_TypeCode>::operator = (
-      detail::proxy < SafeTypeCode < DDS_TypeCode >> p) throw()
-  {
-      SafeTypeCode<DDS_TypeCode>(p).swap(*this);
-      return *this;
+    REFLEX_INLINE InnerTypeCode<DDS_TypeCode>::operator
+      proxy<InnerTypeCode<DDS_TypeCode>>() throw()
+    {
+      detail::proxy<InnerTypeCode<DDS_TypeCode>> p{ factory_, typecode_, release_ };
+      typecode_ = 0;
+      return p;
     }
 
-  REFLEX_INLINE SafeTypeCode<DDS_TypeCode>::operator
-    detail::proxy<SafeTypeCode<DDS_TypeCode>>() throw()
-  {
-    detail::proxy<SafeTypeCode<DDS_TypeCode>> p{ factory_, typecode_, release_ };
-    typecode_ = 0;
-    return p;
-  }
+    REFLEX_INLINE InnerTypeCode<DDS_TypeCode> move(InnerTypeCode<DDS_TypeCode> & stc)
+    {
+      return InnerTypeCode<DDS_TypeCode>(detail::proxy<InnerTypeCode<DDS_TypeCode>>(stc));
+    }
 
-  REFLEX_INLINE SafeTypeCode<DDS_TypeCode> move(SafeTypeCode<DDS_TypeCode> & stc)
-  {
-    return SafeTypeCode<DDS_TypeCode>(detail::proxy<SafeTypeCode<DDS_TypeCode>>(stc));
-  }
-
+    } // namespace detail
 } // namespace reflex
+*/

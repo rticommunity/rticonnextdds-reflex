@@ -19,11 +19,6 @@ damages arising out of the use or inability to use the software.
 #include "large_type.h"
 
 #define DOMAIN_ID           65
-#define APPLICATION_NAME    "Declarative Dynamic Data Example"
-#define PERIOD              100*1000*1000 /* 100ms */
-#define LARGE_TOPIC_NAME    "N-Tuple"
-#define LARGE_TYPE_NAME     "LargeTuple"
-
 
 void delete_entities(DDSDomainParticipant * participant);
 

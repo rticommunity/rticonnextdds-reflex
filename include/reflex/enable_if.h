@@ -656,11 +656,11 @@ namespace reflex {
     }
 
     template <class T>
-    struct static_string_bound 
-    { 
+    struct static_string_bound
+    {
       enum { value = REFLEX_STATIC_STRING_BOUND };
     };
-
+    
     template <class T>
     struct static_container_bound 
     { 

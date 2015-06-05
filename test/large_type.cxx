@@ -8,6 +8,12 @@ support the Software.  RTI shall not be liable for any incidental or consequenti
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
+#ifdef RTI_WIN32
+  #pragma warning(disable:4503)
+  // warning C4503 : '__LINE__Var' : decorated name length exceeded, name was truncated
+  // because of large tuple type.
+#endif
+
 #include "large_type.h"
 #include <memory>
 #include <vector>
@@ -29,12 +35,6 @@ create_ddwriter(const char *type_name,
 
 namespace reflex {
   namespace detail {
-
-    template <>
-    struct static_string_bound<std::string>
-    {
-      enum { value = 999 };
-    };
 
     template <class T>
     struct static_container_bound<std::vector<T>>
@@ -231,10 +231,9 @@ void write_large_type(int domain_id)
     /* 27 */  reflex::match::Sparse<std::string, float, MultiDimArray<int16_t,2,3>::type>,
     /* 28 */  Range<std::tuple<float, bool> &>,
     /* 29 */  std::list<SparseSFA>,
-    /* 30 */  std::map<std::string, unsigned> > TupleFull;
+    /* 30 */  Zip::Map> TupleFull;
     
-    reflex::SafeTypeCode<DDS_TypeCode> 
-      stc(reflex::make_typecode<decltype(t1)>());
+    auto stc = reflex::make_typecode<TupleFull>();
     
     typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
 

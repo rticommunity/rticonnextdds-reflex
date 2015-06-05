@@ -10,7 +10,6 @@ damages arising out of the use or inability to use the software.
 
 #include <time.h>
 #include <memory>
-#include "reflex.h"
 
 #include "shape_type.h"
 
@@ -20,7 +19,7 @@ std::tuple<DDSDynamicDataWriter *,
 create_ddwriter(const char *type_name, 
                 const char *topic_name,
                 DDSDynamicDataTypeSupport *type_support);
-
+/*
 namespace reflex {
   namespace detail {
 
@@ -33,7 +32,7 @@ namespace reflex {
 
   } 
 }
-
+*/
 class MyShapesListener : public reflex::detail::GenericDataReaderListener<ShapeType>
 {
 public:
@@ -57,7 +56,7 @@ public:
 
 void read_shape_type(int domain_id)
 {
-  DDSDomainParticipant *   participant =
+  DDSDomainParticipant * participant =
     DDSDomainParticipantFactory::get_instance()->
     create_participant(
     domain_id,
@@ -106,8 +105,8 @@ void write_shape_type_extended(int domain_id)
   DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
   const char *topic_name = "Triangle";
 
-  reflex::SafeTypeCode<DDS_TypeCode>
-    shape_ex_tc(reflex::make_typecode<ShapeTypeExtended>());
+  reflex::SafeTypeCode<ShapeTypeExtended> shape_ex_tc = 
+    reflex::make_typecode<ShapeTypeExtended>();
 
   reflex::detail::print_IDL(shape_ex_tc.get(), 0);
 
@@ -191,8 +190,8 @@ void write_shape_type(int domain_id)
   //auto t1 = ShapeType(color, x, y, shapesize);
 
   typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
-  reflex::SafeTypeCode<DDS_TypeCode> 
-    stc(reflex::make_typecode<Tuple>());
+  reflex::SafeTypeCode<Tuple> stc =
+    reflex::make_typecode<Tuple>();
   
   reflex::detail::print_IDL(stc.get(), 0);
   

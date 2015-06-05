@@ -39,7 +39,7 @@ MEMBER_TRAITS_DEF_CUSTOM(custom::TupleIntString, 1, "custom_tuple",
                          DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
 
 namespace Zip {
-    typedef std::map<std::string, int> Map;
+    typedef std::map<std::string, int32_t> Map;
 }
 
 #endif // RTIREFLEX_LARGE_TYPE_H
