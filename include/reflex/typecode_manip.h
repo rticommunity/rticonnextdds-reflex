@@ -361,7 +361,7 @@ namespace reflex {
         DDS_EnumMemberSeq enum_seq;
         std::vector<MemberInfo> info_seq(EnumDef<T>::size);
         enum_seq.ensure_length(EnumDef<T>::size, EnumDef<T>::size);
-        Enum_TC_Helper<T>::SetEnumMembers<0, EnumDef<T>::size - 1>::exec(enum_seq, info_seq);
+        Enum_TC_Helper<T>::template SetEnumMembers<0, EnumDef<T>::size - 1>::exec(enum_seq, info_seq);
         
         SafeTypeCode<T> enumTc(
           factory, 
@@ -633,11 +633,11 @@ namespace reflex {
           DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
           SafeTypeCode<reflex::match::Union<TagType, Cases...>> unionTc(
             factory,
-            factory_->create_union_tc(StructName<reflex::match::Union<TagType, Cases...>>::get().c_str(),
-                                      discTc.get(),
-                                      detail::DefaultCaseIndex<match::Union<TagType, Cases...>>::value,
-                                      umember_seq,
-                                      ex));
+            factory->create_union_tc(StructName<reflex::match::Union<TagType, Cases...>>::get().c_str(),
+                                     discTc.get(),
+                                     detail::DefaultCaseIndex<match::Union<TagType, Cases...>>::value,
+                                     umember_seq,
+                                     ex));
 
           check_exception_code(
             "get_typecode<Union>: Unable to create union typecode, error = ",

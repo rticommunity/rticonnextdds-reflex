@@ -23,7 +23,10 @@
 #ARCH=i86Linux2.6gcc4.4.5
 
 # if ndds==5.1.0 and Linux kernel 3.x
-ARCH=i86Linux3.xgcc4.6.3
+#ARCH=i86Linux3.xgcc4.6.3
+
+# if ndds==5.2.0 and Linux kernel 3.x
+#ARCH=i86Linux3gcc4.8.2
 
 # Use clang 3.3 or better
 CXX = clang++
