@@ -645,6 +645,11 @@ namespace reflex {
 */
 namespace reflex {
 
+  namespace detail {
+      const char *get_readable_ex_code(DDS_ExceptionCode_t ex);
+      void check_exception_code(const char * message, DDS_ExceptionCode_t ex);
+  }
+
   template <class T>
   class SafeTypeCode
   {

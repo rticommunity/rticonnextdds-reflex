@@ -23,13 +23,16 @@
 #ARCH=i86Linux2.6gcc4.4.5
 
 # if ndds==5.1.0 and Linux kernel 3.x
-ARCH=i86Linux3.xgcc4.6.3
+#ARCH=i86Linux2.6gcc4.6.3
 
-# USe gcc 4.7 or better
+# if ndds==5.2.0 and Linux kernel 3.x
+#ARCH=i86Linux3gcc4.8.2
+
+# Use gcc 4.7 or better
 CXX = g++
 
 # must use new g++ 4.7 or better to link. 
-CXXLD = $(CXX)
+CXXLD = g++ -Wl,--no-as-needed
 
 CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 \
           -Wall -Wno-unused-local-typedefs

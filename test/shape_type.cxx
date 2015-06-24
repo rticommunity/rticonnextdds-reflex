@@ -116,6 +116,7 @@ void write_shape_type_extended(int domain_id)
     DDS_PARTICIPANT_QOS_DEFAULT,
     NULL,   // Listener
     DDS_STATUS_MASK_NONE);
+
   if (participant == NULL) {
     std::cerr << "! Unable to create DDS domain participant" << std::endl;
     return;

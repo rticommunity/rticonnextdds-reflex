@@ -116,10 +116,10 @@ public:
   {}
 
   ShapeFillKind & fillKind() { return fillKind_; }
-  float & angle() { return angle_; }
+  float & angle()            { return angle_;    }
 
   const ShapeFillKind & fillKind() const { return fillKind_; }
-  const float & angle() const { return angle_; }
+  const float & angle()            const { return angle_;    }
 };
 
 
