@@ -234,7 +234,7 @@ namespace reflex {
   SafeTypeCode<T> make_typecode(const char * name /* default 0 */)
   {
     SafeTypeCode<T> aggregateTc =
-      detail::TC_overload_resolution_helper::get_typecode_struct<T>(
+      detail::Struct_TC_Helper::get_typecode_struct<T>(
         name,
         typename detail::InheritanceTraits<T>::has_base());
 

@@ -197,22 +197,8 @@ namespace reflex {
 
     };
 
-    /* TypeCode Overload Resolution Helper */
-    /* Overload resolution of several free primary template 
-     * functions can be notoriously brittle due to
-     * ordering issues. In general, a function must be declared
-     * before it is called. Sounds simple but in a set of mutually
-     * recursive primary template functions, it is easy to lose
-     * grip on the what's declared before and what's not. In 
-     * general, all the functions should be declared beforehand.
-     * There is an alternative solution that is used here.
-     * Put all the functions in a class and make them static 
-     * and use their fully qualified name to call them. 
-     * No upfront declarations are necessary if this idiom is used. 
-     * */
-    struct TC_overload_resolution_helper 
-    {      
-      
+    struct Struct_TC_Helper
+    {
       template <class T>
       static SafeTypeCode<T> get_typecode_struct(
         const char * name,
@@ -231,7 +217,7 @@ namespace reflex {
         DDS_ExceptionCode_t ex;
         DDS_TypeCode *structTc =
           factory->create_struct_tc(type_name,
-                                    DDS_StructMemberSeq(), ex);
+          DDS_StructMemberSeq(), ex);
 
         SafeTypeCode<T> safetc(factory, structTc);
 
@@ -243,7 +229,7 @@ namespace reflex {
           T,
           0,
           detail::Size<T>::value - 1>::add(
-            factory, safetc.get());
+          factory, safetc.get());
 
         return safetc;
       }
@@ -266,18 +252,18 @@ namespace reflex {
 
         SafeTypeCode<BaseType> baseTc =
           get_typecode_struct<BaseType>(
-             0,
-             typename InheritanceTraits<BaseType>::has_base());
+          0,
+          typename InheritanceTraits<BaseType>::has_base());
 
         DDS_ExceptionCode_t ex;
         DDS_TypeCode *valueTc =
           factory->create_value_tc(
-            type_name,
-            DDS_EXTENSIBLE_EXTENSIBILITY,
-            DDS_VM_NONE,
-            baseTc.get(),
-            DDS_ValueMemberSeq(),
-            ex);
+          type_name,
+          DDS_EXTENSIBLE_EXTENSIBILITY,
+          DDS_VM_NONE,
+          baseTc.get(),
+          DDS_ValueMemberSeq(),
+          ex);
 
         SafeTypeCode<T> aggregateTc(factory, valueTc);
 
@@ -293,7 +279,23 @@ namespace reflex {
 
         return aggregateTc;
       }
+    };
 
+    /* TypeCode Overload Resolution Helper */
+    /* Overload resolution of several free primary template
+    * functions can be notoriously brittle due to
+    * ordering issues. In general, a function must be declared
+    * before it is called. Sounds simple but in a set of mutually
+    * recursive primary template functions, it is easy to lose
+    * grip on the what's declared before and what's not. In
+    * general, all the functions should be declared beforehand.
+    * There is an alternative solution that is used here.
+    * Put all the functions in a class and make them static
+    * and use their fully qualified name to call them.
+    * No upfront declarations are necessary if this idiom is used.
+    * */
+    struct TC_Helper
+    {
       template <class Str>
       static SafeTypeCode<Str> 
         get_typecode(
@@ -329,7 +331,7 @@ namespace reflex {
                             is_string<T>::value       ||
                             is_stdarray<T>::value>::type * = 0)
       {
-        return get_typecode_struct<T>(
+        return Struct_TC_Helper::get_typecode_struct<T>(
                 0 /* name */,
                 typename detail::InheritanceTraits<T>::has_base());
       }
@@ -379,7 +381,7 @@ namespace reflex {
             typename enable_if<is_container<C>::value>::type * = 0)
       {
           SafeTypeCode<typename C::value_type> innerTc
-            = TC_overload_resolution_helper::get_typecode(
+            = TC_Helper::get_typecode(
                 factory,
                 static_cast<typename C::value_type *>(0));
 
@@ -402,7 +404,7 @@ namespace reflex {
          typename enable_if<is_container<C>::value>::type * = 0)
       {
           SafeTypeCode<typename container_traits<C>::value_type> innerTc
-            = TC_overload_resolution_helper::get_typecode(
+            = TC_Helper::get_typecode(
                 factory,
                 static_cast<typename container_traits<C>::value_type *>(0));
 
@@ -427,7 +429,7 @@ namespace reflex {
       {
           typedef typename remove_all_extents<T>::type BasicType;
           SafeTypeCode<BasicType> basicTc
-            = TC_overload_resolution_helper::get_typecode(
+            = TC_Helper::get_typecode(
                 factory, 
                 static_cast<BasicType *>(0));
 
@@ -473,7 +475,7 @@ namespace reflex {
         const reflex::match::Range<T> *)
       {
         SafeTypeCode<typename remove_reference<T>::type> innerTc
-          = TC_overload_resolution_helper::get_typecode(
+          = TC_Helper::get_typecode(
                   factory,
                   static_cast<typename remove_reference<T>::type *>(0));
 
@@ -502,7 +504,7 @@ namespace reflex {
       {
         typedef typename PackHead<T...>::type HeadT;
         SafeTypeCode<HeadT> innerTc =
-          TC_overload_resolution_helper::get_typecode(
+          TC_Helper::get_typecode(
               factory,
               static_cast<HeadT *>(0));
 
@@ -515,7 +517,7 @@ namespace reflex {
         const boost::optional<T> *)
       {
         SafeTypeCode<T> innerTc =
-          TC_overload_resolution_helper::get_typecode(
+          TC_Helper::get_typecode(
             factory,
             static_cast<T *>(0));
 
@@ -539,7 +541,7 @@ namespace reflex {
             OptValuetype;
             
         SafeTypeCode<OptValuetype> innerTc =
-          TC_overload_resolution_helper::get_typecode(
+          TC_Helper::get_typecode(
             factory,
             static_cast<OptValuetype *>(0));
 
@@ -561,7 +563,7 @@ namespace reflex {
             const reflex::match::BoundedRange<T, Bound> *)
       {
           SafeTypeCode<typename remove_reference<T>::type> innerTc
-            = TC_overload_resolution_helper::get_typecode(
+            = TC_Helper::get_typecode(
                 factory,
                 static_cast<typename remove_reference<T>::type *>(0));
 
@@ -612,7 +614,7 @@ namespace reflex {
             const reflex::match::Union<TagType, Cases...> *)
       {
           SafeTypeCode<TagType> discTc =
-            TC_overload_resolution_helper::get_typecode(
+            TC_Helper::get_typecode(
                 factory, 
                 static_cast<TagType *>(0));
 
@@ -623,7 +625,7 @@ namespace reflex {
           const size_t ncases = Size<CaseTuple>::value;
           umember_seq.ensure_length(ncases, ncases);
 
-          TC_overload_resolution_helper::add_union_members(
+          TC_Helper::add_union_members(
               factory,
               umember_seq,
               static_cast<reflex::match::Union<TagType, Cases...> *>(0));
@@ -657,7 +659,7 @@ namespace reflex {
         typedef typename remove_all_extents<T>::type InnerType;
 
         SafeTypeCode<InnerType> innerTc =
-          TC_overload_resolution_helper::get_typecode(
+          TC_Helper::get_typecode(
           factory,
           static_cast<InnerType *>(0));
 
@@ -694,7 +696,7 @@ namespace reflex {
           Size<CaseTuple>::value - 1>::add_union_member(factory, seq);
       }
 
-    }; // struct TC_overload_resolution_helper
+    }; // struct TC_Helper
 
     template <class T>
     void add_member_impl(
@@ -708,7 +710,7 @@ namespace reflex {
     {
       DDS_ExceptionCode_t ex;
       SafeTypeCode<T> innerTc =
-        TC_overload_resolution_helper::get_typecode(
+        TC_Helper::get_typecode(
             factory, 
             static_cast<T *>(0));
 
@@ -743,7 +745,7 @@ namespace reflex {
       typedef typename remove_all_extents<T>::type InnerType;
 
       SafeTypeCode<InnerType> innerTc =
-        TC_overload_resolution_helper::get_typecode(
+        TC_Helper::get_typecode(
             factory, 
             static_cast<InnerType *>(0));
 
@@ -866,7 +868,7 @@ namespace reflex {
       typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
       // typecodes are deleted in get_typecode() overload for Union.
       umember.type =
-        TC_overload_resolution_helper::get_typecode(
+        TC_Helper::get_typecode(
             factory, 
             static_cast<CaseTypeNoRef *>(0)).release();
 
@@ -897,7 +899,7 @@ namespace reflex {
         remove_all_extents<typename Case::type>::type BasicType;
 
       SafeTypeCode<BasicType> basicTc =
-        TC_overload_resolution_helper::get_typecode(
+        TC_Helper::get_typecode(
             factory, 
             static_cast<BasicType *>(0));
 

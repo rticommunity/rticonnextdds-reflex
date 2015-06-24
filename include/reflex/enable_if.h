@@ -93,7 +93,7 @@ namespace reflex {
 
   namespace detail {
 
-    struct DefaultBase;
+    struct DefaultBase {};
 
     struct true_type {
       enum { value = true };
@@ -655,16 +655,16 @@ namespace reflex {
       dst = static_cast<T>(src); // cast required for enums         
     }
 
-    template <class T>
-    struct static_string_bound
+    template <class T, class Parent = void, int Index = -1>
+    struct static_string_bound : DefaultBase
     {
-      enum { value = REFLEX_STATIC_STRING_BOUND };
+      static const unsigned int value = REFLEX_STATIC_STRING_BOUND;
     };
     
-    template <class T>
-    struct static_container_bound 
+    template <class T, class Parent = void, int Index = -1>
+    struct static_container_bound : DefaultBase
     { 
-      enum { value = REFLEX_STATIC_CONTAINER_BOUND };
+      static const unsigned int value = REFLEX_STATIC_CONTAINER_BOUND;
     };
 
   } // namespace detail

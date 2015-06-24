@@ -19,7 +19,7 @@ std::tuple<DDSDynamicDataWriter *,
 create_ddwriter(const char *type_name, 
                 const char *topic_name,
                 DDSDynamicDataTypeSupport *type_support);
-/*
+
 namespace reflex {
   namespace detail {
 
@@ -27,12 +27,12 @@ namespace reflex {
     template <>
     struct static_string_bound<std::string>
     {
-      enum { value = 128 };
+      static const unsigned int value = 128 ;
     };
 
   } 
 }
-*/
+
 class MyShapesListener : public reflex::detail::GenericDataReaderListener<ShapeType>
 {
 public:
