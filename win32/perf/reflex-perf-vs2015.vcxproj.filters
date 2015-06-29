@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\test\reflex_perf.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\complex.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\complexPlugin.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\complexSupport.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\gettimeofday.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\test\complex.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\complexPlugin.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\complexSupport.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\gettimeofday.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="headers">
+      <UniqueIdentifier>{880569d0-4cb1-41aa-9427-8ad1fd3f44e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources">
+      <UniqueIdentifier>{9e2fc6d8-eede-464a-8648-65d78f8efecb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

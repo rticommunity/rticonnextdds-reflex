@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\auto_dd.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dd_extra.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dd_manip.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\default_member_names.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\generic_dr.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\generic_dw.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\reflex.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\safe_typecode.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\typecode_manip.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\reflex\auto_dd.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\bounded.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dd_extra.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dd_manip.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dd_traits.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\disc_union.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\dllexport.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\enable_if.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\generic_dr.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\generic_dw.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\memberwise.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\reflex_fwd.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\safe_typecode.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\sample.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\tuple_iterator.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\typecode_manip.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\default_member_names.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="sources">
+      <UniqueIdentifier>{a8409cdf-4790-4241-a7bf-2e22376b3e68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers">
+      <UniqueIdentifier>{4ee65ad0-f405-4bc8-893e-f075802d0bcf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

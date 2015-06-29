@@ -1,0 +1,98 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 14.00
+# Visual Studio 2015
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex", "reflex-vs2015.vcxproj", "{7EECDE8A-125B-474B-8551-74D3D5739378}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-test", "test\reflex-test-vs2015.vcxproj", "{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7EECDE8A-125B-474B-8551-74D3D5739378} = {7EECDE8A-125B-474B-8551-74D3D5739378}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-perf", "perf\reflex-perf-vs2015.vcxproj", "{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7EECDE8A-125B-474B-8551-74D3D5739378} = {7EECDE8A-125B-474B-8551-74D3D5739378}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug DLL|Any CPU = Debug DLL|Any CPU
+		Debug DLL|Mixed Platforms = Debug DLL|Mixed Platforms
+		Debug DLL|Win32 = Debug DLL|Win32
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release DLL|Any CPU = Release DLL|Any CPU
+		Release DLL|Mixed Platforms = Release DLL|Mixed Platforms
+		Release DLL|Win32 = Release DLL|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug DLL|Any CPU.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug DLL|Mixed Platforms.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug DLL|Mixed Platforms.Build.0 = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug DLL|Win32.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug DLL|Win32.Build.0 = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Debug|Win32.Build.0 = Debug|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release DLL|Any CPU.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release DLL|Mixed Platforms.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release DLL|Mixed Platforms.Build.0 = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release DLL|Win32.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release DLL|Win32.Build.0 = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release|Any CPU.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release|Win32.ActiveCfg = Release|Win32
+		{7EECDE8A-125B-474B-8551-74D3D5739378}.Release|Win32.Build.0 = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug DLL|Any CPU.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug DLL|Mixed Platforms.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug DLL|Mixed Platforms.Build.0 = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug DLL|Win32.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug DLL|Win32.Build.0 = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Debug|Win32.Build.0 = Debug|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release DLL|Any CPU.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release DLL|Mixed Platforms.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release DLL|Mixed Platforms.Build.0 = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release DLL|Win32.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release DLL|Win32.Build.0 = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release|Any CPU.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release|Win32.ActiveCfg = Release|Win32
+		{8D645DD5-7DC8-415A-8BDE-7C1708B153A8}.Release|Win32.Build.0 = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug DLL|Any CPU.ActiveCfg = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug DLL|Mixed Platforms.ActiveCfg = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug DLL|Mixed Platforms.Build.0 = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug DLL|Win32.ActiveCfg = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug DLL|Win32.Build.0 = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Debug|Win32.Build.0 = Debug|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release DLL|Any CPU.ActiveCfg = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release DLL|Mixed Platforms.ActiveCfg = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release DLL|Mixed Platforms.Build.0 = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release DLL|Win32.ActiveCfg = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release DLL|Win32.Build.0 = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Any CPU.ActiveCfg = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Win32.ActiveCfg = Release|Win32
+		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

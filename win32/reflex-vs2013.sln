@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex", "reflex.vcxproj", "{7EECDE8A-125B-474B-8551-74D3D5739377}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex", "reflex-vs2013.vcxproj", "{7EECDE8A-125B-474B-8551-74D3D5739377}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-test", "test\reflex-test.vcxproj", "{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-test", "test\reflex-test-vs2013.vcxproj", "{8D645DD5-7DC8-415A-8BDE-7C1708B153A7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7EECDE8A-125B-474B-8551-74D3D5739377} = {7EECDE8A-125B-474B-8551-74D3D5739377}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-perf", "perf\reflex-perf.vcxproj", "{9FE01E20-5CDC-4D60-8DC8-191F5DC42B28}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-perf", "perf\reflex-perf-vs2013.vcxproj", "{9FE01E20-5CDC-4D60-8DC8-191F5DC42B28}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7EECDE8A-125B-474B-8551-74D3D5739377} = {7EECDE8A-125B-474B-8551-74D3D5739377}
 	EndProjectSection
