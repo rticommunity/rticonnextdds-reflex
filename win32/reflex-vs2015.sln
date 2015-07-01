@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 14.00
-# Visual Studio 2015
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
 VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex", "reflex-vs2015.vcxproj", "{7EECDE8A-125B-474B-8551-74D3D5739378}"
@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-perf", "perf\reflex-
 	ProjectSection(ProjectDependencies) = postProject
 		{7EECDE8A-125B-474B-8551-74D3D5739378} = {7EECDE8A-125B-474B-8551-74D3D5739378}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reflex-prop-test", "reflex-prop-test\reflex-prop-test.vcxproj", "{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,28 @@ Global
 		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Win32.ActiveCfg = Release|Win32
 		{9FE01E20-5CDC-4D60-8DC8-191F5DC42B29}.Release|Win32.Build.0 = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug DLL|Any CPU.ActiveCfg = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug DLL|Any CPU.Build.0 = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug DLL|Mixed Platforms.ActiveCfg = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug DLL|Mixed Platforms.Build.0 = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug DLL|Win32.ActiveCfg = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug DLL|Win32.Build.0 = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Debug|Win32.Build.0 = Debug|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release DLL|Any CPU.ActiveCfg = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release DLL|Any CPU.Build.0 = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release DLL|Mixed Platforms.ActiveCfg = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release DLL|Mixed Platforms.Build.0 = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release DLL|Win32.ActiveCfg = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release DLL|Win32.Build.0 = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release|Any CPU.ActiveCfg = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release|Win32.ActiveCfg = Release|Win32
+		{6F29E112-D16A-46B2-ACF5-A10EB87F6EFE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
