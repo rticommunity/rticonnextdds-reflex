@@ -21,19 +21,15 @@ damages arising out of the use or inability to use the software.
 
 #include "reflex.h"
 
-typedef reflex::match::Sparse<std::string, 
-                              float, 
-                              reflex::match::MultiDimArray<int32_t, 2, 3>::type >
-        Type;
 
 struct one_member
 {
-  Type member;
+  long double member;
 };
 
 RTI_ADAPT_STRUCT(
     one_member,
-    (Type, member))
+    (long double, member))
 
 #endif // MANY_MEMBERS_H
 

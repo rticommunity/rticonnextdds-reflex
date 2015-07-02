@@ -26,19 +26,11 @@ void write_one_member(int)
     reflex::AutoDynamicData ddi1(safe_typeSupport.get());
     reflex::AutoDynamicData ddi2(safe_typeSupport.get());
 
-    reflex::match::MultiDimArray<int32_t,2,3>::type 
-      int_array = { { { { 0,0,0 } }, 
-                      { { 5,5,5 } } } };
-    
-    one_member sparse;
-    std::get<0>(sparse.member.get_opt_tuple()) = 
-      std::string("Real-Time Innovations, Inc.");
-    std::get<1>(sparse.member.get_opt_tuple()) = 1.10f;
-    std::get<2>(sparse.member.get_opt_tuple()) = int_array;
+    one_member one;
+    one.member = 12.3456;
 
-    reflex::fill_dd(sparse, ddi1);
+    reflex::fill_dd(one, ddi1);
     
-    // FIXME: print crashes at run-time.
-    //ddi1.get()->print(stdout, 2);
+    ddi1.get()->print(stdout, 2);
 }
 

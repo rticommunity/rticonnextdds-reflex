@@ -28,8 +28,9 @@ ARCH=x64Linux2.6gcc4.4.5
 # Use clang 3.3 or better
 CXX = clang++
 CXXLD = clang++
+CXXSTD = c++11
 
-CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m64 -D HAVE_CXA_DEMANGLE=1 \
+CXXFLAGS = --std=$(CXXSTD) -DRTI_UNIX -DRTI_LINUX -m64 -D HAVE_CXA_DEMANGLE=1 \
            -fPIC -ftemplate-backtrace-limit=0 -Wall \
            -Wno-return-type-c-linkage  -Wno-deprecated-register
 CXXLDFLAGS = -m64 -fPIC 

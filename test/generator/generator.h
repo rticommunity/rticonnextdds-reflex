@@ -48,6 +48,12 @@ namespace gen {
   template <class GenFunc>
   auto make_gen_from(GenFunc&& func);
 
+  template <class T>
+  struct GenFactory
+  {
+    static auto make();
+  };
+
   template <class T, class GenFunc>
   class Gen : GenFunc
   {

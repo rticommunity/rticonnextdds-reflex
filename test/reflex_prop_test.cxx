@@ -5,7 +5,9 @@
 
 #include "reflex.h"
 
-#define RANDOM 0xAC0
+#ifndef RANDOM_SEED
+  #define RANDOM_SEED 0xAC0
+#endif 
 
 template <class T>
 std::ostream & operator << (std::ostream & o, const std::vector<T> & vector)
@@ -150,7 +152,7 @@ bool test_roundtrip_property()
   Tuple d1 = gen.generate();
   std::cout << d1 << "\n";
   reflex::SafeDynamicData<Tuple> safedd = reflex::make_dd(d1);
-  //safedd.get()->print(stdout, 2);
+  safedd.get()->print(stdout, 2);
   reflex::detail::print_IDL(safedd.get()->get_type(), 2);
   Tuple d2;
   reflex::extract_dd(safedd, d2);
@@ -161,14 +163,8 @@ bool test_roundtrip_property()
 int main(void)
 {
   test_generators();
-  /*test_roundtrip_property<std::tuple<uint32_t,
-                                     float>>();
-                                     std::vector<char>, 
-                                     boost::optional<std::string>, 
-                                     std::tuple<std::string, std::vector<std::string>>,
-                                     std::array<uint16_t, 4>>>();*/
   
-  test_roundtrip_property<typegen::RandomTuple<RANDOM>::type>();
+  test_roundtrip_property<typegen::RandomTuple<RANDOM_SEED>::type>();
   
   //getchar();
 }

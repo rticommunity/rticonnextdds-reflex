@@ -26,9 +26,8 @@
 ifeq ($(ARCH), )
 all:
 	@echo "***************************************************************"
-	@echo "You cannot use this Makefile directly, instead use the"
-	@echo "architecture-specific Makefile. For example:"
-	@echo "         gmake -f make/Makefile.i86Linux2.6gcc4.1.1"
+	@echo "The environment variable 'ARCH' is not set!"
+	@echo "Try i86Linux3gcc4.8.2 or something like that"
 	@echo "***************************************************************"
 	@false
 else
@@ -61,8 +60,11 @@ endif
 
 
 # Define the sources and NDDS search path
-INCLUDES = -Iinclude -I$(NDDSHOME)/include             \
-           -I$(NDDSHOME)/include/ndds -I$(BOOSTHOME)
+INCLUDES = -Iinclude \
+           -Itest/generator \
+           -I$(NDDSHOME)/include \
+           -I$(NDDSHOME)/include/ndds \
+           -I$(BOOSTHOME)
 
 REFLEXLIBRARY = reflex
 
@@ -158,8 +160,17 @@ PERFHEADERS = test/complex.h \
               test/complexSupport.h \
 	      test/complexPlugin.h
 
+PROPTESTSRCS = test/reflex_prop_test.cxx 
+
+PROPTESTHEADERS = test/generator/generator.h \
+                  test/generator/gen_factory.h \
+                  test/generator/type_generator.h
+
 TESTSRCS_NODIR = $(notdir $(TESTSRCS))
 TESTOBJS = $(TESTSRCS_NODIR:%.cxx=objs/$(ARCH)/%.o)
+
+PROPTESTSRCS_NODIR = $(notdir $(PROPTESTSRCS))
+PROPTESTOBJS = $(PROPTESTSRCS_NODIR:%.cxx=objs/$(ARCH)/%.o)
 
 PERFSRCS_NODIR = $(notdir $(PERFSRCS))
 PERFOBJS = $(PERFSRCS_NODIR:%.cxx=objs/$(ARCH)/%.o)
@@ -194,6 +205,16 @@ objs/$(ARCH)/%.o: src/%.cxx $(HEADERS)
 		echo "Making directory $*"; \
 		mkdir -p $* ; \
 	fi;
+
+# reflex_prop_test
+prop_test: objs/$(ARCH)/$(REFLEXLIBRARY)_prop_test  
+
+objs/$(ARCH)/$(REFLEXLIBRARY)_prop_test: $(PROPTESTOBJS)  
+	$(CXXLD) $(CXXLDFLAGS) -o $@ $(PROPTESTOBJS) $(LIBS)
+
+objs/$(ARCH)/reflex_prop_test.o: test/reflex_prop_test.cxx  
+	$(CXX) $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -DRANDOM_SEED=$(RANDOM) -c $< 
+
 
 # reflex_test
 test: objs/$(ARCH)/$(REFLEXLIBRARY)_test  

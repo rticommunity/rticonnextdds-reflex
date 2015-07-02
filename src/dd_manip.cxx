@@ -55,20 +55,17 @@ namespace reflex {
       SET_MEMBER_VALUE_DEF(bool,           set_boolean)
       SET_MEMBER_VALUE_DEF(int8_t,         set_char)
       SET_MEMBER_VALUE_DEF(char,           set_char)
-
+      SET_MEMBER_VALUE_DEF(int16_t,       set_short)
+      SET_MEMBER_VALUE_DEF(uint16_t,      set_ushort)
+      SET_MEMBER_VALUE_DEF(int32_t,       set_long)
+      SET_MEMBER_VALUE_DEF(uint32_t,      set_ulong)
+      SET_MEMBER_VALUE_DEF(int64_t,       set_longlong)
+      SET_MEMBER_VALUE_DEF(uint64_t,      set_ulonglong)
+      SET_MEMBER_VALUE_DEF(float,         set_float)
+      SET_MEMBER_VALUE_DEF(double,        set_double)
 #ifndef RTI_WIN32
       SET_MEMBER_VALUE_DEF(char32_t, set_wchar)
 #endif
-
-      SET_MEMBER_VALUE_DEF(int16_t,  set_short)
-      SET_MEMBER_VALUE_DEF(uint16_t, set_ushort)
-      SET_MEMBER_VALUE_DEF(int32_t,  set_long)
-      SET_MEMBER_VALUE_DEF(uint32_t, set_ulong)
-      SET_MEMBER_VALUE_DEF(int64_t,  set_longlong)
-      SET_MEMBER_VALUE_DEF(uint64_t, set_ulonglong)
-      SET_MEMBER_VALUE_DEF(float,    set_float)
-      SET_MEMBER_VALUE_DEF(double,   set_double)
-
 #ifdef __x86_64__
       SET_MEMBER_VALUE_DEF(long long int, set_longlong)
 #endif
@@ -79,22 +76,60 @@ namespace reflex {
       GET_MEMBER_VALUE_DEF(DDS_Char,  char,            get_char)
       GET_MEMBER_VALUE_DEF(DDS_Char,  int8_t,          get_char)
       // GET_MEMBER_VALUE_DEF DDS_Boolean defined below.
-
+      GET_MEMBER_VALUE_DEF(DDS_Short,            int16_t,        get_short)
+      GET_MEMBER_VALUE_DEF(DDS_UnsignedShort,    uint16_t,       get_ushort)
+      GET_MEMBER_VALUE_DEF(DDS_Long,             int32_t,        get_long)
+      GET_MEMBER_VALUE_DEF(DDS_UnsignedLong,     uint32_t,       get_ulong)
+      GET_MEMBER_VALUE_DEF(DDS_LongLong,         int64_t,        get_longlong)
+      GET_MEMBER_VALUE_DEF(DDS_UnsignedLongLong, uint64_t,       get_ulonglong)
+      GET_MEMBER_VALUE_DEF(DDS_Float,            float,          get_float)
+      GET_MEMBER_VALUE_DEF(DDS_Double,           double,         get_double)
 #ifndef RTI_WIN32
       GET_MEMBER_VALUE_DEF(DDS_Wchar, char32_t, get_wchar)
 #endif
-
-      GET_MEMBER_VALUE_DEF(DDS_Short,            int16_t,   get_short)
-      GET_MEMBER_VALUE_DEF(DDS_UnsignedShort,    uint16_t,  get_ushort)
-      GET_MEMBER_VALUE_DEF(DDS_Long,             int32_t,   get_long)
-      GET_MEMBER_VALUE_DEF(DDS_UnsignedLong,     uint32_t,  get_ulong)
-      GET_MEMBER_VALUE_DEF(DDS_LongLong,         int64_t,   get_longlong)
-      GET_MEMBER_VALUE_DEF(DDS_UnsignedLongLong, uint64_t,  get_ulonglong)
-      GET_MEMBER_VALUE_DEF(DDS_Float,            float,     get_float)
-      GET_MEMBER_VALUE_DEF(DDS_Double,           double,    get_double)
 #ifdef __x86_64__
       GET_MEMBER_VALUE_DEF(DDS_LongLong, long long, get_longlong)
 #endif
+
+      REFLEX_INLINE void set_member_overload_resolution_helper::set_member_value(      
+            DDS_DynamicData & instance,                                                
+            const MemberAccess &ma,                                                    
+            const long double & val)                                                          
+      {                                                                                
+        DDS_ReturnCode_t rc;
+        DDS_LongDouble longdouble;
+        memcpy(&longdouble, &val, sizeof(longdouble));
+
+        if (ma.access_by_id())                                                         
+          rc = instance.set_longdouble(NULL, ma.get_id(), longdouble);                              
+        else                                                                           
+          rc = instance.set_longdouble(ma.get_name(),                                        
+                                       DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,               
+                                       longdouble);                                                 
+        detail::check_retcode("set_longdouble error = ", rc);                              
+      }
+
+      REFLEX_INLINE void get_member_overload_resolution_helper::get_member_value(
+              const DDS_DynamicData & instance,
+              const MemberAccess &ma,
+              long double & val)
+      {
+        DDS_ReturnCode_t rc;
+        DDS_LongDouble longdouble;
+
+        if (ma.access_by_id())
+          rc = instance.get_longdouble(longdouble, NULL, ma.get_id());
+        else
+          rc = instance.get_longdouble(
+                    longdouble,
+                    ma.get_name(),
+                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+
+        detail::check_retcode("DDS_DynamicData::get_longdouble error = ", rc);
+
+        // FIXME: Ignoring endianness. 
+        memcpy(&val, &longdouble, sizeof(longdouble));
+      }
 
       REFLEX_INLINE void get_member_overload_resolution_helper::get_member_value(
               const DDS_DynamicData & instance,

@@ -3,12 +3,6 @@
 
 namespace gen {
 
-  template <class T>
-  struct GenFactory
-  {
-    static auto make();
-  };
-
   template <>
   auto GenFactory<bool>::make()
   {
@@ -177,13 +171,13 @@ namespace gen {
   {
     static auto make()
     {
-      return make_array_gen(GenFactory<T>::make(), dim_list<N>());
+      return make_array_gen(GenFactory<T>::make(), dim_list<Dim>());
     }
 
     template <class TGen>
     static auto make(TGen&& tgen)
     {
-      return make_array_gen(std::forward<TGen>(tgen), dim_list<N>());
+      return make_array_gen(std::forward<TGen>(tgen), dim_list<Dim>());
     }
   };
 

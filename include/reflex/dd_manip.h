@@ -73,9 +73,6 @@ namespace reflex {
       SET_MEMBER_VALUE_DECL(bool);
       SET_MEMBER_VALUE_DECL(char);
       SET_MEMBER_VALUE_DECL(int8_t);
-#ifndef RTI_WIN32
-      SET_MEMBER_VALUE_DECL(char32_t);
-#endif
       SET_MEMBER_VALUE_DECL(int16_t);
       SET_MEMBER_VALUE_DECL(uint16_t);
       SET_MEMBER_VALUE_DECL(int32_t);
@@ -84,7 +81,11 @@ namespace reflex {
       SET_MEMBER_VALUE_DECL(uint64_t);
       SET_MEMBER_VALUE_DECL(float);
       SET_MEMBER_VALUE_DECL(double);
-#ifdef RTIREFLEX_x86_64RTIREFLEX_
+      SET_MEMBER_VALUE_DECL(long double);
+#ifndef RTI_WIN32
+      SET_MEMBER_VALUE_DECL(char32_t);
+#endif
+#ifdef __x86_64__
       SET_MEMBER_VALUE_DECL(long long int);
 #endif
 
@@ -502,9 +503,6 @@ namespace reflex {
       GET_MEMBER_VALUE_DECL(bool);
       GET_MEMBER_VALUE_DECL(char);
       GET_MEMBER_VALUE_DECL(int8_t);
-#ifndef RTI_WIN32
-      GET_MEMBER_VALUE_DECL(char32_t);
-#endif
       GET_MEMBER_VALUE_DECL(int16_t);
       GET_MEMBER_VALUE_DECL(uint16_t);
       GET_MEMBER_VALUE_DECL(int32_t);
@@ -513,6 +511,10 @@ namespace reflex {
       GET_MEMBER_VALUE_DECL(uint64_t);
       GET_MEMBER_VALUE_DECL(float);
       GET_MEMBER_VALUE_DECL(double);
+      GET_MEMBER_VALUE_DECL(long double);
+#ifndef RTI_WIN32
+      GET_MEMBER_VALUE_DECL(char32_t);
+#endif
 #ifdef __x86_64__
       GET_MEMBER_VALUE_DECL(long long int);
 #endif

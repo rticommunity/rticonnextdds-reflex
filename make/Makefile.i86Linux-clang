@@ -31,8 +31,9 @@
 # Use clang 3.3 or better
 CXX = clang++
 CXXLD = clang++
+CXXSTD = c++11
 
-CXXFLAGS = --std=c++11 -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 \
+CXXFLAGS = --std=$(CXXSTD) -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 \
            -Wall -Wno-return-type-c-linkage \
            -Wno-deprecated-register  \
            -ftemplate-depth-1024

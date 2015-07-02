@@ -23,7 +23,7 @@ namespace typegen {
       return (prev >> 1) | (LFSR_bit(prev) << 15);
     }
 
-    template <uint16_t I, uint32_t seed>
+    template <uint16_t I, uint16_t seed>
     struct TypeMap;
 
     constexpr uint16_t MAP_SIZE = 14;
