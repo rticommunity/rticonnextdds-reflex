@@ -32,7 +32,8 @@ CXXSTD = c++11
 
 CXXFLAGS = --std=$(CXXSTD) -DRTI_UNIX -DRTI_LINUX -m64 -D HAVE_CXA_DEMANGLE=1 \
            -fPIC -ftemplate-backtrace-limit=0 -Wall \
-           -Wno-return-type-c-linkage  -Wno-deprecated-register
+           -Wno-return-type-c-linkage  -Wno-deprecated-register \
+           -Wno-unused-local-typedef -DRTI_CDR_SIZEOF_LONG_DOUBLE=16  
 CXXLDFLAGS = -m64 -fPIC 
 SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
 

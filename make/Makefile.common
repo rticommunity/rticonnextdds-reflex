@@ -72,7 +72,7 @@ REFLEXLIBRARY = reflex
 # Modify build flags for debug/release
 ###############################################################################
 ifeq ($(DEBUG),1)
-  CXXFLAGS     += -g -pg -O0 -DREFLEX_DEBUG
+  CXXFLAGS     += -g -pg -O0 -DREFLEX_DEBUG 
   CXXLDFLAGS   += -g -pg -O0 
   ifeq ($(STATICLIB),1)
     NDDSLIBS    = -lnddscppzd -lnddsczd -lnddscorezd 
@@ -89,7 +89,7 @@ ifeq ($(DEBUG),1)
     LIBEXT      = .so
   endif
 else
-  CXXFLAGS     += -O3 -DBOOST_MPL_LIMIT_LIST_SIZE=20
+  CXXFLAGS     += -O3 -DBOOST_MPL_LIMIT_LIST_SIZE=20 
   ifeq ($(STATICLIB),1)
     NDDSLIBS    = -lnddscppz -lnddscz -lnddscorez
     REFLEXLIB      = -l$(REFLEXLIBRARY)z
@@ -182,6 +182,13 @@ DIRECTORIES   = objs.dir objs/$(ARCH).dir
 SOURCES_NODIR = $(notdir $(SOURCES))
 OBJECTS       = $(SOURCES_NODIR:%.cxx=objs/$(ARCH)/%.o)
 
+# Find out where rtiddsgen is 5.1=scripts 5.2=bin
+ifneq ("$(wildcard $(NDDSHOME)/scripts/rtiddsgen)","")
+  RTIDDSGEN=$(NDDSHOME)/scripts/rtiddsgen
+else
+  RTIDDSGEN=$(NDDSHOME)/bin/rtiddsgen
+endif
+
 ###############################################################################
 # Build Rules
 ###############################################################################
@@ -236,7 +243,7 @@ objs/$(ARCH)/reflex_perf.o: test/reflex_perf.cxx
 	$(CXX) -D REFLEX_NO_HEADER_ONLY $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
 
 $(PERFCODEGEN): idl/complex.idl
-	$(NDDSHOME)/scripts/rtiddsgen -language C++ -namespace -d test/ idl/complex.idl
+	$(RTIDDSGEN) -language C++ -namespace -d test/ idl/complex.idl
 
 ###############################################################################
 # Clean target: removes the objs dir

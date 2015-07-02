@@ -118,14 +118,10 @@ namespace reflex {
     template <class T>
     struct is_primitive : false_type {}; // enum
 
-    template <> struct is_primitive<match::octet_t>  : true_type {};
-    template <> struct is_primitive<bool>            : true_type {};
-    template <> struct is_primitive<char>            : true_type {};
-
-#ifndef RTI_WIN32
-    template <> struct is_primitive<char32_t>           : true_type {};
-#endif
-
+    template <> struct is_primitive<match::octet_t>     : true_type {};
+    template <> struct is_primitive<bool>               : true_type {};
+    template <> struct is_primitive<char>               : true_type {};
+    template <> struct is_primitive<signed char>        : true_type {};
     template <> struct is_primitive<int16_t>            : true_type {};
     template <> struct is_primitive<uint16_t>           : true_type {};
     template <> struct is_primitive<int32_t>            : true_type {};
@@ -134,11 +130,14 @@ namespace reflex {
     template <> struct is_primitive<uint64_t>           : true_type {};
     template <> struct is_primitive<float>              : true_type {};
     template <> struct is_primitive<double>             : true_type {};
+    template <> struct is_primitive<long double>        : true_type {};
+#ifndef RTI_WIN32
+    template <> struct is_primitive<char32_t>           : true_type {};
+#endif
 #if __x86_64__
     template <> struct is_primitive<long long>          : true_type {};
     template <> struct is_primitive<unsigned long long> : true_type {};
 #endif 
-    template <> struct is_primitive<long double>        : true_type {};
 
     template <class... Args>
     struct is_primitive<std::tuple<Args...>> : false_type{};

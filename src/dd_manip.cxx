@@ -55,14 +55,14 @@ namespace reflex {
       SET_MEMBER_VALUE_DEF(bool,           set_boolean)
       SET_MEMBER_VALUE_DEF(int8_t,         set_char)
       SET_MEMBER_VALUE_DEF(char,           set_char)
-      SET_MEMBER_VALUE_DEF(int16_t,       set_short)
-      SET_MEMBER_VALUE_DEF(uint16_t,      set_ushort)
-      SET_MEMBER_VALUE_DEF(int32_t,       set_long)
-      SET_MEMBER_VALUE_DEF(uint32_t,      set_ulong)
-      SET_MEMBER_VALUE_DEF(int64_t,       set_longlong)
-      SET_MEMBER_VALUE_DEF(uint64_t,      set_ulonglong)
-      SET_MEMBER_VALUE_DEF(float,         set_float)
-      SET_MEMBER_VALUE_DEF(double,        set_double)
+      SET_MEMBER_VALUE_DEF(int16_t,        set_short)
+      SET_MEMBER_VALUE_DEF(uint16_t,       set_ushort)
+      SET_MEMBER_VALUE_DEF(int32_t,        set_long)
+      SET_MEMBER_VALUE_DEF(uint32_t,       set_ulong)
+      SET_MEMBER_VALUE_DEF(int64_t,        set_longlong)
+      SET_MEMBER_VALUE_DEF(uint64_t,       set_ulonglong)
+      SET_MEMBER_VALUE_DEF(float,          set_float)
+      SET_MEMBER_VALUE_DEF(double,         set_double)
 #ifndef RTI_WIN32
       SET_MEMBER_VALUE_DEF(char32_t, set_wchar)
 #endif
@@ -97,9 +97,12 @@ namespace reflex {
             const long double & val)                                                          
       {                                                                                
         DDS_ReturnCode_t rc;
-        DDS_LongDouble longdouble;
-        memcpy(&longdouble, &val, sizeof(longdouble));
-
+#if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
+        const long double & longdouble = val;
+#else        
+        DDS_LongDouble longdouble = { { 0 } };
+        memcpy(&longdouble, &val, std::min(sizeof(DDS_LongDouble), sizeof(long double)));
+#endif
         if (ma.access_by_id())                                                         
           rc = instance.set_longdouble(NULL, ma.get_id(), longdouble);                              
         else                                                                           
@@ -115,8 +118,11 @@ namespace reflex {
               long double & val)
       {
         DDS_ReturnCode_t rc;
-        DDS_LongDouble longdouble;
-
+#if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
+        long double & longdouble = val;
+#else
+        DDS_LongDouble longdouble = { { 0 } };
+#endif
         if (ma.access_by_id())
           rc = instance.get_longdouble(longdouble, NULL, ma.get_id());
         else
@@ -127,8 +133,9 @@ namespace reflex {
 
         detail::check_retcode("DDS_DynamicData::get_longdouble error = ", rc);
 
-        // FIXME: Ignoring endianness. 
-        memcpy(&val, &longdouble, sizeof(longdouble));
+#if (RTI_CDR_SIZEOF_LONG_DOUBLE != 16)
+        memcpy(&val, &longdouble, std::min(sizeof(DDS_LongDouble), sizeof(long double)));
+#endif        
       }
 
       REFLEX_INLINE void get_member_overload_resolution_helper::get_member_value(

@@ -26,8 +26,11 @@ More reading:
 ### Linux Build
 1. Recommended compilers: g++ 4.8, clang 3.3 or better
 2. export REFLEXHOME, BOOSTHOME (1.46+) and NDDSHOME (5.0.0+)
-3. export ARCH=i86Linux2.6gcc4.4.5, for example.
+3. export ARCH=i86Linux2.6gcc4.8.2, for example.
 4. See make/Makefile* for details
 5. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NDDSHOME/lib/$ARCH:$REFLEXHOME/objs/$ARCH
-6. Example: make -f make/Makefile.i86Linux-gcc CXX=g++48 (g++48 must be in your $PATH)
+6. Build:               make -f make/Makefile.i86Linux-gcc CXX=g++48 (g++48 must be in your $PATH)
+7. Build tests:         make/Makefile.i86Linux-gcc test
+8. Build perf_test:     make/Makefile.i86Linux-gcc perf_test
+9. Build property_test: make/Makefile.i86Linux-gcc prop_test CXX=g++5 CXXSTD=c++14 RANDOM=$RANDOM
 
