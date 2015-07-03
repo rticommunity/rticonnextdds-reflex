@@ -26,18 +26,18 @@ namespace typegen {
     template <uint16_t I, uint16_t seed>
     struct TypeMap;
 
-    constexpr uint16_t MAP_SIZE = 14;
+    constexpr uint16_t MAP_SIZE = 15;
 
-    TYPE_MAP(0, bool);
-    TYPE_MAP(1, char);
-    TYPE_MAP(2, int8_t);
-    TYPE_MAP(3, int16_t);
-    TYPE_MAP(4, int32_t);
-    TYPE_MAP(5, int64_t);
-    TYPE_MAP(6, uint8_t);
-    TYPE_MAP(7, uint16_t);
-    TYPE_MAP(8, uint32_t);
-    TYPE_MAP(9, uint64_t);
+    TYPE_MAP(0,  bool);
+    TYPE_MAP(1,  char);
+    TYPE_MAP(2,  int8_t);
+    TYPE_MAP(3,  int16_t);
+    TYPE_MAP(4,  int32_t);
+    TYPE_MAP(5,  int64_t);
+    TYPE_MAP(6,  uint8_t);
+    TYPE_MAP(7,  uint16_t);
+    TYPE_MAP(8,  uint32_t);
+    TYPE_MAP(9,  uint64_t);
     TYPE_MAP(10, float);
     TYPE_MAP(11, double);
     TYPE_MAP(12, long double);
@@ -47,6 +47,14 @@ namespace typegen {
     struct TypeMap<13, lfsr>
     {
       typedef boost::optional<typename TypeMap<LFSR(lfsr) % 13, LFSR(lfsr)>::type> type;
+    };
+
+    // sequence generator
+    template <uint16_t lfsr>
+    struct TypeMap<14, lfsr>
+    {
+      //typedef std::vector<typename TypeMap<LFSR(lfsr) % 13, LFSR(lfsr)>::type> type;
+      typedef std::vector<long double> type;
     };
 
     template <class Head, class... Tail>

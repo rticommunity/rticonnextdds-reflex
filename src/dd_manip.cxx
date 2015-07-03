@@ -91,18 +91,36 @@ namespace reflex {
       GET_MEMBER_VALUE_DEF(DDS_LongLong, long long, get_longlong)
 #endif
 
+      REFLEX_INLINE DDS_LongDouble to_LongDouble(long double src)
+      {
+#if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
+        return src;
+#else
+        DDS_LongDouble dst = { { 0 } };
+        memcpy(&dst, &src, std::min(sizeof(long double), sizeof(DDS_LongDouble)));
+        return dst;
+#endif         
+      }
+      
+      REFLEX_INLINE long double  from_LongDouble(DDS_LongDouble src)
+      {
+#if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
+        return src;
+#else
+        long double dst = 0;
+        memcpy(&dst, &src, std::min(sizeof(long double), sizeof(DDS_LongDouble)));
+        return dst;
+#endif         
+      }
+
       REFLEX_INLINE void set_member_overload_resolution_helper::set_member_value(      
             DDS_DynamicData & instance,                                                
             const MemberAccess &ma,                                                    
             const long double & val)                                                          
       {                                                                                
         DDS_ReturnCode_t rc;
-#if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
-        const long double & longdouble = val;
-#else        
-        DDS_LongDouble longdouble = { { 0 } };
-        memcpy(&longdouble, &val, std::min(sizeof(DDS_LongDouble), sizeof(long double)));
-#endif
+        DDS_LongDouble longdouble = to_LongDouble(val);
+       
         if (ma.access_by_id())                                                         
           rc = instance.set_longdouble(NULL, ma.get_id(), longdouble);                              
         else                                                                           
@@ -119,7 +137,7 @@ namespace reflex {
       {
         DDS_ReturnCode_t rc;
 #if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
-        long double & longdouble = val;
+        DDS_LongDouble longdouble = 0;
 #else
         DDS_LongDouble longdouble = { { 0 } };
 #endif
@@ -132,10 +150,7 @@ namespace reflex {
                     DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
 
         detail::check_retcode("DDS_DynamicData::get_longdouble error = ", rc);
-
-#if (RTI_CDR_SIZEOF_LONG_DOUBLE != 16)
-        memcpy(&val, &longdouble, std::min(sizeof(DDS_LongDouble), sizeof(long double)));
-#endif        
+        val = from_LongDouble(longdouble);
       }
 
       REFLEX_INLINE void get_member_overload_resolution_helper::get_member_value(
@@ -161,6 +176,77 @@ namespace reflex {
         detail::check_retcode("DDS_DynamicData::get_boolean error = ", rc);
 
         val = out ? true : false;
+      }
+
+      REFLEX_INLINE void set_member_overload_resolution_helper::set_member_value(
+                DDS_DynamicData & instance,
+                const MemberAccess &ma,
+                const std::vector<long double> & val,
+                void *)
+      {
+        // Sequences of long double native type is loaned and unloaned as an optimization.
+
+        if (!val.empty())
+        {
+          DynamicDataSeqTraits<long double>::type seq;
+
+#if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)          
+          std::vector<long double> & nc_val = 
+            const_cast<std::vector<long double> &>(val);
+          
+          if (seq.loan_contiguous(&nc_val[0], val.size(), val.capacity()) != true)
+          {
+            throw std::runtime_error("set_member_value: sequence loaning failed");
+          }
+
+          DDS_ReturnCode_t rc = set_sequence(instance, ma, seq);
+          seq.unloan();
+          detail::check_retcode("set_member_value: Error setting sequence, error = ", rc);
+#else
+          seq.ensure_length(val.size(), val.size());
+
+          size_t i = 0;
+          for (auto const & elem: val)
+          {
+            seq[i] = to_LongDouble(elem);
+            ++i;
+          }
+
+          DDS_ReturnCode_t rc = set_sequence(instance, ma, seq);
+          detail::check_retcode("set_member_value: Error setting sequence, error = ", rc);
+#endif
+        }
+      }
+
+      REFLEX_INLINE void get_member_overload_resolution_helper::get_member_value(
+                const DDS_DynamicData & instance,
+                const MemberAccess &ma,
+                std::vector<long double> & val,
+                void *)
+      {
+        DDS_DynamicDataMemberInfo seq_info;
+
+        const char * member_name =
+          ma.access_by_id() ? NULL : ma.get_name();
+        int id = ma.access_by_id() ?
+          ma.get_id() : DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED;
+
+        instance.get_member_info(seq_info, member_name, id);
+        right_size(val, seq_info.element_count); // shrink/grow as needed.
+
+        if (seq_info.element_count > 0)
+        {
+          DynamicDataSeqTraits<long double>::type seq;
+          seq.ensure_length(seq_info.element_count,
+                            seq_info.element_count);
+
+          DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
+          detail::check_retcode("get_member_value: get_sequence error = ", rc);
+          for(size_t i = 0;i < seq_info.element_count; ++i)   
+          {
+            val[i] = from_LongDouble(seq[i]);
+          }
+        }
       }
 
       // Also see get_array function template for enums in dd_manip.h 

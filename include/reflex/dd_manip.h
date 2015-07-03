@@ -53,6 +53,9 @@ namespace reflex {
 
   namespace detail {
 
+    REFLEX_DLL_EXPORT DDS_LongDouble to_LongDouble(long double);
+    REFLEX_DLL_EXPORT long double  from_LongDouble(DDS_LongDouble);
+
     template <class T>
     bool do_serialize(T &)
     {
@@ -217,6 +220,12 @@ namespace reflex {
           }
         }
       }
+
+      REFLEX_DLL_EXPORT static void set_member_value(
+                DDS_DynamicData & instance,
+                const MemberAccess &ma,
+                const std::vector<long double> & val,
+                void * = 0);
 
       template <class T>
       static void set_member_value(
@@ -830,14 +839,18 @@ namespace reflex {
       }
 
 
+      REFLEX_DLL_EXPORT static void get_member_value(
+          const DDS_DynamicData & instance,
+          const MemberAccess &ma,
+          std::vector<long double> & val,
+          void * = 0);
+
       template <class T>
       static void get_member_value(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           std::vector<T> & val,
-          typename enable_if<
-                             is_primitive_and_not_bool<T>::value
-                            >::type * = 0)
+          typename enable_if<is_primitive_and_not_bool<T>::value>::type * = 0)
       {
         // Sequences of primitive types are loaned and unloaned as an optimization.
         // bools and enums don;t use this optimization because vector<bool> storage is
@@ -899,7 +912,7 @@ namespace reflex {
 
         instance.get_member_info(seq_info, member_name, id);
         seq.ensure_length(seq_info.element_count,
-          seq_info.element_count);
+                          seq_info.element_count);
 
         if (seq_info.element_count > 0)
         {

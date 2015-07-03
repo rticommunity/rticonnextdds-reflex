@@ -87,7 +87,7 @@ endif
 
 XSDCXX    := $(XSDCXXHOME)/bin/xsd # path to the XSD compiler
 LIBXSD    := $(XSDCXXHOME)/libxsd # path to the LIBXSD
-CXX       := g++
+CXX       := g++ -Wl,--no-as-needed 
 XSDSTD    := --std c++11
 CXXSTD    := --std=c++11
 CXXFLAGS  += -m32 -D HAVE_CXA_DEMANGLE=1 \
@@ -118,6 +118,7 @@ driver: driver.cxx $(obj_dir)
 	$(CXX) $(CXXSTD) $(CXXFLAGS) $(CXXLDFLAGS) $(INCLUDEPATHS) -o $@ $^ $(LIBPATHS) $(NDDSLIBS) $(REFLEXLIB) -lxerces-c 
 
 objs/%.o: gen/%.cxx 
+	mkdir -p objs
 	$(CXX) $(CXXFLAGS) $(CXXLDFLAGS)  $(CXXSTD) -I$(LIBXSD) -c $< -o $@  
 
 gen: $(TOPXSD)       

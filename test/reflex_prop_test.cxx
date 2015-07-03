@@ -12,7 +12,7 @@
 template <class T>
 std::ostream & operator << (std::ostream & o, const std::vector<T> & vector)
 {
-  for (auto & elem : vector)
+  for (const auto & elem : vector)
     o << elem << " ";
 
   return o;
@@ -150,7 +150,7 @@ bool test_roundtrip_property()
 {
   auto gen = gen::make_tuple_gen<Tuple>();
   Tuple d1 = gen.generate();
-  std::cout << d1 << "\n";
+  //std::cout << d1 << "\n";
   reflex::SafeDynamicData<Tuple> safedd = reflex::make_dd(d1);
   safedd.get()->print(stdout, 2);
   reflex::detail::print_IDL(safedd.get()->get_type(), 2);

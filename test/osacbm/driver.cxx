@@ -236,9 +236,7 @@ RTI_ADAPT_VALUETYPE(
 template <class T>
 void print_tc()
 {
-  reflex::SafeTypeCode<DDS_TypeCode>
-          stc(reflex::make_typecode<T>());
-          
+  reflex::SafeTypeCode<T> stc(reflex::make_typecode<T>());
   reflex::detail::print_IDL(stc.get(), 0);
 }
 

@@ -19,27 +19,27 @@ damages arising out of the use or inability to use the software.
 #include <stdint.h>
 #endif
 
-#define SET_SEQUENCE_DECL(DDS_SEQ_TYPE)                               \
+#define SET_SEQUENCE_DECL(DDS_SEQ_TYPE)                                       \
 REFLEX_DLL_EXPORT DDS_ReturnCode_t set_sequence(DDS_DynamicData &instance,    \
-                              const MemberAccess & ma,                \
-                              const DDS_SEQ_TYPE &value);
+                                                const MemberAccess & ma,      \
+                                                const DDS_SEQ_TYPE &value);
 
-#define GET_SEQUENCE_DECL(DDS_SEQ_TYPE)                                   \
+#define GET_SEQUENCE_DECL(DDS_SEQ_TYPE)                                           \
 REFLEX_DLL_EXPORT DDS_ReturnCode_t get_sequence(const DDS_DynamicData & instance, \
-                              DDS_SEQ_TYPE &seq,                          \
-                              const MemberAccess & ma);
+                                                DDS_SEQ_TYPE &seq,                \
+                                                const MemberAccess & ma);
 
-#define SET_ARRAY_DECL(BASIC_TYPE)                                    \
+#define SET_ARRAY_DECL(BASIC_TYPE)                                            \
 REFLEX_DLL_EXPORT DDS_ReturnCode_t set_array(DDS_DynamicData &instance,       \
-                           const MemberAccess & ma,                   \
-                           DDS_UnsignedLong length,                   \
-                           const BASIC_TYPE *array);
+                                             const MemberAccess & ma,         \
+                                             DDS_UnsignedLong length,         \
+                                             const BASIC_TYPE *array);
 
-#define GET_ARRAY_DECL(BASIC_TYPE)                                     \
-REFLEX_DLL_EXPORT DDS_ReturnCode_t get_array(const DDS_DynamicData & instance, \
-                           BASIC_TYPE *array,                          \
-                           DDS_UnsignedLong *length,                   \
-                           const MemberAccess & ma);
+#define GET_ARRAY_DECL(BASIC_TYPE)                                               \
+REFLEX_DLL_EXPORT DDS_ReturnCode_t get_array(const DDS_DynamicData & instance,   \
+                                             BASIC_TYPE *array,                  \
+                                             DDS_UnsignedLong *length,           \
+                                             const MemberAccess & ma);
 
 namespace reflex {
 
@@ -124,6 +124,7 @@ namespace reflex {
       SET_SEQUENCE_DECL(DDS_UnsignedShortSeq)
       SET_SEQUENCE_DECL(DDS_FloatSeq)
       SET_SEQUENCE_DECL(DDS_DoubleSeq)
+      SET_SEQUENCE_DECL(DDS_LongDoubleSeq)
       SET_SEQUENCE_DECL(DDS_BooleanSeq)
       SET_SEQUENCE_DECL(DDS_CharSeq)
       SET_SEQUENCE_DECL(DDS_WcharSeq)
@@ -160,6 +161,7 @@ namespace reflex {
       GET_SEQUENCE_DECL(DDS_UnsignedLongLongSeq)
       GET_SEQUENCE_DECL(DDS_FloatSeq)
       GET_SEQUENCE_DECL(DDS_DoubleSeq)
+      GET_SEQUENCE_DECL(DDS_LongDoubleSeq)
 
       GET_ARRAY_DECL(match::octet_t)    // also uint8_t
       GET_ARRAY_DECL(bool)
