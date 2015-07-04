@@ -56,6 +56,24 @@ namespace reflex {
     REFLEX_DLL_EXPORT DDS_LongDouble to_LongDouble(long double);
     REFLEX_DLL_EXPORT long double  from_LongDouble(DDS_LongDouble);
 
+    // This signed char overload is needed because DDS does not natively
+    // support signed char. It supports char and octet, which in C++
+    // are char and unsigned char but signed char is a third kind of char
+    // and is separate from first two. It must be explicitly casted 
+    // to char. Hence the overload.
+    REFLEX_DLL_EXPORT DDS_Char * primitive_ptr_cast(signed char * ptr);
+
+    template <class T>
+    T * primitive_ptr_cast(T * t,
+                           typename
+                            enable_if<is_primitive_and_not_bool<T>::value &&
+                                      !std::is_same<signed char, T>::value>::type * = 0)
+    {
+      // see the signed char overload.
+      return t;
+    }
+
+
     template <class T>
     bool do_serialize(T &)
     {
@@ -242,7 +260,7 @@ namespace reflex {
         {
           typename DynamicDataSeqTraits<T>::type seq;
           std::vector<T> & nc_val = const_cast<std::vector<T> &>(val);
-          if (seq.loan_contiguous(&nc_val[0], val.size(), val.capacity()) != true)
+          if (seq.loan_contiguous(primitive_ptr_cast(&nc_val[0]), val.size(), val.capacity()) != true)
           {
             throw std::runtime_error("set_member_value: sequence loaning failed");
           }
@@ -869,7 +887,7 @@ namespace reflex {
         if (seq_info.element_count > 0)
         {
           typename DynamicDataSeqTraits<T>::type seq;
-          if (seq.loan_contiguous(&val[0], val.size(), val.capacity()) != true)
+          if (seq.loan_contiguous(primitive_ptr_cast(&val[0]), val.size(), val.capacity()) != true)
           {
             throw std::runtime_error("get_member_value: sequence loaning failed");
           }

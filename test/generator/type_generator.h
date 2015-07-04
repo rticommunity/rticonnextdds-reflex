@@ -9,6 +9,9 @@
 
 namespace typegen {
 
+  template <uint16_t seed, uint16_t Size = 24>
+  struct RandomTuple;
+
   namespace detail {
 
     constexpr uint16_t LFSR_bit(uint16_t prev)
@@ -23,10 +26,17 @@ namespace typegen {
       return (prev >> 1) | (LFSR_bit(prev) << 15);
     }
 
+    template <size_t lfsr, size_t... values>
+    struct oneof
+    {
+      constexpr static size_t val[sizeof...(values)] = { values... };
+      constexpr static size_t value = val[LFSR(lfsr) % sizeof...(values)];
+    };
+
     template <uint16_t I, uint16_t seed>
     struct TypeMap;
 
-    constexpr uint16_t MAP_SIZE = 15;
+    constexpr uint16_t MAP_SIZE = 17;
 
     TYPE_MAP(0,  bool);
     TYPE_MAP(1,  char);
@@ -42,19 +52,40 @@ namespace typegen {
     TYPE_MAP(11, double);
     TYPE_MAP(12, long double);
 
-    // optional generator
+    // sequence generator
     template <uint16_t lfsr>
     struct TypeMap<13, lfsr>
     {
-      typedef boost::optional<typename TypeMap<LFSR(lfsr) % 13, LFSR(lfsr)>::type> type;
+      // avoid sequence<optional<T>> = 16
+      constexpr static size_t selection = LFSR(lfsr) % (MAP_SIZE-1); 
+      typedef std::vector<typename TypeMap<selection, LFSR(lfsr)>::type> type;
     };
 
-    // sequence generator
+    // array generator
     template <uint16_t lfsr>
     struct TypeMap<14, lfsr>
     {
-      //typedef std::vector<typename TypeMap<LFSR(lfsr) % 13, LFSR(lfsr)>::type> type;
-      typedef std::vector<long double> type;
+      // avoid array<optional<T>> = 16
+      constexpr static size_t selection = LFSR(lfsr) % (MAP_SIZE-1); 
+      typedef std::array<typename TypeMap<selection, LFSR(lfsr)>::type,
+                         (LFSR(lfsr) % 10) + 1> type;
+    };
+
+    // tuple generator
+    template <uint16_t lfsr>
+    struct TypeMap<15, lfsr>
+    {
+      constexpr static size_t tuplesize = (LFSR(lfsr) % 24) + 1;
+      typedef typename RandomTuple<LFSR(lfsr), tuplesize>::type type;
+    };
+
+    // optional generator
+    template <uint16_t lfsr>
+    struct TypeMap<16, lfsr>
+    {
+      // avoid optional<optional<T>> = 16
+      constexpr static size_t selection = LFSR(lfsr) % (MAP_SIZE-1); 
+      typedef boost::optional<typename TypeMap<selection, LFSR(lfsr)>::type> type;
     };
 
     template <class Head, class... Tail>
@@ -66,12 +97,65 @@ namespace typegen {
       typedef std::tuple<Head, Tail...> type;
     };
 
+    template <class T>
+    struct identity
+    {
+      typedef T type;
+    };
+
+    template <bool, class T, class U>
+    struct if_
+    {
+      typedef typename T::type type;
+    };
+
+    template <class T, class U>
+    struct if_<false, T, U>
+    {
+      typedef typename U::type type;
+    };
+
+    template <class Elem, class... Tail>
+    struct contains;
+
+    template <class Elem, class Head, class... Tail>
+    struct contains<Elem, std::tuple<Head, Tail...>>
+    {
+      constexpr static bool value = contains<Elem, std::tuple<Tail...>>::value;
+    };
+
+    template <class Elem, class... Tail>
+    struct contains<Elem, std::tuple<Elem, Tail...>>
+    {
+      constexpr static bool value = true;
+    };
+
+    template <class Elem>
+    struct contains<Elem, std::tuple<>>
+    {
+      constexpr static bool value = false;
+    };
+
+    template<size_t lfsr, class... Args>
+    struct NextUniqueType;
+
+    template<size_t lfsr, class... Args>
+    struct NextUniqueType<lfsr, std::tuple<Args...>>
+    {
+      typedef typename TypeMap<LFSR(lfsr) % MAP_SIZE, LFSR(lfsr)>::type Next;
+      typedef typename if_<contains<Next, std::tuple<Args...>>::value,
+                           NextUniqueType<LFSR(lfsr), std::tuple<Args...>>,
+                           identity<Next>>::type type;
+                           
+    };
+
     template <size_t size, uint16_t lfsr>
     struct RandomTupleImpl
     {
-      typedef typename TypeMap<LFSR(lfsr) % MAP_SIZE, LFSR(lfsr)>::type Next;
-      typedef typename
-        tuple_cons<Next, typename RandomTupleImpl<size - 1, LFSR(lfsr)>::type>::type type;
+      typedef typename RandomTupleImpl<size - 1, LFSR(lfsr)>::type Tuple;
+      typedef typename NextUniqueType<LFSR(lfsr), Tuple>::type Next;
+      //typedef typename TypeMap<LFSR(lfsr) % MAP_SIZE, LFSR(lfsr)>::type Next;
+      typedef typename tuple_cons<Next, Tuple>::type type;
     };
 
     template <uint16_t lfsr>
@@ -82,7 +166,7 @@ namespace typegen {
 
   } // namespace detail
 
-  template <uint16_t seed, uint16_t Size = 16>
+  template <uint16_t seed, uint16_t Size>
   struct RandomTuple
   {
     typedef typename detail::RandomTupleImpl<Size - 1, detail::LFSR(seed)>::type type;

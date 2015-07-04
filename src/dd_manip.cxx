@@ -113,6 +113,16 @@ namespace reflex {
 #endif         
       }
 
+      REFLEX_INLINE DDS_Char * primitive_ptr_cast(signed char * ptr)
+      {
+        // This signed char overload is needed because DDS does not natively
+        // support signed char. It supports char and octet, which in C++
+        // are char and unsigned char but signed char is a third kind of char
+        // and is separate from first two. It must be explicitly casted 
+        // to char. Hence the overload.
+        return reinterpret_cast<DDS_Char *>(ptr);
+      }
+
       REFLEX_INLINE void set_member_overload_resolution_helper::set_member_value(      
             DDS_DynamicData & instance,                                                
             const MemberAccess &ma,                                                    
