@@ -11,6 +11,8 @@ damages arising out of the use or inability to use the software.
 #include "reflex/dllexport.h"
 #include "reflex/dd_manip.h"
 
+#include <algorithm>
+
 #define SET_MEMBER_VALUE_DEF(TYPE, FUNCTION)                                     \
 REFLEX_INLINE void set_member_overload_resolution_helper::set_member_value(      \
       DDS_DynamicData & instance,                                                \
@@ -96,8 +98,9 @@ namespace reflex {
 #if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
         return src;
 #else
+        using namespace std;
         DDS_LongDouble dst = { { 0 } };
-        memcpy(&dst, &src, std::min(sizeof(long double), sizeof(DDS_LongDouble)));
+        memcpy(&dst, &src, min(sizeof(long double), sizeof(DDS_LongDouble)));
         return dst;
 #endif         
       }
@@ -107,8 +110,9 @@ namespace reflex {
 #if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
         return src;
 #else
+        using namespace std;
         long double dst = 0;
-        memcpy(&dst, &src, std::min(sizeof(long double), sizeof(DDS_LongDouble)));
+        memcpy(&dst, &src, min(sizeof(long double), sizeof(DDS_LongDouble)));
         return dst;
 #endif         
       }

@@ -56,6 +56,12 @@ namespace reflex {
     REFLEX_DLL_EXPORT DDS_LongDouble to_LongDouble(long double);
     REFLEX_DLL_EXPORT long double  from_LongDouble(DDS_LongDouble);
 
+    struct RawStorage
+    {
+      static const unsigned int size = 1024;
+      char buf[size];
+    };
+
     // This signed char overload is needed because DDS does not natively
     // support signed char. It supports char and octet, which in C++
     // are char and unsigned char but signed char is a third kind of char
@@ -554,16 +560,18 @@ namespace reflex {
             Str & val,
             typename enable_if<is_string<Str>::value>::type * = 0)
       {
+        RawStorage raw; 
 #ifdef RTI_WIN32  
         // NOTE: static
-        static char * buf = 
-          new char[detail::static_string_bound<Str>::value + 1];
+        static char * buf =
+          // new char[detail::static_string_bound<Str>::value + 1];
+          raw.buf;
 #else
         char buffer[detail::static_string_bound<Str>::value + 1];
-        char *buf = buffer;
+        char *buf = raw.buf //buffer;
+        
 #endif
-        DDS_UnsignedLong size = 
-          detail::static_string_bound<Str>::value;
+        DDS_UnsignedLong size = RawStorage::size;
 
         const char * member_name =
           ma.access_by_id() ? NULL : ma.get_name();
@@ -580,8 +588,7 @@ namespace reflex {
         }
         else if (rc == DDS_RETCODE_OUT_OF_RESOURCES)
         {
-          // Preallocated buffer is insufficient.
-          // Have the m/w provide it.
+          // Raw buffer is insufficient. Have the m/w provide it.
           char * ptr = 0; // TODO: null or empty?
           size = 0;
           rc = instance.get_string(ptr, &size, member_name, id);

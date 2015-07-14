@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:noNamespaceSchemaLocation="NDDSHOME/resource/schema/rti_dds_qos_profiles.xsd"
-     version="5.0.0">
+     version="5.2.0">
     <qos_library name="reflex_Library">
         <qos_profile name="reflex_Profile" is_default_qos="true">
             <datawriter_qos>
@@ -22,7 +22,19 @@
                         <max_send_window_size>50</max_send_window_size>
                     </rtps_reliable_writer>
                 </protocol>
-		
+                <property>
+                <!-- This property is needed when using -unboundedSupport command-line option
+                 in order to configure the memory allocation policy for the buffers that are
+                 used to serialize the samples -->                
+                    <value>
+                    <element>
+                      <name>
+                        dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size
+                      </name>
+                      <value>10000</value>
+                    </element>
+                  </value>
+                </property>
             </datawriter_qos>
 
             <datareader_qos>
@@ -32,6 +44,24 @@
                 <history>
                     <kind>KEEP_ALL_HISTORY_QOS</kind>
                 </history>
+                <!-- The following properties are needed when using unbounded sequence/string support 
+                     in order to configure the memory allocation policy for the buffers that are
+                     used to serialize the samples -->                
+                <reader_resource_limits>
+                  <dynamically_allocate_fragmented_samples>
+                    true
+                  </dynamically_allocate_fragmented_samples>
+                </reader_resource_limits>
+                <property>
+                  <value>
+                    <element>
+                      <name>
+                        dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size
+                      </name>
+                      <value>10000</value>
+                    </element>
+                  </value>
+                </property>
             </datareader_qos>
 
             <participant_qos>

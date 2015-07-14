@@ -176,7 +176,7 @@ void write_shape_type_extended(int domain_id)
 
 void write_shape_type(int domain_id)
 {
-  DDS_ReturnCode_t         rc;
+  DDS_ReturnCode_t         rc = DDS_RETCODE_OK;
   DDSDomainParticipant *   participant = NULL;
   DDSDynamicDataWriter *ddWriter = NULL;
   DDS_DynamicDataTypeProperty_t props;
@@ -196,6 +196,7 @@ void write_shape_type(int domain_id)
   
   reflex::detail::print_IDL(stc.get(), 0);
   
+  props.serialization.min_size_serialized = 128;
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 

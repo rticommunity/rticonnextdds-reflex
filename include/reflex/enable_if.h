@@ -32,6 +32,8 @@ damages arising out of the use or inability to use the software.
 #include <stdint.h>
 #endif
 
+#if ((RTI_DDS_VERSION_MAJOR==5) && (RTI_DDS_VERSION_MINOR==1))
+
 #ifndef REFLEX_STATIC_STRING_BOUND
 #define REFLEX_STATIC_STRING_BOUND 256
 #endif
@@ -39,6 +41,20 @@ damages arising out of the use or inability to use the software.
 #ifndef REFLEX_STATIC_CONTAINER_BOUND
 #define REFLEX_STATIC_CONTAINER_BOUND 256
 #endif
+
+#elif ((RTI_DDS_VERSION_MAJOR==5) && (RTI_DDS_VERSION_MINOR==2))
+
+#ifndef REFLEX_STATIC_STRING_BOUND
+#define REFLEX_STATIC_STRING_BOUND RTI_INT32_MAX
+#endif
+
+#ifndef REFLEX_STATIC_CONTAINER_BOUND
+#define REFLEX_STATIC_CONTAINER_BOUND RTI_INT32_MAX
+#endif
+
+#endif // RTI_DDS_VERSION_MAJOR
+
+
 
 namespace reflex {
 

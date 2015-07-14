@@ -41,6 +41,13 @@ void test_all_types(int domain_id);
 int main(int argc, const char **argv) 
 {
   try {
+
+    // Uncomment this to turn on additional logging
+    /*NDDSConfigLogger::get_instance()->
+      set_verbosity_by_category(NDDS_CONFIG_LOG_CATEGORY_API,
+                                NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
+    */
+
     if (argc <= 1) {
       std::cout << "Please specify either shapes [pub/sub/pubex], large, darkart, many, one, all\n";
       return 0;
