@@ -58,7 +58,7 @@ namespace reflex {
 
     struct RawStorage
     {
-      static const unsigned int size = 1024;
+      static const unsigned int size = 128;
       char buf[size];
     };
 
@@ -561,16 +561,7 @@ namespace reflex {
             typename enable_if<is_string<Str>::value>::type * = 0)
       {
         RawStorage raw; 
-#ifdef RTI_WIN32  
-        // NOTE: static
-        static char * buf =
-          // new char[detail::static_string_bound<Str>::value + 1];
-          raw.buf;
-#else
-        char buffer[detail::static_string_bound<Str>::value + 1];
-        char *buf = raw.buf //buffer;
-        
-#endif
+        char * buf = raw.buf;
         DDS_UnsignedLong size = RawStorage::size;
 
         const char * member_name =
@@ -589,12 +580,12 @@ namespace reflex {
         else if (rc == DDS_RETCODE_OUT_OF_RESOURCES)
         {
           // Raw buffer is insufficient. Have the m/w provide it.
-          char * ptr = 0; // TODO: null or empty?
+          buf = 0; // TODO: null or empty?
           size = 0;
-          rc = instance.get_string(ptr, &size, member_name, id);
+          rc = instance.get_string(buf, &size, member_name, id);
           detail::check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
-          val.assign(ptr);
-          DDS_String_free(ptr);
+          val.assign(buf);
+          DDS_String_free(buf);
         }
         else
           detail::check_retcode("DDS_DynamicData::get_string failed. error = ", rc);
