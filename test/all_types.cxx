@@ -27,11 +27,11 @@ void round_trip_test(int domain, const T & source, T & dest)
   reflex::AutoDynamicData src_dd(safe_typeSupport.get());
   reflex::AutoDynamicData dest_dd(safe_typeSupport.get());
 
-  reflex::fill_dd(source, src_dd);
+  reflex::write_dynamicdata(source, src_dd);
 
-  reflex::extract_dd(src_dd, dest);
+  reflex::read_dynamicdata(src_dd, dest);
 
-  reflex::fill_dd(dest, dest_dd);
+  reflex::write_dynamicdata(dest, dest_dd);
 
   // round-tripping must work!
   assert(src_dd.get()->equal(*dest_dd.get()));

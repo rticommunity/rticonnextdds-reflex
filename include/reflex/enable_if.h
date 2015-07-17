@@ -34,22 +34,22 @@ damages arising out of the use or inability to use the software.
 
 #if ((RTI_DDS_VERSION_MAJOR==5) && (RTI_DDS_VERSION_MINOR==1))
 
-#ifndef REFLEX_STATIC_STRING_BOUND
-#define REFLEX_STATIC_STRING_BOUND 256
+#ifndef RTI_REFLEX_STATIC_STRING_BOUND
+  #define RTI_REFLEX_STATIC_STRING_BOUND 256
 #endif
 
-#ifndef REFLEX_STATIC_CONTAINER_BOUND
-#define REFLEX_STATIC_CONTAINER_BOUND 256
+#ifndef RTI_REFLEX_STATIC_SEQUENCE_BOUND
+  #define RTI_REFLEX_STATIC_SEQUENCE_BOUND 256
 #endif
 
 #elif ((RTI_DDS_VERSION_MAJOR==5) && (RTI_DDS_VERSION_MINOR==2))
 
-#ifndef REFLEX_STATIC_STRING_BOUND
-#define REFLEX_STATIC_STRING_BOUND RTI_INT32_MAX
+#ifndef RTI_REFLEX_STATIC_STRING_BOUND
+  #define RTI_REFLEX_STATIC_STRING_BOUND 256
 #endif
 
-#ifndef REFLEX_STATIC_CONTAINER_BOUND
-#define REFLEX_STATIC_CONTAINER_BOUND RTI_INT32_MAX
+#ifndef RTI_REFLEX_STATIC_SEQUENCE_BOUND
+  #define RTI_REFLEX_STATIC_SEQUENCE_BOUND 256
 #endif
 
 #endif // RTI_DDS_VERSION_MAJOR
@@ -673,13 +673,13 @@ namespace reflex {
     template <class T, class Parent = void, int Index = -1>
     struct static_string_bound : DefaultBase
     {
-      static const unsigned int value = REFLEX_STATIC_STRING_BOUND;
+      static const unsigned int value = RTI_REFLEX_STATIC_STRING_BOUND;
     };
     
     template <class T, class Parent = void, int Index = -1>
     struct static_container_bound : DefaultBase
     { 
-      static const unsigned int value = REFLEX_STATIC_CONTAINER_BOUND;
+      static const unsigned int value = RTI_REFLEX_STATIC_SEQUENCE_BOUND;
     };
 
   } // namespace detail

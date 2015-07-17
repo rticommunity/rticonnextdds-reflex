@@ -28,6 +28,9 @@
     <ClCompile Include="..\src\typecode_manip.cxx">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\type_library.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\reflex\auto_dd.h">
@@ -82,6 +85,9 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="..\include\reflex\default_member_names.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\type_library.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

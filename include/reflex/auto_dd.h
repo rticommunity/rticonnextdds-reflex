@@ -44,7 +44,7 @@ namespace reflex {
   public:
     /**
      * Create an initialized but unpopulated DynamicData instance 
-     * from the given type-support.
+     * from the given type-support. The typeSupport object is 
      */
     AutoDynamicData(DDSDynamicDataTypeSupport * typeSupport);
 
@@ -69,7 +69,7 @@ namespace reflex {
 #endif 
 
     /**
-    * Swap the contents (shallow)
+    * Swap two AutoDynamicData objects.
     */
     void swap(AutoDynamicData &) throw();
 
@@ -85,7 +85,7 @@ namespace reflex {
   };
 
   /**
-  * Swap the contents (shallow)
+  * Swap contents
   */
   void swap(AutoDynamicData & lhs, AutoDynamicData & rhs) throw();
 

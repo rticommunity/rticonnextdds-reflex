@@ -195,8 +195,11 @@ void write_shape_type(int domain_id)
     reflex::make_typecode<Tuple>();
   
   reflex::detail::print_IDL(stc.get(), 0);
-  
+
+#if ((RTI_DDS_VERSION_MAJOR==5) && (RTI_DDS_VERSION_MINOR!=1))
   props.serialization.min_size_serialized = 128;
+#endif 
+
   std::shared_ptr<DDSDynamicDataTypeSupport> 
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
@@ -247,7 +250,7 @@ void write_shape_type(int domain_id)
     copy(t1, x, y, color, shapesize);
 
     // write the values in a dynamic data instance.
-    reflex::fill_dd(t1, *dd1.get());
+    reflex::write_dynamicdata(t1, *dd1.get());
 
     // print if you like
     //ddi1.get()->print(stdout, 2);
@@ -255,11 +258,11 @@ void write_shape_type(int domain_id)
 
     // read the dynamic data instance back 
     // in a different tuple
-    reflex::extract_dd(*dd1.get(), t2);
+    reflex::read_dynamicdata(*dd1.get(), t2);
 
     // write the second tuple again in a
     // different dynamic data instance.
-    reflex::fill_dd(t2, *dd2.get());
+    reflex::write_dynamicdata(t2, *dd2.get());
 
     // print if you like
     // ddi2.get()->print(stdout, 2);

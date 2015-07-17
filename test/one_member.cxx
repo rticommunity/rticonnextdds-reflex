@@ -13,6 +13,8 @@ damages arising out of the use or inability to use the software.
 
 void write_one_member(int) 
 {
+    const int i = sizeof(long double);
+
     reflex::SafeTypeCode<one_member> 
       stc(reflex::make_typecode<one_member>());
     
@@ -23,14 +25,14 @@ void write_one_member(int)
     std::shared_ptr<DDSDynamicDataTypeSupport> 
        safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
   
-    reflex::AutoDynamicData ddi1(safe_typeSupport.get());
-    reflex::AutoDynamicData ddi2(safe_typeSupport.get());
+    reflex::AutoDynamicData d1(safe_typeSupport.get());
+    reflex::AutoDynamicData d2(safe_typeSupport.get());
 
     one_member one;
     one.member = 12.3456;
 
-    reflex::fill_dd(one, ddi1);
+    reflex::write_dynamicdata(one, d1);
     
-    ddi1.get()->print(stdout, 2);
+    d1.get()->print(stdout, 2);
 }
 

@@ -25,6 +25,7 @@ damages arising out of the use or inability to use the software.
 #include "reflex/bounded.h"
 #include "reflex/generic_dr.h"
 #include "reflex/generic_dw.h"
+#include "reflex/type_library.h"
 #include "reflex/reflex_fwd.h"
 
 #include <boost/fusion/sequence/intrinsic/size.hpp>
@@ -64,7 +65,7 @@ namespace reflex {
 
 
     template <class T>
-    void fill_dd_impl(
+    void write_dynamicdata_impl(
       const T & data,
       DDS_DynamicData &instance,
       false_type /* T has no base */)
@@ -81,14 +82,14 @@ namespace reflex {
     }
 
     template <class T>
-    void fill_dd_impl(
+    void write_dynamicdata_impl(
       const T & data,
       DDS_DynamicData &instance,
       true_type /* T has a base */)
     {
       typedef typename InheritanceTraits<T>::basetype Base;
 
-      fill_dd_impl(
+      write_dynamicdata_impl(
         static_cast<const Base &>(data),
         instance,
         typename detail::InheritanceTraits<Base>::has_base());
@@ -105,7 +106,7 @@ namespace reflex {
     }
 
     template <class T>
-    void extract_dd_impl(
+    void read_dynamicdata_impl(
       const DDS_DynamicData & instance,
       T & data,
       false_type /* T has no base*/)
@@ -122,14 +123,14 @@ namespace reflex {
     }
 
     template <class T>
-    void extract_dd_impl(
+    void read_dynamicdata_impl(
       const DDS_DynamicData & instance,
       T & data,
       true_type /* T has a base*/)
     {
       typedef typename InheritanceTraits<T>::basetype Base;
 
-      extract_dd_impl(
+      read_dynamicdata_impl(
         instance,
         static_cast<Base &>(data),
         typename InheritanceTraits<Base>::has_base());
@@ -155,33 +156,44 @@ namespace reflex {
    * is a value-type, which means copying SafeDynamicData would result in a
    * deep copy of the underlying DynamicData instance.
    *
-   * @see reflex::fill_dd
-   * @see reflex::extract_dd
-   * @see reflex::make_dd
+   * @see reflex::write_dynamicdata
+   * @see reflex::read_dynamicdata
+   * @see reflex::make_dynamicdata
    */
   template <class T>
   class SafeDynamicData : public AutoDynamicData
   {
   public:
     /**
-     * Create a SafeDynamicData object from an object of type T.
-     * @param type_support Type support that is tied to the typecode
-     *        given by reflex::make_typecode.
-     * @param src The source object
-     * @pre The type support must include the typecode obtained from 
-     *      reflex::make_typecode for type T.
-     * @see reflex::make_dd
-     */
+    * Create a SafeDynamicData object from an object of type T.
+    * @param src The source object
+    * @see reflex::make_dynamicdata
+    */
+    SafeDynamicData(const T & src)
+      : AutoDynamicData(GlobalTypeLibrary::instance().put<T>().get<T>().get_type_support())
+    {
+      write_dynamicdata(src, *AutoDynamicData::get());
+    }
+
+    /**
+    * Create a SafeDynamicData object from an object of type T.
+    * @param type_support Type support that is tied to the typecode
+    *        given by reflex::make_typecode.
+    * @param src The source object
+    * @pre The type support must include the typecode obtained from
+    *      reflex::make_typecode for type T.
+    * @see reflex::make_dynamicdata
+    */
     SafeDynamicData(
       DDSDynamicDataTypeSupport *type_support,
       const T & src)
       : AutoDynamicData(type_support)
     {
-      fill_dd(src, *AutoDynamicData::get());
+      write_dynamicdata(src, *AutoDynamicData::get());
     }
 
     /**
-     * Swap the contents (shallow)
+     * Swap two SafeDynamicData objects
      */
     void swap(SafeDynamicData<T> & rhs) throw()
     {
@@ -189,9 +201,6 @@ namespace reflex {
     }
   };
 
-  /**
-  * Swap the contents (shallow)
-  */
   template <class T>
   void swap(SafeDynamicData<T> & lhs, SafeDynamicData<T> & rhs) throw()
   {
@@ -199,35 +208,27 @@ namespace reflex {
   }
 
   template <class T>
-  void fill_dd(const T & data, DDS_DynamicData &instance)
+  void write_dynamicdata(const T & data, DDS_DynamicData &instance)
   {
-    detail::fill_dd_impl(
+    detail::write_dynamicdata_impl(
       data,
       instance,
       typename detail::InheritanceTraits<T>::has_base());
   }
 
   template <class T>
-  void fill_dd(const T & data, AutoDynamicData &instance)
+  void write_dynamicdata(const T & data, AutoDynamicData &instance)
   {
-    detail::fill_dd_impl(
+    detail::write_dynamicdata_impl(
       data,
       *instance.get(),
       typename detail::InheritanceTraits<T>::has_base());
   }
 
   template <class T>
-  SafeDynamicData<T> make_dd(const T & src)
+  SafeDynamicData<T> make_dynamicdata(const T & src)
   {
-    static reflex::SafeTypeCode<T>
-      stc(reflex::make_typecode<T>());
-
-    static DDS_DynamicDataTypeProperty_t props;
-
-    static DDSDynamicDataTypeSupport * type_support =
-      new DDSDynamicDataTypeSupport(stc.get(), props);
-
-    return reflex::SafeDynamicData<T>(type_support, src);
+    return reflex::SafeDynamicData<T>(src);
   }
 
   template <class T>
@@ -242,18 +243,18 @@ namespace reflex {
   }
 
   template <class T>
-  void extract_dd(const DDS_DynamicData & instance, T & data)
+  void read_dynamicdata(const DDS_DynamicData & instance, T & data)
   {
-    detail::extract_dd_impl(
+    detail::read_dynamicdata_impl(
       instance,
       data,
       typename detail::InheritanceTraits<T>::has_base());
   }
 
   template <class T>
-  void extract_dd(const AutoDynamicData & instance, T & data)
+  void read_dynamicdata(const AutoDynamicData & instance, T & data)
   {
-    detail::extract_dd_impl(
+    detail::read_dynamicdata_impl(
       *instance.get(),
       data,
       typename detail::InheritanceTraits<T>::has_base());

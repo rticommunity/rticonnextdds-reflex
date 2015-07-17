@@ -95,14 +95,14 @@ namespace reflex {
       template <class U>
       DDS_ReturnCode_t write(U & data)
       {
-        fill_dd(data, *dd_instance_.get());
+        write_dynamicdata(data, *dd_instance_.get());
         return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
       }
 
       template <class U>
       DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
       {
-        fill_dd(data, *dd_instance_.get());
+        write_dynamicdata(data, *dd_instance_.get());
         return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
       }
     };
@@ -126,14 +126,14 @@ namespace reflex {
       template <class U>
       DDS_ReturnCode_t write(U & data)
       {
-        fill_dd(data, *dd_instance_.get());
+        write_dynamicdata(data, *dd_instance_.get());
         return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
       }
 
       template <class U>
       DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
       {
-        fill_dd(data, *dd_instance_.get());
+        write_dynamicdata(data, *dd_instance_.get());
         return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
       }
     };
