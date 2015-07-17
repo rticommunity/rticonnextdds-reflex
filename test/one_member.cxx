@@ -13,8 +13,6 @@ damages arising out of the use or inability to use the software.
 
 void write_one_member(int) 
 {
-    const int i = sizeof(long double);
-
     reflex::SafeTypeCode<one_member> 
       stc(reflex::make_typecode<one_member>());
     

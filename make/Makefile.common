@@ -116,6 +116,7 @@ SOURCES = src/auto_dd.cxx                  \
           src/dd_manip.cxx                 \
           src/reflex.cxx                   \
           src/safe_typecode.cxx            \
+          src/type_library.cxx             \
           src/default_member_names.cxx
 
 HEADERS = include/reflex/reflex_fwd.h           \
@@ -132,6 +133,7 @@ HEADERS = include/reflex/reflex_fwd.h           \
           include/reflex/disc_union.h           \
           include/reflex/dd_extra.h             \
           include/reflex/bounded.h              \
+          include/reflex/type_library.h         \
           include/reflex/tuple_iterator.h       \
           include/reflex.h
 

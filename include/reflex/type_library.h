@@ -100,8 +100,15 @@ namespace reflex
     template <class T>
     TypeLibrary & put(DDSDynamicDataTypeSupport * support)
     {
-      _typemap[typeid(T)] =
-        std::make_shared<detail::TypeInfoContainer<T>>(reflex::make_typecode<T>(), support, false);
+      TypeMap::const_iterator got = _typemap.find(typeid(T));
+      
+      if (got == _typemap.end())
+      {
+        _typemap[typeid(T)] =
+          std::make_shared<detail::TypeInfoContainer<T>>(reflex::make_typecode<T>(), 
+                                                         support, 
+                                                         false);
+      }
 
       return *this;
     }
@@ -109,13 +116,18 @@ namespace reflex
     template <class T>
     TypeLibrary & put()
     {
-      reflex::make_typecode<T> stc(reflex::make_typecode<T>());
+      TypeMap::const_iterator got = _typemap.find(typeid(T));
+      
+      if (got == _typemap.end())
+      {
+        reflex::SafeTypeCode<T> stc(reflex::make_typecode<T>());
 
-      _typemap[typeid(T)] =
-        std::make_shared<detail::TypeInfoContainer<T>>(
-          detail::TypeInfoContainer<T>(std::move(stc),
-                                       new DDSDynamicDataTypeSupport(stc.get(), _default_props),
-                                       true));
+        _typemap[typeid(T)] =
+          std::make_shared<detail::TypeInfoContainer<T>>(
+            detail::TypeInfoContainer<T>(std::move(stc),
+                                         new DDSDynamicDataTypeSupport(stc.get(), _default_props),
+                                         true));
+      }
 
       return *this;
     }
@@ -132,6 +144,11 @@ namespace reflex
     }
 
     std::vector<TypeLibrary> & nested() 
+    {
+      return _nested;
+    }
+
+    const std::vector<TypeLibrary> & nested() const
     {
       return _nested;
     }

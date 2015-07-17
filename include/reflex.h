@@ -149,7 +149,7 @@ namespace reflex {
   } // namespace detail
 
   /**
-   * @brief Typesafe, exception-safe, poulated DynamicData
+   * @brief Typesafe, exception-safe, poulated DynamicData 
    *
    * The objects of SafeDynamicData are guaranteed to contain an initialized 
    * and fully populated DynamicData instance of type T. SafeDynamicData
@@ -165,20 +165,30 @@ namespace reflex {
   {
   public:
     /**
-    * Create a SafeDynamicData object from an object of type T.
+    * @brief Create a new SafeDynamicData object from a source object of type T.
+    *
+    *        Uses default <a
+    *        href="http://community.rti.com/rti-doc/510/ndds/doc/html/api_cpp/structDDS__DynamicDataTypeProperty__t.html">DDS_DynamicDataTypeProperty_t</a>.
+    *        Automatically generates a type support object and
+    *        stores it in the GlobalTypeLibrary.
     * @param src The source object
+    * @pre   Type T must be adpated using RTI_ADAPT_STRUCT macro.
     * @see reflex::make_dynamicdata
     */
     SafeDynamicData(const T & src)
-      : AutoDynamicData(GlobalTypeLibrary::instance().put<T>().get<T>().get_type_support())
+      : AutoDynamicData(
+          const_cast<DDSDynamicDataTypeSupport *>(
+            GlobalTypeLibrary::instance().template put<T>()
+                                         .template get<T>()
+                                         .get_type_support()))
     {
       write_dynamicdata(src, *AutoDynamicData::get());
     }
 
     /**
-    * Create a SafeDynamicData object from an object of type T.
-    * @param type_support Type support that is tied to the typecode
-    *        given by reflex::make_typecode.
+    * @brief Create a new SafeDynamicData object from a source object of type T.
+    *
+    * @param type_support Type support object that represents T  
     * @param src The source object
     * @pre The type support must include the typecode obtained from
     *      reflex::make_typecode for type T.
@@ -193,7 +203,9 @@ namespace reflex {
     }
 
     /**
-     * Swap two SafeDynamicData objects
+     * @brief Swap two SafeDynamicData objects
+     *
+     *        Never throws.
      */
     void swap(SafeDynamicData<T> & rhs) throw()
     {
