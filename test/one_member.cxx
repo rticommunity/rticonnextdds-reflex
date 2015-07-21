@@ -29,7 +29,7 @@ void write_one_member(int)
     one_member one;
     one.member = 12.3456;
 
-    reflex::write_dynamicdata(one, d1);
+    reflex::write_dynamicdata(d1, one);
     
     d1.get()->print(stdout, 2);
 }

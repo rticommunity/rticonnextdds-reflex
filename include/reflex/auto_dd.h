@@ -43,49 +43,61 @@ namespace reflex {
 
   public:
     /**
-     * Create an initialized but unpopulated DynamicData instance 
-     * from the given type-support. The typeSupport object is 
+     * @brief Create an initialized but unpopulated DynamicData instance
+     *        from the given type-support. 
+     * 
+     *        The typeSupport object is not owned by AutoDynamicData.
      */
     AutoDynamicData(DDSDynamicDataTypeSupport * typeSupport);
 
     /**
-    * Create a deep copy 
+    * @brief Create a deep copy 
     */
     AutoDynamicData(const AutoDynamicData &);
 
     /**
-    * Make a deep copy
+    * @brief Deep copy of the contents of src in to this
     */
-    AutoDynamicData & operator = (const AutoDynamicData &);
+    AutoDynamicData & operator = (const AutoDynamicData &src);
 
     /**
-    * Destroy
+    * @brief Destructor
     */
     ~AutoDynamicData();
 
 #ifdef REFLEX_HAS_RVALUE_REF
-    AutoDynamicData(AutoDynamicData &&);
-    AutoDynamicData & operator = (AutoDynamicData &&);
+    /**@brief Moves the ownership of DynamicData from src to a newly
+    *         created AutoDynamicData object.
+    *
+    *         The src object no longer owns the DynamicData instance.
+    */
+    AutoDynamicData(AutoDynamicData && src);
+
+    /**@brief Moves the ownership of DynamicData from src to this.
+    *
+    *         Deletes the existing DynamicData instance in this.
+    */
+    AutoDynamicData & operator = (AutoDynamicData && src);
 #endif 
 
     /**
-    * Swap two AutoDynamicData objects.
+    * @brief Swap two AutoDynamicData objects. Does not throw.
     */
     void swap(AutoDynamicData &) throw();
 
     /**
-    * Access the underlying DynamicData instance.
+    * @brief Return the underlying DynamicData instance.
     */
     DDS_DynamicData * get();
 
     /**
-    * Access the underlying DynamicData instance.
+    * @brief Return the underlying DynamicData instance.
     */
     const DDS_DynamicData * get() const;
   };
 
   /**
-  * Swap contents
+  * @brief Swap the contents of two AutoDynamicData instances. Never throws.
   */
   void swap(AutoDynamicData & lhs, AutoDynamicData & rhs) throw();
 

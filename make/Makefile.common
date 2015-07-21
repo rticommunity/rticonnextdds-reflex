@@ -116,8 +116,7 @@ SOURCES = src/auto_dd.cxx                  \
           src/dd_manip.cxx                 \
           src/reflex.cxx                   \
           src/safe_typecode.cxx            \
-          src/type_library.cxx             \
-          src/default_member_names.cxx
+          src/member_names.cxx
 
 HEADERS = include/reflex/reflex_fwd.h           \
           include/reflex/auto_dd.h              \
@@ -126,14 +125,16 @@ HEADERS = include/reflex/reflex_fwd.h           \
           include/reflex/generic_dw.h           \
           include/reflex/dd_manip.h             \
           include/reflex/typecode_manip.h       \
-          include/reflex/default_member_names.h \
+          include/reflex/member_names.h         \
           include/reflex/dd_traits.h            \
           include/reflex/enable_if.h            \
           include/reflex/safe_typecode.h        \
           include/reflex/disc_union.h           \
           include/reflex/dd_extra.h             \
           include/reflex/bounded.h              \
-          include/reflex/type_library.h         \
+          include/reflex/type_manager.h         \
+          include/reflex/safe_dynamicdata.h     \
+          include/reflex/adapt_macros.h         \
           include/reflex/tuple_iterator.h       \
           include/reflex.h
 

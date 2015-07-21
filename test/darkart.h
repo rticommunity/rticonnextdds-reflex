@@ -375,21 +375,21 @@ struct Pmt // : non_copyable_non_movable
 
 } // namespace darkart
 
-RTI_ADAPT_ENUM(
+REFLEX_ADAPT_ENUM(
   darkart::EventInfo::STATUS_FLAGS,
   (NORMAL,        0)
   (ID_MISMATCH,   1)
   (BAD_TIMESTAMP, 2))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     darkart::Baseline,
     (bool,   found_baseline) 
     (double,           mean)
     (double,       variance))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     darkart::Channel,
-    (int,              board_id, RTI_KEY)
+    (int,              board_id, REFLEX_KEY)
     (int,           channel_num)
     (int,            channel_id)
     (std::string,         label)
@@ -400,7 +400,7 @@ RTI_ADAPT_STRUCT(
     (int,                nsamps)
     (bool,            saturated))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::EventInfo,
   (int,                                 run_id)
   (int,                               event_id)
@@ -411,7 +411,7 @@ RTI_ADAPT_STRUCT(
   (int,                                 nchans)
   (bool,                             saturated))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::Pmt,
   (std::string,     serial_id)
   (int,            channel_id)
@@ -425,7 +425,7 @@ RTI_ADAPT_STRUCT(
   (double,  photocathode_area)
   (double,                 qe))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::VetoTDCHit,
   (int,      pmt_index)
   (int,      hit_index)
@@ -434,79 +434,79 @@ RTI_ADAPT_STRUCT(
   (float,    pmt_theta)
   (float,      pmt_phi))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::VetoTruth,
   (int,                  sim_event)
   (darkart::VetoTDCHits,      hits))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::Waveform,
   (std::vector<double>,          wave)
   (int,                 trigger_index)
   (double,                sample_rate))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::TopLevel,  
   (darkart::BaselineData, baseline_data())
   (darkart::ChannelInfo ,  channel_info())
-  (darkart::EventInfo   ,    event_info(), RTI_KEY)
+  (darkart::EventInfo   ,    event_info(), REFLEX_KEY)
   (darkart::PmtInfo     ,      pmt_info())
   (darkart::VetoTruth   ,    veto_truth())
   (darkart::Waveforms   ,     waveforms()))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::BaselineDataProduct,
   (darkart::BaselineData &, baseline_data)
-  (unsigned int, event_id, RTI_KEY)
-  (std::string, producer_label, RTI_KEY)
-  (std::string, instance_name, RTI_KEY)
-  (std::string, proc_step, RTI_KEY))
+  (unsigned int, event_id, REFLEX_KEY)
+  (std::string, producer_label, REFLEX_KEY)
+  (std::string, instance_name, REFLEX_KEY)
+  (std::string, proc_step, REFLEX_KEY))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::WaveformsProduct,
   (darkart::Waveforms &, waveforms)
-  (unsigned int, event_id, RTI_KEY)
-  (std::string, producer_label, RTI_KEY)
-  (std::string, instance_name, RTI_KEY)
-  (std::string, proc_step, RTI_KEY))
+  (unsigned int, event_id, REFLEX_KEY)
+  (std::string, producer_label, REFLEX_KEY)
+  (std::string, instance_name, REFLEX_KEY)
+  (std::string, proc_step, REFLEX_KEY))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::ProductID,
   (darkart::ProcessIndex,  processIndex_)
   (darkart::ProductIndex,  productIndex_))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::RefCore,
   (darkart::ProductID, id_))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::BaselineDataAssns,
   (darkart::BaselineDataAssns::ptr_data_t, ptr_data_1_)
   (darkart::BaselineDataAssns::ptr_data_t, ptr_data_2_))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::BaselineDataAssnsProduct,
   (darkart::BaselineDataAssns &, assns)
-  (unsigned int, event_id, RTI_KEY)
-  (std::string, producer_label, RTI_KEY)
-  (std::string, instance_name, RTI_KEY)
-  (std::string, proc_step, RTI_KEY))
+  (unsigned int, event_id, REFLEX_KEY)
+  (std::string, producer_label, REFLEX_KEY)
+  (std::string, instance_name, REFLEX_KEY)
+  (std::string, proc_step, REFLEX_KEY))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::ChannelInfoProduct,
   (darkart::ChannelInfo &, cinfo)
-  (unsigned int, event_id, RTI_KEY)
-  (std::string, producer_label, RTI_KEY)
-  (std::string, instance_name, RTI_KEY)
-  (std::string, proc_step, RTI_KEY))
+  (unsigned int, event_id, REFLEX_KEY)
+  (std::string, producer_label, REFLEX_KEY)
+  (std::string, instance_name, REFLEX_KEY)
+  (std::string, proc_step, REFLEX_KEY))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   darkart::EventInfoProduct,
   (darkart::EventInfo &, einfo)
-  (unsigned int, event_id, RTI_KEY)
-  (std::string, producer_label, RTI_KEY)
-  (std::string, instance_name, RTI_KEY)
-  (std::string, proc_step, RTI_KEY))
+  (unsigned int, event_id, REFLEX_KEY)
+  (std::string, producer_label, REFLEX_KEY)
+  (std::string, instance_name, REFLEX_KEY)
+  (std::string, proc_step, REFLEX_KEY))
 
 
 #endif // RTIREFLEX_DARKART_H

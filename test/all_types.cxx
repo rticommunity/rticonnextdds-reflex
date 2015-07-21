@@ -24,20 +24,20 @@ void round_trip_test(int domain, const T & source, T & dest)
   std::shared_ptr<DDSDynamicDataTypeSupport>
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
-  reflex::AutoDynamicData src_dd(safe_typeSupport.get());
-  reflex::AutoDynamicData dest_dd(safe_typeSupport.get());
+  reflex::AutoDynamicData d1(safe_typeSupport.get());
+  reflex::AutoDynamicData d2(safe_typeSupport.get());
 
-  reflex::write_dynamicdata(source, src_dd);
+  reflex::write_dynamicdata(d1, source);
 
-  reflex::read_dynamicdata(src_dd, dest);
+  reflex::read_dynamicdata(dest, d1);
 
-  reflex::write_dynamicdata(dest, dest_dd);
+  reflex::write_dynamicdata(d2, dest);
 
   // round-tripping must work!
-  assert(src_dd.get()->equal(*dest_dd.get()));
+  assert(d1.get()->equal(*d2.get()));
 
 #ifndef RTI_WIN32    
-  dest_dd.get()->print(stdout, 2);
+  d1.get()->print(stdout, 2);
 #endif
 }
 

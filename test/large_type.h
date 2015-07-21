@@ -19,24 +19,24 @@ damages arising out of the use or inability to use the software.
 
 enum Color { red, green, blue };
 
-ENUM_DEF(Color, "Color", 3)  
+REFLEX_ENUM_DEF_CUSTOM(Color, "Color", 3)  
 
-ENUM_MEMBER_DEF(Color, 0, "RED",   0)
-ENUM_MEMBER_DEF(Color, 1, "GREEN", 1)
-ENUM_MEMBER_DEF(Color, 2, "BLUE",  2)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(Color, 0, "RED",   0)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(Color, 1, "GREEN", 1)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(Color, 2, "BLUE",  2)
 
 namespace custom
 {
   typedef std::tuple<int32_t, std::tuple<std::string>> TupleIntString;
 }
 
-STRUCT_NAME_DEF_CUSTOM(custom::TupleIntString, "TIString");
+REFLEX_STRUCT_NAME_DEF_CUSTOM(custom::TupleIntString, "TIString");
 
-MEMBER_TRAITS_DEF_CUSTOM(custom::TupleIntString, 0, "custom_integer",
-                         DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
+REFLEX_STRUCT_MEMBER_DEF_CUSTOM(custom::TupleIntString, 0, "custom_integer",
+                                DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
 
-MEMBER_TRAITS_DEF_CUSTOM(custom::TupleIntString, 1, "custom_tuple",
-                         DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
+REFLEX_STRUCT_MEMBER_DEF_CUSTOM(custom::TupleIntString, 1, "custom_tuple",
+                                DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
 
 namespace Zip {
     typedef std::map<std::string, int32_t> Map;

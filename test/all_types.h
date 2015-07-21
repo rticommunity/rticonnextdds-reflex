@@ -31,7 +31,7 @@ struct TestSparseType
   SparseSFA member;
 };
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   TestSparseType,
   (SparseSFA, member))
 
@@ -41,7 +41,7 @@ struct TestOptionalType
   boost::optional<int> oint;
 };
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   TestOptionalType,
   (boost::optional<int>, oint))
 
@@ -70,26 +70,26 @@ struct TestOptionalBaseType {
   boost::optional<MyShapeTypeExtended> member;
 };
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   MyShapeType,
-  (string128, color, RTI_KEY)
+  (string128, color, REFLEX_KEY)
   (int32_t, x)
   (int32_t, y)
   (int32_t, shapesize))
 
-ENUM_DEF(MyShapeFillKind, "MyShapeFillKind", 4)
-ENUM_MEMBER_DEF(MyShapeFillKind, 0, "SOLID_FILL", 0)
-ENUM_MEMBER_DEF(MyShapeFillKind, 1, "TRANSPARENT_FILL", 1)
-ENUM_MEMBER_DEF(MyShapeFillKind, 2, "HORIZONTAL_HATCH_FILL", 2)
-ENUM_MEMBER_DEF(MyShapeFillKind, 3, "VERTICAL_HATCH_FILL", 3)
+REFLEX_ENUM_DEF_CUSTOM(MyShapeFillKind, "MyShapeFillKind", 4)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(MyShapeFillKind, 0, "SOLID_FILL", 0)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(MyShapeFillKind, 1, "TRANSPARENT_FILL", 1)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(MyShapeFillKind, 2, "HORIZONTAL_HATCH_FILL", 2)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(MyShapeFillKind, 3, "VERTICAL_HATCH_FILL", 3)
 
-RTI_ADAPT_VALUETYPE(
+REFLEX_ADAPT_VALUETYPE(
   MyShapeTypeExtended,
-  BASE(MyShapeType),
+  REFLEX_EXTENDS(MyShapeType),
   (MyShapeFillKind, fillKind)
   (float, angle))
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   TestOptionalBaseType,
   (boost::optional<MyShapeTypeExtended>, member))
 

@@ -245,7 +245,7 @@ void write_large_type(int domain_id)
     reflex::AutoDynamicData ddi1(safe_typeSupport.get());
     reflex::AutoDynamicData ddi2(safe_typeSupport.get());
 
-    reflex::write_dynamicdata(t1, *ddi1.get());
+    reflex::write_dynamicdata(*ddi1.get(), t1);
 
 #ifndef RTI_WIN32
     ddi1.get()->print(stdout, 2);
@@ -272,9 +272,9 @@ void write_large_type(int domain_id)
     std::get<28>(t2) = ltfb2;
 #endif
 
-    reflex::read_dynamicdata(*ddi1.get(), t2);
+    reflex::read_dynamicdata(t2, *ddi1.get());
     std::cout << "size = " << std::get<29>(t2).size() << std::endl;
-    reflex::write_dynamicdata(t2, *ddi2.get());
+    reflex::write_dynamicdata(*ddi2.get(), t2);
 
 #ifndef RTI_WIN32
     ddi2.get()->print(stdout, 2);

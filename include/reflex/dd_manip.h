@@ -46,10 +46,10 @@ damages arising out of the use or inability to use the software.
 namespace reflex {
 
   template <class T>
-  void write_dynamicdata(const T & data, DDS_DynamicData &instance);
+  void write_dynamicdata(DDS_DynamicData &dest, const T & src);
 
   template <class T>
-  void read_dynamicdata(const DDS_DynamicData & instance, T & data);
+  void read_dynamicdata(T & dest, const DDS_DynamicData & src);
 
   namespace detail {
 
@@ -173,7 +173,7 @@ namespace reflex {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        reflex::write_dynamicdata(val, inner);
+        reflex::write_dynamicdata(inner, val);
       }
 
       template <class C>
@@ -360,7 +360,7 @@ namespace reflex {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        reflex::write_dynamicdata(val.get_opt_tuple(), inner);
+        reflex::write_dynamicdata(inner, val.get_opt_tuple());
       }
 
       template <class TagType, class... Cases>
@@ -635,7 +635,7 @@ namespace reflex {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        reflex::read_dynamicdata(inner, val);
+        reflex::read_dynamicdata(val, inner);
       }
 
     private:
@@ -1002,7 +1002,7 @@ namespace reflex {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
-        reflex::read_dynamicdata(inner, val.get_opt_tuple());
+        reflex::read_dynamicdata(val.get_opt_tuple(), inner);
       }
 
       template <class T, size_t Dim>

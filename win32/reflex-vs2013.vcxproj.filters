@@ -10,9 +10,6 @@
     <ClCompile Include="..\src\dd_manip.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\default_member_names.cxx">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\generic_dr.cxx">
       <Filter>sources</Filter>
     </ClCompile>
@@ -28,7 +25,7 @@
     <ClCompile Include="..\src\typecode_manip.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\type_library.cxx">
+    <ClCompile Include="..\src\member_names.cxx">
       <Filter>sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,10 +81,16 @@
     <ClInclude Include="..\include\reflex\typecode_manip.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\reflex\default_member_names.h">
+    <ClInclude Include="..\include\reflex\type_manager.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\reflex\type_library.h">
+    <ClInclude Include="..\include\reflex\safe_dynamicdata.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\adapt_macros.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\member_names.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

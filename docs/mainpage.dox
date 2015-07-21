@@ -1,0 +1,18 @@
+/**
+\mainpage RefleX: Reflection for DDS X-Types
+
+\image html reflex-logo-small.png 
+
+RefleX is short for Reflection for DDS-XTypes. The main objective 
+of this library is to create DDS-XTypes compliant types and data 
+directly from native C++ types. RefleX is declarative–i.e., it is 
+not a reflection API. There is no separate code generation step 
+involved (other than compilation). The RefleX library will take 
+your application-level datatypes in C++ and will happily map them 
+to equivalent DDS topic types.
+
+Click \link reflex \endlink namespace to explore the RefleX API.
+
+See a <a href="http://rticommunity.github.io/rticonnextdds-reflex">tutorial</a>.
+
+*/

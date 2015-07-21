@@ -27,7 +27,7 @@ struct one_member
   long double member;
 };
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     one_member,
     (long double, member))
 

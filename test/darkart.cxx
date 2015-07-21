@@ -80,7 +80,7 @@ void write_darkart_type(unsigned domain_id)
     safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));
 
   reflex::AutoDynamicData ddi1(safe_typeSupport.get());
-  reflex::write_dynamicdata(all, *ddi1.get());
+  reflex::write_dynamicdata(*ddi1.get(), all);
   std::cout << "Printing Data\n";
 
   // FIXME: Causes a run-time crash.

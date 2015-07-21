@@ -46,9 +46,9 @@ public:
   const int & shapesize()     const { return shapesize_; }
 };
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
   ShapeType,
-  (std::string, color(), RTI_KEY)
+  (std::string, color(), REFLEX_KEY)
   (int,             x())
   (int,             y())
   (int,     shapesize()))
@@ -88,16 +88,16 @@ public:
 };
 
 
-ENUM_DEF(ShapeFillKind, "ShapeFillKind", 4)
+REFLEX_ENUM_DEF_CUSTOM(ShapeFillKind, "ShapeFillKind", 4)
 
-ENUM_MEMBER_DEF(ShapeFillKind, 0, "SOLID_FILL",            0)
-ENUM_MEMBER_DEF(ShapeFillKind, 1, "TRANSPARENT_FILL",      1)
-ENUM_MEMBER_DEF(ShapeFillKind, 2, "HORIZONTAL_HATCH_FILL", 2)
-ENUM_MEMBER_DEF(ShapeFillKind, 3, "VERTICAL_HATCH_FILL",   3)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(ShapeFillKind, 0, "SOLID_FILL",            0)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(ShapeFillKind, 1, "TRANSPARENT_FILL",      1)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(ShapeFillKind, 2, "HORIZONTAL_HATCH_FILL", 2)
+REFLEX_ENUM_MEMBER_DEF_CUSTOM(ShapeFillKind, 3, "VERTICAL_HATCH_FILL",   3)
 
-RTI_ADAPT_VALUETYPE(
+REFLEX_ADAPT_VALUETYPE(
   ShapeTypeExtended, 
-  BASE(ShapeType),
+  REFLEX_EXTENDS(ShapeType),
   (ShapeFillKind, fillKind())
   (float,         angle()))
 
@@ -105,12 +105,12 @@ RTI_ADAPT_VALUETYPE(
 
 typedef std::tuple<std::string, int, int, int> ShapeTypeTuple;
 
-STRUCT_NAME_DEF_CUSTOM(ShapeTypeTuple, "ShapeType")
+REFLEX_STRUCT_NAME_DEF_CUSTOM(ShapeTypeTuple, "ShapeType")
 
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 0, "color",     RTI_KEY);
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 1, "x",         RTI_REQUIRED);
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 2, "y",         RTI_REQUIRED);
-MEMBER_TRAITS_DEF_CUSTOM(ShapeTypeTuple, 3, "shapesize", RTI_REQUIRED);
+REFLEX_STRUCT_MEMBER_DEF_CUSTOM(ShapeTypeTuple, 0, "color",     REFLEX_KEY);
+REFLEX_STRUCT_MEMBER_DEF_CUSTOM(ShapeTypeTuple, 1, "x",         REFLEX_REQUIRED);
+REFLEX_STRUCT_MEMBER_DEF_CUSTOM(ShapeTypeTuple, 2, "y",         REFLEX_REQUIRED);
+REFLEX_STRUCT_MEMBER_DEF_CUSTOM(ShapeTypeTuple, 3, "shapesize", REFLEX_REQUIRED);
 
 
 #endif // RTIREFLEX_LARGE_TYPE_H

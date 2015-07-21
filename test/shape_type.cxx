@@ -250,7 +250,7 @@ void write_shape_type(int domain_id)
     copy(t1, x, y, color, shapesize);
 
     // write the values in a dynamic data instance.
-    reflex::write_dynamicdata(t1, *dd1.get());
+    reflex::write_dynamicdata(*dd1.get(), t1);
 
     // print if you like
     //ddi1.get()->print(stdout, 2);
@@ -258,11 +258,11 @@ void write_shape_type(int domain_id)
 
     // read the dynamic data instance back 
     // in a different tuple
-    reflex::read_dynamicdata(*dd1.get(), t2);
+    reflex::read_dynamicdata(t2, *dd1.get());
 
     // write the second tuple again in a
     // different dynamic data instance.
-    reflex::write_dynamicdata(t2, *dd2.get());
+    reflex::write_dynamicdata(*dd2.get(), t2);
 
     // print if you like
     // ddi2.get()->print(stdout, 2);

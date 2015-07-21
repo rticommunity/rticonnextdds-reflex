@@ -17,7 +17,7 @@ damages arising out of the use or inability to use the software.
 
 #include <ndds/ndds_cpp.h>
 #include "reflex/safe_typecode.h"
-#include "reflex/default_member_names.h"
+#include "reflex/member_names.h"
 #include "reflex/enable_if.h"
 #include "reflex/disc_union.h" 
 #include "reflex/tuple_iterator.h"

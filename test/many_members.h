@@ -32,7 +32,7 @@ struct many_members
   int m101;
 };
 
-RTI_ADAPT_STRUCT(many_members,
+REFLEX_ADAPT_STRUCT(many_members,
     (int,  m1)(int,  m2)(int,  m3)(int,  m4)(int,  m5)
     (int,  m6)(int,  m7)(int,  m8)(int,  m9)(int, m10)
     (int, m11)(int, m12)(int, m13)(int, m14)(int, m15)

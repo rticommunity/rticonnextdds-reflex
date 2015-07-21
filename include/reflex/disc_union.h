@@ -17,7 +17,7 @@ damages arising out of the use or inability to use the software.
 #include <tuple>
 #include <typeinfo>
 #include "reflex/tuple_iterator.h"
-#include "reflex/default_member_names.h"
+#include "reflex/member_names.h"
 
 namespace reflex {
 

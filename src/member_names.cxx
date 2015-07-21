@@ -9,7 +9,7 @@ damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
 #include "reflex/dllexport.h"
-#include "reflex/default_member_names.h"
+#include "reflex/member_names.h"
 #include "ndds/ndds_cpp.h"
 #include <string>
 

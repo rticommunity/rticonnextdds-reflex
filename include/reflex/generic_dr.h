@@ -155,7 +155,7 @@ namespace reflex {
         for (int i = 0; i < data_seq.length(); ++i)
         {
           if (info_seq[i].valid_data)
-            read_dynamicdata(data_seq[i], data[i].data());
+            read_dynamicdata(data[i].data(), data_seq[i]);
           else
           {
             T temp;
