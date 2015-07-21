@@ -150,12 +150,13 @@ bool test_roundtrip_property()
 {
   auto gen = gen::make_tuple_gen<Tuple>();
   Tuple d1 = gen.generate();
+  reflex::TypeManager<Tuple> tm;
   //std::cout << d1 << "\n";
-  reflex::SafeDynamicData<Tuple> safedd = reflex::make_dynamicdata(d1);
+  reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(d1);
   safedd.get()->print(stdout, 2);
   reflex::detail::print_IDL(safedd.get()->get_type(), 2);
   Tuple d2;
-  reflex::read_dynamicdata(safedd, d2);
+  reflex::read_dynamicdata(d2, safedd);
   std::cout << std::boolalpha << (d1 == d2) << "\n";
   return true;
 }

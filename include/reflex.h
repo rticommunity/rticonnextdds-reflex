@@ -26,6 +26,7 @@ damages arising out of the use or inability to use the software.
 #include "reflex/generic_dr.h"
 #include "reflex/generic_dw.h"
 #include "reflex/safe_dynamicdata.h"
+#include "reflex/type_manager.h"
 #include "reflex/reflex_fwd.h"
 
 #include <boost/fusion/sequence/intrinsic/size.hpp>

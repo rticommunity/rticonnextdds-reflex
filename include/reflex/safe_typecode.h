@@ -68,8 +68,8 @@ namespace reflex {
     */
     explicit SafeTypeCode(const DDS_TypeCode * tc)
       : factory_(DDS_TypeCodeFactory::get_instance()),
-      typecode_(tc),
-      is_shared_(true)
+        typecode_(const_cast<DDS_TypeCode *>(tc)),
+        is_shared_(true)
     { }
 
     /** @brief Construct an SafeTypeCode object that owns the TypeCode

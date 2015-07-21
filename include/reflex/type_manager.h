@@ -68,7 +68,7 @@ namespace reflex
 
     TypeManager(DDSDynamicDataTypeSupport * support)
       : _props(),
-        _safe_typecode(static_cast<const DDSDynamicDataTypeSupport *>(support->get_data_type())),
+        _safe_typecode(support->get_data_type()),
         _type_support(support, detail::empty_deleter())
     {  }
 
@@ -83,7 +83,7 @@ namespace reflex
     */
     SafeDynamicData<T> create_dynamicdata(const T & src) const
     {
-      return SafeDynamicData<T>(_type_support, src);
+      return SafeDynamicData<T>(_type_support.get(), src);
     }
 
     /**
