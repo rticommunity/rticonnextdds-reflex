@@ -42,61 +42,61 @@
 
 <p>Consider the following simple <code>ShapeType</code> class.</p>
 
-<div class="highlight highlight-cpp"><pre><span class="pl-st">class</span> <span class="pl-en">ShapeType</span> 
+<div class="highlight highlight-cpp"><pre><span class="pl-k">class</span> <span class="pl-en">ShapeType</span> 
 {
   std::string color_;
-  <span class="pl-st">int</span> x_, y_, shapesize_;
+  <span class="pl-k">int</span> x_, y_, shapesize_;
 
-<span class="pl-s">public:</span>
+<span class="pl-k">public:</span>
   <span class="pl-en">ShapeType</span>() {}
-  <span class="pl-en">ShapeType</span>(<span class="pl-s">const</span> std::string &amp; color,
-            <span class="pl-st">int</span> x, <span class="pl-st">int</span> y, <span class="pl-st">int</span> shapesize)
+  <span class="pl-en">ShapeType</span>(<span class="pl-k">const</span> std::string &amp; color,
+            <span class="pl-k">int</span> x, <span class="pl-k">int</span> y, <span class="pl-k">int</span> shapesize)
     : color_(color), x_(x), y_(y),
       <span class="pl-en">shapesize_</span>(shapesize)
   {}
 
   std::string &amp; <span class="pl-en">color</span>() { <span class="pl-k">return</span> color_;     }
-  <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             { <span class="pl-k">return</span> x_;         }
-  <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             { <span class="pl-k">return</span> y_;         }
-  <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     { <span class="pl-k">return</span> shapesize_; }
+  <span class="pl-k">int</span> &amp; <span class="pl-en">x</span>()             { <span class="pl-k">return</span> x_;         }
+  <span class="pl-k">int</span> &amp; <span class="pl-en">y</span>()             { <span class="pl-k">return</span> y_;         }
+  <span class="pl-k">int</span> &amp; <span class="pl-en">shapesize</span>()     { <span class="pl-k">return</span> shapesize_; }
 
-  <span class="pl-s">const</span> std::string &amp; <span class="pl-en">color</span>() <span class="pl-s">const</span> { <span class="pl-k">return</span> color_;     }
-  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">x</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> x_;         }
-  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">y</span>()             <span class="pl-s">const</span> { <span class="pl-k">return</span> y_;         }
-  <span class="pl-s">const</span> <span class="pl-st">int</span> &amp; <span class="pl-en">shapesize</span>()     <span class="pl-s">const</span> { <span class="pl-k">return</span> shapesize_; }
+  <span class="pl-k">const</span> std::string &amp; <span class="pl-en">color</span>() <span class="pl-k">const</span> { <span class="pl-k">return</span> color_;     }
+  <span class="pl-k">const</span> <span class="pl-k">int</span> &amp; <span class="pl-en">x</span>()             <span class="pl-k">const</span> { <span class="pl-k">return</span> x_;         }
+  <span class="pl-k">const</span> <span class="pl-k">int</span> &amp; <span class="pl-en">y</span>()             <span class="pl-k">const</span> { <span class="pl-k">return</span> y_;         }
+  <span class="pl-k">const</span> <span class="pl-k">int</span> &amp; <span class="pl-en">shapesize</span>()     <span class="pl-k">const</span> { <span class="pl-k">return</span> shapesize_; }
 };</pre></div>
 
-<p>To send and receive instances of this class using DDS, simply add the <code>RTI_ADAPT_STRUCT</code> macro below. Note that <code>color</code> is the key.</p>
+<p>To send and receive instances of this class using DDS, simply add the <code>REFLEX_ADAPT_STRUCT</code> macro below. Note that <code>color</code> is the key.</p>
 
-<div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>reflex.h<span class="pl-pds">"</span></span>
+<div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>reflex.h<span class="pl-pds">"</span></span>
 
-<span class="pl-en">RTI_ADAPT_STRUCT</span>(
+<span class="pl-en">REFLEX_ADAPT_STRUCT</span>(
   ShapeType,
-  (std::string, color(), RTI_KEY)
-  (<span class="pl-st">int</span>,             x())
-  (<span class="pl-st">int</span>,             y())
-  (<span class="pl-st">int</span>,     shapesize()))</pre></div>
+  (std::string, color(), REFLEX_KEY)
+  (<span class="pl-k">int</span>,             x())
+  (<span class="pl-k">int</span>,             y())
+  (<span class="pl-k">int</span>,     shapesize()))</pre></div>
 
 <p>The <code>ShapeType</code> class and its objects can now be used with RTI Connext DDS. Here's the <code>main</code> program that writes a <code>ShapeType</code> objects. <code>GenericDataWriter</code> is an thin shim layer to simplify using DDS DataWriter with RefleX. It is not mandatory, however. </p>
 
-<div class="highlight highlight-cpp"><pre><span class="pl-st">int</span> <span class="pl-en">main</span> (<span class="pl-st">void</span>)
+<div class="highlight highlight-cpp"><pre><span class="pl-k">int</span> <span class="pl-en">main</span> (<span class="pl-k">void</span>)
 {
   <span class="pl-c">// ... setup participant</span>
 
   reflex::GenericDataWriter&lt;ShapeType&gt;
-      <span class="pl-s3">writer</span>(participant, <span class="pl-s1"><span class="pl-pds">"</span>Square<span class="pl-pds">"</span></span>);
-  ShapeType <span class="pl-vo">shape</span>(<span class="pl-s1"><span class="pl-pds">"</span>BLUE<span class="pl-pds">"</span></span>, <span class="pl-c1">10</span>, <span class="pl-c1">20</span>, <span class="pl-c1">30</span>);
-  writer.<span class="pl-s3">write</span>(shape);
+      <span class="pl-c1">writer</span>(participant, <span class="pl-s"><span class="pl-pds">"</span>Square<span class="pl-pds">"</span></span>);
+  ShapeType <span class="pl-smi">shape</span>(<span class="pl-s"><span class="pl-pds">"</span>BLUE<span class="pl-pds">"</span></span>, <span class="pl-c1">10</span>, <span class="pl-c1">20</span>, <span class="pl-c1">30</span>);
+  writer.<span class="pl-c1">write</span>(shape);
 }</pre></div>
 
-<p>RefleX maps the <code>ShapeType</code> class to the following <code>ShapeType</code> IDL, which is interoperable with the Shapes Demo.</p>
+<p>RefleX maps the <code>ShapeType</code> class to the following <code>ShapeType</code> IDL, which is inter-operable with the Shapes Demo.</p>
 
-<div class="highlight highlight-cpp"><pre><span class="pl-st">struct</span> <span class="pl-en">ShapeType</span>
+<div class="highlight highlight-cpp"><pre><span class="pl-k">struct</span> <span class="pl-en">ShapeType</span>
 {
     string&lt;<span class="pl-c1">128</span>&gt; color; <span class="pl-c">//@key</span>
-    <span class="pl-st">long</span> x;
-    <span class="pl-st">long</span> y;
-    <span class="pl-st">long</span> shapesize;
+    <span class="pl-k">long</span> x;
+    <span class="pl-k">long</span> y;
+    <span class="pl-k">long</span> shapesize;
 };<span class="pl-c">//@Extensibility EXTENSIBLE_EXTENSIBILITY</span></pre></div>
 
 <h3>
@@ -145,21 +145,26 @@
 <a id="linux" class="anchor" href="#linux" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux</h4>
 
 <ol>
-<li>Use gcc 4.8, clang 3.3 or better</li>
+<li>Recommended compilers: g++ 4.8, clang 3.3 or better</li>
 <li>export REFLEXHOME, BOOSTHOME (1.46+) and NDDSHOME (5.0.0+)</li>
-<li>export ARCH=i86Linux2.6gcc4.4.5, for example. See make/Makefile* for details</li>
+<li>export ARCH=i86Linux2.6gcc4.8.2, for example.</li>
+<li>See make/Makefile* for details</li>
 <li>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NDDSHOME/lib/$ARCH:$REFLEXHOME/objs/$ARCH</li>
-<li>Example: make -f make/Makefile.i86Linux-gcc CXX=g++48 (g++48 must be in your $PATH) </li>
+<li>Build:               make -f make/Makefile.i86Linux-gcc CXX=g++48 (g++48 must be in your $PATH)</li>
+<li>Build tests:         make/Makefile.i86Linux-gcc test</li>
+<li>Build perf_test:     make/Makefile.i86Linux-gcc perf_test</li>
+<li>Build property_test: make/Makefile.i86Linux-gcc prop_test CXX=g++5 CXXSTD=c++14 RANDOM=$RANDOM</li>
 </ol>
 
-<h4>
-<a id="visual-studio-2013-build" class="anchor" href="#visual-studio-2013-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Visual Studio 2013 Build</h4>
+<h3>
+<a id="windows-build" class="anchor" href="#windows-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Windows Build</h3>
 
 <ol>
+<li>Use Visual Studio 2013</li>
 <li>Set REFLEXHOME, BOOSTHOME (1.46+), and NDDSHOME (5.1.0+)</li>
 <li>Set PATH=%PATH%;%REFLEXHOME%\objs\i86Win32VS2013;%NDDSHOME%\lib\i86Win32VS2012</li>
-<li>(Optional) Run %NDDSHOME%\scripts\rtiddsgen -language C++ -namespace -d test idl\complex.idl</li>
-<li>Open win32\reflex-vs2013.sln using Visual Studio and build.</li>
+<li>Run %NDDSHOME%\scripts\rtiddsgen -language C++ -namespace -d test idl\complex.idl</li>
+<li>Open win32\reflex-vs2013.sln</li>
 </ol>
 
 <h3>
