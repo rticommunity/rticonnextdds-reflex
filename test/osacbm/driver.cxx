@@ -74,23 +74,16 @@ namespace osacbm {
 
 };
 
-RTI_ADAPT_STRUCT(
-    osacbm::DAReal,
-    (osacbm::DAReal::value_type, value())
-    );
-
-RTI_ADAPT_ENUM_NAME(
+REFLEX_ADAPT_ENUM(
     osacbm::DataStatus,
-    "DataStatus",
     (OK,        0)
     (FAILED,    1)
     (UNKNOWN,   2)
     (NOT_USED,  3)
     );
  
-RTI_ADAPT_ENUM_NAME(
+REFLEX_ADAPT_ENUM(
     osacbm::SITE_CATEGORY,
-    "SITE_CATEGORY",
     (SITE_ZERO,           0)
     (SITE_SPECIFIC,       1)
     (SITE_PLAT,           2)
@@ -101,9 +94,8 @@ RTI_ADAPT_ENUM_NAME(
     (SITE_PLAT_TRNG_DATA, 7)
     );
 
-RTI_ADAPT_ENUM_NAME(
+REFLEX_ADAPT_ENUM(
     osacbm::OsacbmTimeType,
-    "OsacbmTimeType",
     (OSACBM_TIME_MIMOSA,       0)
     (OSACBM_TIME_POSIX_NSEC_8, 1)
     (OSACBM_TIME_POSIX_USEC_8, 2)
@@ -116,7 +108,12 @@ RTI_ADAPT_ENUM_NAME(
     (OSACBM_TIME_SYSTEM_TICK,  9) 
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
+    osacbm::DAReal,
+    (osacbm::DAReal::value_type, value())
+    );
+
+REFLEX_ADAPT_STRUCT(
     osacbm::Site,
     (osacbm::SITE_CATEGORY,                category())
     (osacbm::Site::regId_optional,         regId())
@@ -125,7 +122,7 @@ RTI_ADAPT_STRUCT(
     (osacbm::Site::userTag_optional,       userTag())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::MIMKey3,
     (osacbm::MIMKey3::code_type,     code())
     (osacbm::MIMKey3::dbId_type,     dbId())
@@ -133,20 +130,20 @@ RTI_ADAPT_STRUCT(
     (osacbm::Site,                   site())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::MIMKey1,
     (xml_schema::unsigned_int,         code())
     (osacbm::MIMKey1::name_optional,   name())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::LocalTime,
     (osacbm::LocalTime::dst_type,       dst())
     (osacbm::LocalTime::hourDelta_type, hourDelta())
     (osacbm::LocalTime::minDelta_type,  minDelta())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::OsacbmTime,
     (osacbm::OsacbmTime::localTime_optional,   localTime())
     (osacbm::OsacbmTime::time_type,            time())
@@ -154,18 +151,18 @@ RTI_ADAPT_STRUCT(
     (osacbm::OsacbmTime::time_type_type,       time_type1())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::RefUnit,
     (osacbm::MIMKey1, id())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::UnitConverter,
     (xml_schema::double_, multiplier())
     (xml_schema::double_, offset())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::EngUnit,
     (osacbm::EngUnit::abbrev_optional,   abbrev())
     (osacbm::EngUnit::code_type,         code())
@@ -176,14 +173,14 @@ RTI_ADAPT_STRUCT(
     (osacbm::EngUnit::unitConv_optional, unitConv())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::EnumValue,
     (osacbm::EnumValue::enumEU_optional, enumEU())
     (osacbm::EnumValue::name_optional,   name())
     (osacbm::EnumValue::value_type,      value())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::NumAlert,
     (osacbm::NumAlert::alertName_optional,      alertName())
     (osacbm::NumAlert::alertSeverity_optional,  alertSeverity())
@@ -196,7 +193,7 @@ RTI_ADAPT_STRUCT(
     (osacbm::NumAlert::regionRef_optional,      regionRef())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::AlertRegionRef,
     (xml_schema::unsigned_int,                          regionId())
     (osacbm::AlertRegionRef::regionLastUpdate_optional, regionLastUpdate())
@@ -204,7 +201,7 @@ RTI_ADAPT_STRUCT(
     (osacbm::AlertRegionRef::regionSite_optional,       regionSite())
     );
 
-RTI_ADAPT_STRUCT(
+REFLEX_ADAPT_STRUCT(
     osacbm::DataEvent,
     (osacbm::DataEvent::alertStatus_optional,  alertStatus())
     (osacbm::DataEvent::confid_optional,       confid())
@@ -214,14 +211,14 @@ RTI_ADAPT_STRUCT(
     (osacbm::DataEvent::time_optional,         time())
     );
 
-RTI_ADAPT_VALUETYPE(
+REFLEX_ADAPT_VALUETYPE(
     osacbm::DADataEvent,
     osacbm::DataEvent,
     (osacbm::DADataEvent::dataStatus_optional, dataStatus())
     (osacbm::DADataEvent::numAlerts_sequence,  numAlerts())
     );
 
-RTI_ADAPT_VALUETYPE(
+REFLEX_ADAPT_VALUETYPE(
     osacbm::DADataSeq, 
     osacbm::DADataEvent,
     (osacbm::DADataSeq::values_sequence,            values())
@@ -255,8 +252,10 @@ void test_DADataSeq()
 
   dataseq1.xAxisStart(99.99);
 
+  reflex::TypeManager<osacbm::DADataSeq> tm_dataseq;
+
   reflex::SafeDynamicData<osacbm::DADataSeq> sdd1 = 
-    reflex::make_dd(dataseq1);
+    tm_dataseq.create_dynamicdata(dataseq1);
 
   std::cout << dataseq1 << std::endl;
   // valuetype printing appears to have bugs
@@ -264,10 +263,10 @@ void test_DADataSeq()
 
   osacbm::DADataSeq dataseq2;
 
-  reflex::extract_dd(*sdd1.get(), dataseq2);
+  reflex::read_dynamicdata(dataseq2, sdd1);
 
   reflex::SafeDynamicData<osacbm::DADataSeq> sdd2 = 
-    reflex::make_dd(dataseq2);
+    tm_dataseq.create_dynamicdata(dataseq2);
 
   assert(dataseq1 == dataseq2);
   assert(sdd1.get()->equal(*sdd2.get()));
