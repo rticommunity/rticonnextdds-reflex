@@ -178,7 +178,7 @@ namespace reflex {
         std::cerr << "binding " << Head << "\n";
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(outer, inner, MemberAccess::BY_ID(Head + 1));
-        reflex::meta::TraverseTupleByIndices<T, Tuple, meta::indices<Tail...>>::exec(inner, val);
+        TraverseTupleByIndices<T, Tuple, meta::indices<Tail...>>::exec(inner, val);
         std::cerr << "unbinding\n";
       }
     };

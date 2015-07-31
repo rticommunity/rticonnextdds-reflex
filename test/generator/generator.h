@@ -13,8 +13,8 @@
 
 namespace gen {
 
-  constexpr unsigned int DEFAULT_MAX_STR_LEN = 100;
-  constexpr unsigned int DEFAULT_MAX_SEQ_LEN = 100;
+  constexpr unsigned int DEFAULT_MAX_STR_LEN = 3;
+  constexpr unsigned int DEFAULT_MAX_SEQ_LEN = 3;
 
 #ifdef RTI_WIN32
   void initialize(unsigned int seed = 0)
@@ -232,8 +232,8 @@ namespace gen {
   {
     return make_gen_from(
       [genlist...,
-      func = std::forward<Zipper>(func)]() mutable {
-      return func(genlist.generate()...);
+       func = std::forward<Zipper>(func)]() mutable {
+          return func(genlist.generate()...);
     });
   }
 
@@ -290,8 +290,8 @@ namespace gen {
     {
       static auto make()
       {
-        return make_zip_gen([](auto... args) {
-          return std::make_tuple(args...);
+        return make_zip_gen([](auto&&... args) {
+          return std::make_tuple(std::forward<decltype(args)>(args)...);
         }, GenFactory<Args>::make()...);
       }
     };
