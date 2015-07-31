@@ -34,7 +34,7 @@ namespace reflex {
       else
         return s;
     }
-    REFLEX_INLINE const char * DefaultMemberNames::basename(const char * str)
+    REFLEX_INLINE const char * NameHelper::basename(const char * str)
     {
       if (!str)  return str; // null string
       if (!*str) return str; // empty string
@@ -44,7 +44,7 @@ namespace reflex {
       return (ptr == str) ? str : ptr + 1;
     }
 
-    REFLEX_INLINE std::string DefaultMemberNames::type_name(const char * prefix)
+    REFLEX_INLINE std::string NameHelper::type_name(const char * prefix)
     {
       static unsigned int i = 0;
       char buf[32];
@@ -52,7 +52,7 @@ namespace reflex {
       return std::string(buf);
     }
 
-    REFLEX_INLINE std::string DefaultMemberNames::demangle(const char* name)
+    REFLEX_INLINE std::string NameHelper::demangle(const char* name)
     {
 #ifdef HAVE_CXA_DEMANGLE
       int status = -4;
@@ -66,15 +66,15 @@ namespace reflex {
       }
       else 
       {
-        return DefaultMemberNames::type_name("T");
+        return NameHelper::type_name("T");
       }
 #else 
-      return DefaultMemberNames::type_name("DefaultTypeName");
+      return NameHelper::type_name("DefaultTypeName");
 #endif
     }
 
     REFLEX_INLINE REFLEX_DLL_EXPORT 
-      reflex::codegen::MemberInfo DefaultMemberNames::get_member_info(int i)
+      reflex::codegen::MemberInfo NameHelper::get_member_info(int i)
     { 
       char member_name[32];
       snprintf(member_name, 32, "m%d", i);
@@ -85,9 +85,9 @@ namespace reflex {
 
   namespace codegen {
 
-      REFLEX_INLINE MemberInfo::MemberInfo() {}
+    REFLEX_INLINE REFLEX_DLL_EXPORT MemberInfo::MemberInfo() {}
 
-      REFLEX_INLINE MemberInfo::MemberInfo(
+    REFLEX_INLINE REFLEX_DLL_EXPORT MemberInfo::MemberInfo(
                  const std::string & n,
                  unsigned char v)
         : name(reflex::detail::remove_parenthesis(n)), 

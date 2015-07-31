@@ -52,8 +52,8 @@ namespace reflex {
     template <class T>
     struct MembersInBasesImpl<T, reflex::meta::true_type>
     {
-      typedef typename reflex::type_traits::InheritanceTraits<T>::basetype  Base;
-      typedef typename reflex::type_traits::InheritanceTraits<Base>::has_base BaseHasBase;
+      typedef typename reflex::type_traits::inheritance_traits<T>::basetype  Base;
+      typedef typename reflex::type_traits::inheritance_traits<Base>::has_base BaseHasBase;
 
       enum {
         value = MembersInBasesImpl<Base, BaseHasBase>::value +
@@ -64,7 +64,7 @@ namespace reflex {
     template <class T>
     struct MembersInBases
     {
-      typedef typename reflex::type_traits::InheritanceTraits<T>::has_base HasBase;
+      typedef typename reflex::type_traits::inheritance_traits<T>::has_base HasBase;
       enum { value = MembersInBasesImpl<T, HasBase>::value };
     };
 
@@ -92,12 +92,12 @@ namespace reflex {
       DDS_DynamicData &instance,
       reflex::meta::true_type /* T has a base */)
     {
-      typedef typename reflex::type_traits::InheritanceTraits<T>::basetype Base;
+      typedef typename reflex::type_traits::inheritance_traits<T>::basetype Base;
 
       write_dynamicdata_impl(
         static_cast<const Base &>(data),
         instance,
-        typename reflex::type_traits::InheritanceTraits<Base>::has_base());
+        typename reflex::type_traits::inheritance_traits<Base>::has_base());
 
       typedef detail::TypelistIterator<
         T,
@@ -133,12 +133,12 @@ namespace reflex {
       T & data,
       reflex::meta::true_type /* T has a base*/)
     {
-      typedef typename reflex::type_traits::InheritanceTraits<T>::basetype Base;
+      typedef typename reflex::type_traits::inheritance_traits<T>::basetype Base;
 
       read_dynamicdata_impl(
         instance,
         static_cast<Base &>(data),
-        typename reflex::type_traits::InheritanceTraits<Base>::has_base());
+        typename reflex::type_traits::inheritance_traits<Base>::has_base());
 
       typedef detail::TypelistIterator<
         T,
@@ -159,7 +159,7 @@ namespace reflex {
     detail::write_dynamicdata_impl(
       src,
       dest,
-      typename reflex::type_traits::InheritanceTraits<T>::has_base());
+      typename reflex::type_traits::inheritance_traits<T>::has_base());
   }
 
   template <class T>
@@ -168,7 +168,7 @@ namespace reflex {
     detail::write_dynamicdata_impl(
       src,
       *dest.get(),
-      typename reflex::type_traits::InheritanceTraits<T>::has_base());
+      typename reflex::type_traits::inheritance_traits<T>::has_base());
   }
 
   template <class T>
@@ -177,7 +177,7 @@ namespace reflex {
     SafeTypeCode<T> aggregateTc =
       detail::Struct_TC_Helper::get_typecode_struct<T>(
         name,
-        typename reflex::type_traits::InheritanceTraits<T>::has_base());
+        typename reflex::type_traits::inheritance_traits<T>::has_base());
 
     return aggregateTc;
   }
@@ -188,7 +188,7 @@ namespace reflex {
     detail::read_dynamicdata_impl(
       src,
       dest,
-      typename reflex::type_traits::InheritanceTraits<T>::has_base());
+      typename reflex::type_traits::inheritance_traits<T>::has_base());
   }
 
   template <class T>
@@ -197,7 +197,7 @@ namespace reflex {
     detail::read_dynamicdata_impl(
       *src.get(),
       dest,
-      typename reflex::type_traits::InheritanceTraits<T>::has_base());
+      typename reflex::type_traits::inheritance_traits<T>::has_base());
   }
 
 } // namespace reflex

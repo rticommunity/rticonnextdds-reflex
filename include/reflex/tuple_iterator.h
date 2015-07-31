@@ -71,7 +71,7 @@ namespace reflex {
         typedef typename reflex::meta::at<Typelist, I>::type CaseI;
         if (CaseI::matches(discriminator_value))
         {
-          typename CaseI::type * data_ptr = reflex::meta::Get<I>(val.get_caseptr_tuple());
+          typename CaseI::type * data_ptr = reflex::meta::get<I>(val.get_caseptr_tuple());
           bool data_in_case_ptr = data_ptr ? true : false;
 
           if (data_in_case_ptr == false)
@@ -125,7 +125,7 @@ namespace reflex {
         {
           typedef typename reflex::meta::at<Typelist, I>::type CaseI;
           typename CaseI::type const * data_ptr =
-            reflex::meta::Get<I>(val.get_caseptr_tuple()) ? :
+            reflex::meta::get<I>(val.get_caseptr_tuple()) ? :
               &(boost::get<CaseI>(val.get_variant()).get());
 
           if (ma.access_by_id())
@@ -174,7 +174,7 @@ namespace reflex {
 
         if (ma.access_by_id())
         {
-          set_member_forward(instance, ma, reflex::meta::Get<I>(tuple));
+          set_member_forward(instance, ma, reflex::meta::get<I>(tuple));
           Next::set(instance, ma + 1, tuple);
         }
         else
@@ -185,7 +185,7 @@ namespace reflex {
           set_member_forward(
                      instance,
                      MemberAccess::BY_NAME(info.name.c_str()),
-                     reflex::meta::Get<I>(tuple));
+                     reflex::meta::get<I>(tuple));
 
           Next::set(instance, ma, tuple);
         }
@@ -204,7 +204,7 @@ namespace reflex {
 #endif
         if (ma.access_by_id())
         {
-          get_member_forward(instance, ma, reflex::meta::Get<I>(tuple));
+          get_member_forward(instance, ma, reflex::meta::get<I>(tuple));
           Next::get(instance, ma + 1, tuple);
         }
         else
@@ -216,7 +216,7 @@ namespace reflex {
           get_member_forward(
               instance,
               MemberAccess::BY_NAME(info.name.c_str()),
-              reflex::meta::Get<I>(tuple));
+              reflex::meta::get<I>(tuple));
           Next::get(instance, ma, tuple);
         }
       }
@@ -318,7 +318,7 @@ namespace reflex {
 
         if (ma.access_by_id()) 
         {
-          set_member_forward(instance, ma, reflex::meta::Get<MAX_INDEX>(tuple));
+          set_member_forward(instance, ma, reflex::meta::get<MAX_INDEX>(tuple));
         }
         else
         {
@@ -329,7 +329,7 @@ namespace reflex {
           set_member_forward(
                      instance,
                      MemberAccess::BY_NAME(info.name.c_str()),
-                     reflex::meta::Get<MAX_INDEX>(tuple));
+                     reflex::meta::get<MAX_INDEX>(tuple));
         }
       }
 
@@ -346,7 +346,7 @@ namespace reflex {
 
         if (ma.access_by_id())
         {
-          get_member_forward(instance, ma, reflex::meta::Get<MAX_INDEX>(tuple));
+          get_member_forward(instance, ma, reflex::meta::get<MAX_INDEX>(tuple));
         }
         else
         {
@@ -357,7 +357,7 @@ namespace reflex {
           get_member_forward(
               instance,
               MemberAccess::BY_NAME(info.name.c_str()),
-              reflex::meta::Get<MAX_INDEX>(tuple));
+              reflex::meta::get<MAX_INDEX>(tuple));
         }
       }
 

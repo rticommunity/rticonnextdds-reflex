@@ -107,6 +107,9 @@ namespace reflex {
 
   } // namespace match
 
+  /**
+  * @brief Includes C++ compile-time meta-programming facilities
+  */
   namespace meta {
 
     struct true_type {
@@ -119,6 +122,10 @@ namespace reflex {
 
   } // namespace meta
 
+  /**
+  * @brief RefleX macros in \link adapt_macros.h \endlink expand static 
+  *        information of user-defined types to this namespace.
+  */
   namespace codegen {
 
     template <class T>
@@ -127,6 +134,23 @@ namespace reflex {
       enum { is_enum = 0 };
     };
 
+    /**
+     * @brief Casts integers to user-defined enumeration types.
+     *
+     *        C++ does not directly allow casting from integers to 
+     *        user-defined enumerations. A static_cast must be used.
+     *        The default implementation of this function uses
+     *        a static_cast. It may not be sufficient in some cases.
+     *
+     *        In cases where the generated enumeration is more than
+     *        the native C++ enumeration (such as a class), the 
+     *        enum_cast function must overloaded explicitly to support
+     *        conversion from integers to the specialized implementation
+     *        of enumeration types. This function must be overloaded in 
+     *        the namespace that declares the enumeration.
+     *
+     *        For a complete example please see $REFLEXHOME/test/osacbm/driver.cxx
+     */
     template <class T>
     void enum_cast(T & dst, DDS_Long src)
     {
@@ -137,6 +161,45 @@ namespace reflex {
   } // namespace codegen
 
 
+  /**
+  * @brief Contains customizable type traits for user-defined types
+  * 
+  *        Type-traits for standard library container/optional types 
+  *        and select boost types are already provided. For third-party 
+  *        container/optional types, the respective type traits templates
+  *        can be customized. 
+  *
+  *        For instance, if thirdparty::base64_binary is a container of 
+  *        octets in the thirdparty namespace, such a container can be
+  *        easily adapted using the following.
+  *
+  *        \code{.cpp}
+  *        namespace reflex { namespace type_traits {
+  *          template <> 
+  *          struct is_container<thirdparty::base64_binary> 
+  *                   : reflex::meta::true_type 
+  *          { };
+  *
+  *          template <>
+  *          struct container_traits<thirdparty::base64_binary>
+  *          {
+  *            typedef char value_type;
+  *            typedef char * iterator;
+  *          };
+  *
+  *        } } // namespace reflex::type_traits
+  *        \endcode
+  *
+  *        The is_container type trait indicates that a certain type should be 
+  *        treated as a container type. It will map to sequence typecode.
+  *        Adaptable containers must export input-iterator like interface including
+  *        the relevant traits. For instance, thirdparty::base64_binary exports
+  *        value_type and iterator using container_traits specialization below.
+  *        The container_traits specialization may not be always needed.
+  *
+  *        For a more complete example, please see $REFLEXHOME/include/reflex/traits/xsd_traits.h
+  *
+  */
   namespace type_traits {
 
     using reflex::meta::false_type;
@@ -400,27 +463,27 @@ namespace reflex {
     template <> struct is_char_ptr<const char * const> : true_type{};
 
     template <class T>
-    struct InheritanceTraits {
+    struct inheritance_traits {
       typedef reflex::meta::false_type has_base;
     };
 
-    struct DefaultBase { };
+    struct default_bound { };
 
     template <class T, class Parent = void, int Index = -1>
-    struct static_string_bound : DefaultBase
+    struct static_string_bound : default_bound
     {
       static const unsigned int value = REFLEX_STATIC_STRING_BOUND;
     };
 
     template <class T, class Parent = void, int Index = -1>
-    struct static_container_bound : DefaultBase
+    struct static_container_bound : default_bound
     {
       static const unsigned int value = REFLEX_STATIC_SEQUENCE_BOUND;
     };
 
     /*template <class T>
     struct is_default_member_names {
-    enum { value = std::is_base_of<DefaultBase, T>::value };
+    enum { value = std::is_base_of<default_bound, T>::value };
     };*/
   } // namespace type_traits
 
@@ -648,7 +711,7 @@ namespace reflex {
     template <size_t I, class FusionSeq>
     typename disable_if_lazy <reflex::type_traits::is_tuple<FusionSeq>::value,
       at<FusionSeq, I >> ::type
-      Get(FusionSeq & seq)
+      get(FusionSeq & seq)
     {
       return boost::fusion::at_c<I>(seq);
     }
@@ -656,7 +719,7 @@ namespace reflex {
     template <size_t I, class FusionSeq>
     typename disable_if_lazy <reflex::type_traits::is_tuple<FusionSeq>::value,
       at<const FusionSeq, I >> ::type
-      Get(const FusionSeq & seq)
+      get(const FusionSeq & seq)
     {
       return boost::fusion::at_c<I>(seq);
     }
@@ -664,7 +727,7 @@ namespace reflex {
     template <size_t I, class... Args>
     // Note reference (ref) at the end.
     typename at<std::tuple<Args...>, I>::type &
-      Get(std::tuple<Args...> & tuple)
+      get(std::tuple<Args...> & tuple)
     {
       return std::get<I>(tuple);
     }
@@ -672,7 +735,7 @@ namespace reflex {
     template <size_t I, class... Args>
     // Note reference (ref) at the end.
     typename at<const std::tuple<Args...>, I>::type &
-      Get(const std::tuple<Args...> & tuple)
+      get(const std::tuple<Args...> & tuple)
     {
       return std::get<I>(tuple);
     }
@@ -680,7 +743,7 @@ namespace reflex {
     template <size_t I, class First, class Second>
     // Note reference (ref) at the end.
     typename at<std::pair<First, Second>, I>::type &
-      Get(std::pair<First, Second> & pair)
+      get(std::pair<First, Second> & pair)
     {
       return std::get<I>(pair);
     }
@@ -688,7 +751,7 @@ namespace reflex {
     template <size_t I, class First, class Second>
     // Note reference (ref) at the end.
     typename at<const std::pair<First, Second>, I>::type &
-      Get(const std::pair<First, Second> & pair)
+      get(const std::pair<First, Second> & pair)
     {
       return std::get<I>(pair);
     }

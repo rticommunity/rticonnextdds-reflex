@@ -234,7 +234,7 @@ namespace reflex { namespace codegen {                       \
         {                                                    \
     static const char *name() {                              \
       return                                                 \
-        detail::DefaultMemberNames::basename                 \
+        detail::NameHelper::basename                         \
          (#EnumType);                                        \
                 }                                            \
                                                              \
@@ -245,7 +245,7 @@ namespace reflex { namespace codegen {                       \
                                                              \
     template <unsigned Index>                                \
     struct EnumMember {                                      \
-      static MemberInfo info();             \
+      static MemberInfo info();                              \
                 };                                           \
         };                                                   \
 } } /* namespace reflex::detail */                           \
@@ -340,7 +340,7 @@ BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL,       \
     {                                                             \
     static std::string get()                                      \
         {                                                         \
-      return detail::DefaultMemberNames::basename(#FullyQualifiedType);   \
+      return detail::NameHelper::basename(#FullyQualifiedType);   \
         }                                                         \
     };                                                            \
 } } // namespace reflex::detail                         
@@ -348,7 +348,7 @@ BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL,       \
 #define RTI_INHERITANCE_TRAITS(Derived, Base)      \
 namespace reflex { namespace type_traits {         \
   template <>                                      \
-  struct InheritanceTraits<Derived> {              \
+  struct inheritance_traits<Derived> {              \
     typedef true_type has_base;                    \
     typedef Base basetype;                         \
     };                                             \

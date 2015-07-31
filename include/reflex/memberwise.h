@@ -20,20 +20,87 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
+  namespace meta {
+
+    template <int... I> struct indices;
+
+    struct Too_Many_Indices;
+
+    template <class T, class Indices>
+    struct get_nested_type
+    {
+      typedef Too_Many_Indices type;
+    };
+
+    template <class... Args, int Head, int... Tail>
+    struct get_nested_type<std::tuple<Args...>, indices<Head, Tail...>>
+    {
+      typedef typename std::tuple_element<Head, std::tuple<Args...>>::type TE;
+      typedef typename get_nested_type<TE, indices<Tail...>>::type type;
+    };
+
+    template <class... Args, int Head>
+    struct get_nested_type<std::tuple<Args...>, indices<Head>>
+    {
+      typedef typename std::tuple_element<Head, std::tuple<Args...>>::type type;
+    };
+
+    template <class TagType, class... Args, int Head, int... Tail>
+    struct get_nested_type<match::Union<TagType, Args...>, indices<Head, Tail...>>
+    {
+      typedef typename match::Union<TagType, Args...>::case_tuple_type CaseTuple;
+      typedef typename std::tuple_element<Head, CaseTuple>::type Case;
+      typedef typename get_nested_type<typename Case::type, indices<Tail...>>::type type;
+    };
+
+    template <class TagType, class... Args, int Head>
+    struct get_nested_type<match::Union<TagType, Args...>, indices<Head>>
+    {
+      typedef typename match::Union<TagType, Args...>::case_tuple_type CaseTuple;
+      typedef typename std::tuple_element<Head, CaseTuple>::type Case;
+      typedef typename Case::type type;
+    };
+
+    template <class... Args, int Head, int... Tail>
+    struct get_nested_type<match::Sparse<Args...>, indices<Head, Tail...>>
+    {
+      typedef typename match::Sparse<Args...>::raw_tuple_type RawTuple;
+      typedef typename std::tuple_element<Head, RawTuple>::type Raw;
+      typedef typename get_nested_type<Raw, indices<Tail...>>::type type;
+    };
+
+    template <class... Args, int Head>
+    struct get_nested_type<match::Sparse<Args...>, indices<Head>>
+    {
+      typedef typename match::Sparse<Args...>::raw_tuple_type RawTuple;
+      typedef typename std::tuple_element<Head, RawTuple>::type type;
+    };
+
+    template <class T, int Head, int... Tail>
+    struct get_nested_type<std::vector<T>, indices<Head, Tail...>>
+    {
+      typedef typename get_nested_type<T, indices<Tail...>>::type type;
+    };
+
+    template <class T, int Head>
+    struct get_nested_type<std::vector<T>, indices<Head>>
+    {
+      typedef T type;
+    };
+
+  } // namespace meta
+
   namespace detail {
 
-    struct DefaultMemberNames;
+    struct NameHelper;
 
-    template <int... I> struct Indices;
-    //template <class TagType, class... Cases> struct Union;
-    //template <class... Args> struct Sparse;
 
     template <class T>
     void set_member_by_index(DDS_DynamicData &instance,
       unsigned index,
       const T & val)
     {
-      // set_member_value<DefaultMemberNames, 0>(instance, MemberAccess::BY_ID(index + 1), val);
+      // set_member_value<NameHelper, 0>(instance, MemberAccess::BY_ID(index + 1), val);
     }
 
     template <class T>
@@ -41,7 +108,7 @@ namespace reflex {
       const char * name,
       const T & val)
     {
-      // set_member_value<DefaultMemberNames, 0>(instance, MemberAccess::BY_NAME(name), val);
+      // set_member_value<NameHelper, 0>(instance, MemberAccess::BY_NAME(name), val);
     }
 
     template <class T>
@@ -97,91 +164,27 @@ namespace reflex {
       const char *expr,
       const T & val)
     {
-
+      // FIXME
     }
-
-    struct Too_Many_Indices;
-
-    template <class T, class Indices>
-    struct GetNestedType
-    {
-      typedef Too_Many_Indices type;
-    };
-
-    template <class... Args, int Head, int... Tail>
-    struct GetNestedType<std::tuple<Args...>, Indices<Head, Tail...>>
-    {
-      typedef typename std::tuple_element<Head, std::tuple<Args...>>::type TE;
-      typedef typename GetNestedType<TE, Indices<Tail...>>::type type;
-    };
-
-    template <class... Args, int Head>
-    struct GetNestedType<std::tuple<Args...>, Indices<Head>>
-    {
-      typedef typename std::tuple_element<Head, std::tuple<Args...>>::type type;
-    };
-
-    template <class TagType, class... Args, int Head, int... Tail>
-    struct GetNestedType<match::Union<TagType, Args...>, Indices<Head, Tail...>>
-    {
-      typedef typename match::Union<TagType, Args...>::case_tuple_type CaseTuple;
-      typedef typename std::tuple_element<Head, CaseTuple>::type Case;
-      typedef typename GetNestedType<typename Case::type, Indices<Tail...>>::type type;
-    };
-
-    template <class TagType, class... Args, int Head>
-    struct GetNestedType<match::Union<TagType, Args...>, Indices<Head>>
-    {
-      typedef typename match::Union<TagType, Args...>::case_tuple_type CaseTuple;
-      typedef typename std::tuple_element<Head, CaseTuple>::type Case;
-      typedef typename Case::type type;
-    };
-
-    template <class... Args, int Head, int... Tail>
-    struct GetNestedType<match::Sparse<Args...>, Indices<Head, Tail...>>
-    {
-      typedef typename match::Sparse<Args...>::raw_tuple_type RawTuple;
-      typedef typename std::tuple_element<Head, RawTuple>::type Raw;
-      typedef typename GetNestedType<Raw, Indices<Tail...>>::type type;
-    };
-
-    template <class... Args, int Head>
-    struct GetNestedType<match::Sparse<Args...>, Indices<Head>>
-    {
-      typedef typename match::Sparse<Args...>::raw_tuple_type RawTuple;
-      typedef typename std::tuple_element<Head, RawTuple>::type type;
-    };
-
-    template <class T, int Head, int... Tail>
-    struct GetNestedType<std::vector<T>, Indices<Head, Tail...>>
-    {
-      typedef typename GetNestedType<T, Indices<Tail...>>::type type;
-    };
-
-    template <class T, int Head>
-    struct GetNestedType<std::vector<T>, Indices<Head>>
-    {
-      typedef T type;
-    };
 
     template <class T, class Tuple, class Indices>
     struct TraverseTupleByIndices;
 
     template <class T, class Tuple, int Head, int... Tail>
-    struct TraverseTupleByIndices<T, Tuple, Indices<Head, Tail...>>
+    struct TraverseTupleByIndices<T, Tuple, meta::indices<Head, Tail...>>
     {
       static void exec(DDS_DynamicData & outer, const T & val)
       {
         std::cerr << "binding " << Head << "\n";
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(outer, inner, MemberAccess::BY_ID(Head + 1));
-        TraverseTupleByIndices<T, Tuple, Indices<Tail...>>::exec(inner, val);
+        reflex::meta::TraverseTupleByIndices<T, Tuple, meta::indices<Tail...>>::exec(inner, val);
         std::cerr << "unbinding\n";
       }
     };
 
     template <class T, class Tuple, int Last>
-    struct TraverseTupleByIndices<T, Tuple, Indices<Last>>
+    struct TraverseTupleByIndices<T, Tuple, meta::indices<Last>>
     {
       static void exec(DDS_DynamicData & outer, const T & val)
       {
@@ -196,9 +199,9 @@ namespace reflex {
       const T & val)
     {
       // This functionality is buggy in case of unions. especially default cases.
-      typedef typename GetNestedType<Tuple, Indices<Head, I...>>::type Nested;
+      typedef typename meta::get_nested_type<Tuple, meta::indices<Head, I...>>::type Nested;
       static_assert(std::is_same<Nested, T>::value, "The types don't match");
-      TraverseTupleByIndices<T, Tuple, Indices<Head, I...>>::exec(instance, val);
+      TraverseTupleByIndices<T, Tuple, meta::indices<Head, I...>>::exec(instance, val);
     }
 
   } // namespace detail

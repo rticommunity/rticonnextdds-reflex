@@ -49,14 +49,14 @@ namespace reflex {
       std::string name;
       unsigned char value;
 
-      MemberInfo();
-      MemberInfo(const std::string & n, unsigned char v);
+      REFLEX_DLL_EXPORT MemberInfo();
+      REFLEX_DLL_EXPORT MemberInfo(const std::string & n, unsigned char v);
     };
   } // namespace codegen
 
   namespace detail {
 
-    struct DefaultMemberNames
+    struct NameHelper
     {
       REFLEX_DLL_EXPORT static reflex::codegen::MemberInfo get_member_info(int i);
       REFLEX_DLL_EXPORT static const char * basename(const char *);
@@ -74,7 +74,7 @@ namespace reflex {
     struct MemberTraits
     {
       static MemberInfo member_info() {
-        return reflex::detail::DefaultMemberNames::get_member_info(I);
+        return reflex::detail::NameHelper::get_member_info(I);
       }
     };
 
@@ -101,9 +101,9 @@ namespace reflex {
       static std::string get()
       {
 #ifdef HAVE_CXA_DEMANGLE
-        return reflex::detail::DefaultMemberNames::demangle(typeid(T).name());
+        return reflex::detail::NameHelper::demangle(typeid(T).name());
 #else
-        return reflex::detail::DefaultMemberNames::type_name("DefaultTypeName");
+        return reflex::detail::NameHelper::type_name("DefaultTypeName");
 #endif
       }
     };
@@ -113,7 +113,7 @@ namespace reflex {
     {
       static std::string get()
       {
-        return reflex::detail::DefaultMemberNames::type_name("DefaultPairTypeName");
+        return reflex::detail::NameHelper::type_name("DefaultPairTypeName");
       }
     };
 
@@ -122,7 +122,7 @@ namespace reflex {
     {
       static std::string get()
       {
-        return reflex::detail::DefaultMemberNames::type_name("DefaultSparseTypeName");
+        return reflex::detail::NameHelper::type_name("DefaultSparseTypeName");
       }
     };
 
@@ -131,7 +131,7 @@ namespace reflex {
     {
       static std::string get()
       {
-        return reflex::detail::DefaultMemberNames::type_name("DefaultUnionName");
+        return reflex::detail::NameHelper::type_name("DefaultUnionName");
       }
     };
 
@@ -140,7 +140,7 @@ namespace reflex {
     {
       static std::string get()
       {
-        return reflex::detail::DefaultMemberNames::type_name("DefaultTupleName");
+        return reflex::detail::NameHelper::type_name("DefaultTupleName");
       }
     };
 

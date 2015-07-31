@@ -226,12 +226,12 @@ namespace reflex {
         const char * type_name =
           name ? name : struct_name.c_str();
 
-        typedef typename reflex::type_traits::InheritanceTraits<T>::basetype BaseType;
+        typedef typename reflex::type_traits::inheritance_traits<T>::basetype BaseType;
 
         SafeTypeCode<BaseType> baseTc =
           get_typecode_struct<BaseType>(
           0,
-          typename reflex::type_traits::InheritanceTraits<BaseType>::has_base());
+          typename reflex::type_traits::inheritance_traits<BaseType>::has_base());
 
         DDS_ExceptionCode_t ex;
         DDS_TypeCode *valueTc =
@@ -311,7 +311,7 @@ namespace reflex {
       {
         return Struct_TC_Helper::get_typecode_struct<T>(
                 0 /* name */,
-                typename reflex::type_traits::InheritanceTraits<T>::has_base());
+                typename reflex::type_traits::inheritance_traits<T>::has_base());
       }
 
       template <class T>
