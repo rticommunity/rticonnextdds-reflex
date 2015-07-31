@@ -108,7 +108,7 @@ namespace reflex {
         value =
         MatchDefaultCase<CaseTuple,
         1,
-        Size<CaseTuple>::value - 1,
+        reflex::meta::size<CaseTuple>::value - 1,
         typename std::tuple_element<1, CaseTuple>::type>::value
       };
     };
@@ -206,7 +206,7 @@ namespace reflex {
         detail::TypelistIterator<
           T,
           0,
-          reflex::meta::Size<T>::value - 1>::add(
+          reflex::meta::size<T>::value - 1>::add(
           factory, safetc.get());
 
         return safetc;
@@ -252,7 +252,7 @@ namespace reflex {
         detail::TypelistIterator<
           T,
           0,
-          reflex::meta::Size<T>::value - 1>
+          reflex::meta::size<T>::value - 1>
           ::add(factory, aggregateTc.get());
 
         return aggregateTc;
@@ -481,7 +481,7 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         const boost::optional<T...> *)
       {
-        typedef typename PackHead<T...>::type HeadT;
+        typedef typename packhead<T...>::type HeadT;
         SafeTypeCode<HeadT> innerTc =
           TC_Helper::get_typecode(
               factory,
@@ -580,7 +580,7 @@ namespace reflex {
 
           TypelistIterator<RawTuple,
                            0,
-                           reflex::meta::Size<RawTuple>::value - 1>::add(
+                           reflex::meta::size<RawTuple>::value - 1>::add(
                              factory, sparseTc.get());
 
           return sparseTc;
@@ -601,7 +601,7 @@ namespace reflex {
             reflex::match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
 
           DDS_UnionMemberSeq umember_seq;
-          const size_t ncases = Size<CaseTuple>::value;
+          const size_t ncases = reflex::meta::size<CaseTuple>::value;
           umember_seq.ensure_length(ncases, ncases);
 
           TC_Helper::add_union_members(
@@ -612,7 +612,7 @@ namespace reflex {
           DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
           SafeTypeCode<reflex::match::Union<TagType, Cases...>> unionTc(
             factory,
-            factory->create_union_tc(StructName<reflex::match::Union<TagType, Cases...>>::get().c_str(),
+            factory->create_union_tc(reflex::codegen::StructName<reflex::match::Union<TagType, Cases...>>::get().c_str(),
                                      discTc.get(),
                                      detail::DefaultCaseIndex<match::Union<TagType, Cases...>>::value,
                                      umember_seq,
@@ -624,7 +624,7 @@ namespace reflex {
 
           TypelistIterator<CaseTuple,
             0,
-            Size<CaseTuple>::value - 1>::delete_typecodes(factory, umember_seq);
+            reflex::meta::size<CaseTuple>::value - 1>::delete_typecodes(factory, umember_seq);
 
           return unionTc;
       }
@@ -672,7 +672,7 @@ namespace reflex {
           reflex::match::Union<TagType, Cases...>::case_tuple_type CaseTuple;
         TypelistIterator<CaseTuple,
           0,
-          Size<CaseTuple>::value - 1>::add_union_member(factory, seq);
+          reflex::meta::size<CaseTuple>::value - 1>::add_union_member(factory, seq);
       }
 
     }; // struct TC_Helper

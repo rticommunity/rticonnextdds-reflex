@@ -55,7 +55,7 @@ struct optional_traits<xsd::cxx::tree::optional<T>>
 template <>
 struct is_string<xml_schema::string> : reflex::meta::true_type {};
 
-  } // namespace detail
+  } // namespace type_traits 
 } // namespace reflex
 
 namespace osacbm {

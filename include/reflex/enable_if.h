@@ -119,6 +119,24 @@ namespace reflex {
 
   } // namespace meta
 
+  namespace codegen {
+
+    template <class T>
+    struct EnumDef
+    {
+      enum { is_enum = 0 };
+    };
+
+    template <class T>
+    void enum_cast(T & dst, DDS_Long src)
+    {
+      dst = static_cast<T>(src); // cast required for enums         
+    }
+
+
+  } // namespace codegen
+
+
   namespace type_traits {
 
     using reflex::meta::false_type;
@@ -526,12 +544,12 @@ namespace reflex {
     };
 
     template <class T, class... U>
-    struct PackHead {
+    struct packhead {
       typedef T type;
     };
 
     template <class T>
-    struct PackHead<T> {
+    struct packhead<T> {
       typedef T type;
     };
 
@@ -555,20 +573,20 @@ namespace reflex {
     };
 
     template <class FusionSeq, size_t I>
-    struct At
+    struct at
     {
       typedef typename
         boost::fusion::result_of::at_c<FusionSeq, I>::type type;
     };
 
     template <class... Args, size_t I>
-    struct At<std::tuple<Args...>, I>
+    struct at<std::tuple<Args...>, I>
     {
       typedef typename std::tuple_element<I, std::tuple<Args...>>::type type;
     };
 
     template <class... Args, size_t I>
-    struct At<const std::tuple<Args...>, I>
+    struct at<const std::tuple<Args...>, I>
     {
       // This is crazy!: I can't pass const tuple to std::tuple_element.
       // I've to attach const to the result of tuple_element.
@@ -581,21 +599,21 @@ namespace reflex {
     };
 
     template <class First, class Second, size_t I>
-    struct At<std::pair<First, Second>, I>
+    struct at<std::pair<First, Second>, I>
     {
       typedef typename
         std::tuple_element<I, std::pair<First, Second>>::type type;
     };
 
     template <class First, class Second, size_t I>
-    struct At<const std::pair<First, Second>, I>
+    struct at<const std::pair<First, Second>, I>
     {
       typedef typename
         std::tuple_element<I, std::pair<First, Second>>::type const type;
     };
 
     template <class FusionSeq>
-    struct Size
+    struct size
     {
       enum {
         value =
@@ -604,32 +622,32 @@ namespace reflex {
     };
 
     template <class First, class Second>
-    struct Size<std::pair<First, Second>>
+    struct size<std::pair<First, Second>>
     {
       enum { value = 2 };
     };
 
     template <class First, class Second>
-    struct Size<const std::pair<First, Second>>
+    struct size<const std::pair<First, Second>>
     {
       enum { value = 2 };
     };
 
     template <class... Args>
-    struct Size<std::tuple<Args...>>
+    struct size<std::tuple<Args...>>
     {
       enum { value = std::tuple_size<std::tuple<Args...>>::value };
     };
 
     template <class... Args>
-    struct Size<const std::tuple<Args...>>
+    struct size<const std::tuple<Args...>>
     {
       enum { value = std::tuple_size<const std::tuple<Args...>>::value };
     };
 
     template <size_t I, class FusionSeq>
     typename disable_if_lazy <reflex::type_traits::is_tuple<FusionSeq>::value,
-      At<FusionSeq, I >> ::type
+      at<FusionSeq, I >> ::type
       Get(FusionSeq & seq)
     {
       return boost::fusion::at_c<I>(seq);
@@ -637,7 +655,7 @@ namespace reflex {
 
     template <size_t I, class FusionSeq>
     typename disable_if_lazy <reflex::type_traits::is_tuple<FusionSeq>::value,
-      At<const FusionSeq, I >> ::type
+      at<const FusionSeq, I >> ::type
       Get(const FusionSeq & seq)
     {
       return boost::fusion::at_c<I>(seq);
@@ -645,7 +663,7 @@ namespace reflex {
 
     template <size_t I, class... Args>
     // Note reference (ref) at the end.
-    typename At<std::tuple<Args...>, I>::type &
+    typename at<std::tuple<Args...>, I>::type &
       Get(std::tuple<Args...> & tuple)
     {
       return std::get<I>(tuple);
@@ -653,7 +671,7 @@ namespace reflex {
 
     template <size_t I, class... Args>
     // Note reference (ref) at the end.
-    typename At<const std::tuple<Args...>, I>::type &
+    typename at<const std::tuple<Args...>, I>::type &
       Get(const std::tuple<Args...> & tuple)
     {
       return std::get<I>(tuple);
@@ -661,7 +679,7 @@ namespace reflex {
 
     template <size_t I, class First, class Second>
     // Note reference (ref) at the end.
-    typename At<std::pair<First, Second>, I>::type &
+    typename at<std::pair<First, Second>, I>::type &
       Get(std::pair<First, Second> & pair)
     {
       return std::get<I>(pair);
@@ -669,7 +687,7 @@ namespace reflex {
 
     template <size_t I, class First, class Second>
     // Note reference (ref) at the end.
-    typename At<const std::pair<First, Second>, I>::type &
+    typename at<const std::pair<First, Second>, I>::type &
       Get(const std::pair<First, Second> & pair)
     {
       return std::get<I>(pair);
@@ -695,23 +713,6 @@ namespace reflex {
 
 
   } // namespace meta
-
-  namespace codegen {
-
-    template <class T>
-    struct EnumDef
-    {
-      enum { is_enum = 0 };
-    };
-
-    template <class T>
-    void enum_cast(T & dst, DDS_Long src)
-    {
-      dst = static_cast<T>(src); // cast required for enums         
-    }
-
-
-  } // namespace codegen
 
   namespace match {
 

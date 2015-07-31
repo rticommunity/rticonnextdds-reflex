@@ -57,7 +57,7 @@ namespace reflex {
 
       enum {
         value = MembersInBasesImpl<Base, BaseHasBase>::value +
-        reflex::meta::Size<Base>::value
+        reflex::meta::size<Base>::value
       };
     };
 
@@ -78,7 +78,7 @@ namespace reflex {
       typedef detail::TypelistIterator<
         T,
         0,
-        reflex::meta::Size<T>::value - 1> TIter;
+        reflex::meta::size<T>::value - 1> TIter;
 
       TIter::set(
         instance,
@@ -102,7 +102,7 @@ namespace reflex {
       typedef detail::TypelistIterator<
         T,
         0,
-        reflex::meta::Size<T>::value - 1> TIter;
+        reflex::meta::size<T>::value - 1> TIter;
 
       TIter::set(
         instance,
@@ -119,7 +119,7 @@ namespace reflex {
       typedef detail::TypelistIterator<
         T,
         0,
-        reflex::meta::Size<T>::value - 1> TIter;
+        reflex::meta::size<T>::value - 1> TIter;
 
       TIter::get(
         instance,
@@ -143,7 +143,7 @@ namespace reflex {
       typedef detail::TypelistIterator<
         T,
         0,
-        reflex::meta::Size<T>::value - 1> TIter;
+        reflex::meta::size<T>::value - 1> TIter;
 
       TIter::get(
         instance,

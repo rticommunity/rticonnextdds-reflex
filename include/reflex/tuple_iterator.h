@@ -68,7 +68,7 @@ namespace reflex {
         int discriminator_value,
         TUnion& val)
     {
-        typedef typename reflex::meta::At<Typelist, I>::type CaseI;
+        typedef typename reflex::meta::at<Typelist, I>::type CaseI;
         if (CaseI::matches(discriminator_value))
         {
           typename CaseI::type * data_ptr = reflex::meta::Get<I>(val.get_caseptr_tuple());
@@ -123,7 +123,7 @@ namespace reflex {
         if ((I == val.get_active_index()) ||
             (I == val.get_variant().which() - 1))
         {
-          typedef typename reflex::meta::At<Typelist, I>::type CaseI;
+          typedef typename reflex::meta::at<Typelist, I>::type CaseI;
           typename CaseI::type const * data_ptr =
             reflex::meta::Get<I>(val.get_caseptr_tuple()) ? :
               &(boost::get<CaseI>(val.get_variant()).get());
@@ -232,7 +232,7 @@ namespace reflex {
           reflex::codegen::MemberTraits<Typelist, I>::member_info().name;
 #endif
 
-        typedef typename reflex::meta::At<Typelist, I>::type Inner;
+        typedef typename reflex::meta::at<Typelist, I>::type Inner;
         typedef typename reflex::meta::remove_reference<Inner>::type InnerNoRef;
 
         reflex::codegen::MemberInfo info =
@@ -254,7 +254,7 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename reflex::meta::At<Typelist, I>::type CaseI;
+        typedef typename reflex::meta::at<Typelist, I>::type CaseI;
 
         reflex::codegen::MemberInfo info =
           reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
@@ -270,7 +270,7 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename reflex::meta::At<Typelist, I>::type Case;
+        typedef typename reflex::meta::at<Typelist, I>::type Case;
         typedef typename reflex::meta::remove_reference<typename Case::type>::type CaseTypeNoRef;
         deleteTc_forward<CaseTypeNoRef>(
             factory, 
@@ -372,7 +372,7 @@ namespace reflex {
           reflex::codegen::MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
 
-        typedef typename reflex::meta::At<Typelist, MAX_INDEX>::type Inner;
+        typedef typename reflex::meta::at<Typelist, MAX_INDEX>::type Inner;
         typedef typename reflex::meta::remove_reference<Inner>::type InnerNoRef;
 
         reflex::codegen::MemberInfo info =
@@ -391,7 +391,7 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename reflex::meta::At<Typelist, MAX_INDEX>::type CaseI;
+        typedef typename reflex::meta::at<Typelist, MAX_INDEX>::type CaseI;
         reflex::codegen::MemberInfo info =
           reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                        MAX_INDEX>::member_info();
@@ -403,7 +403,7 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename reflex::meta::At<Typelist, MAX_INDEX>::type Case;
+        typedef typename reflex::meta::at<Typelist, MAX_INDEX>::type Case;
         typedef typename reflex::meta::remove_reference<typename Case::type>::type CaseTypeNoRef;
         deleteTc_forward<CaseTypeNoRef>(
             factory, 

@@ -378,7 +378,7 @@ namespace reflex {
         typedef TypelistIterator<
                     CaseTuple,
                     0,
-                    Size<CaseTuple>::value - 1> TIter;
+                    reflex::meta::size<CaseTuple>::value - 1> TIter;
 
         if (!val.empty())
         {
@@ -612,8 +612,12 @@ namespace reflex {
         rc = instance.get_long(out, member_name, id);
         detail::check_retcode("get_member_value: get_long (for enums) failed, error = ", rc);
         
-        // argument dependent lookup here.
-        reflex::codegen::enum_cast(val, out); // cast required for enums
+        // Do not qualify this function call. 
+        // Argument dependent lookup must happen here.
+        // A more specialized enum_cast could be defined
+        // in the namespace of T otherwise fallback to codegen.
+        using namespace reflex::codegen;
+        enum_cast(val, out); // cast required for enums
       }
 
       template <class Typelist>
@@ -642,7 +646,7 @@ namespace reflex {
       template <class C>
       static void right_size(C &c, size_t size)
       {
-        C temp(size, typename container_traits<C>::value_type());
+        C temp(size, typename reflex::type_traits::container_traits<C>::value_type());
         c = temp;
       }
 
@@ -1111,7 +1115,7 @@ namespace reflex {
         typedef TypelistIterator<
           CaseTuple,
           0,
-          Size<CaseTuple>::value - 1> TIter;
+          reflex::meta::size<CaseTuple>::value - 1> TIter;
 
         DDS_DynamicDataMemberInfo member_info;
         inner.get_member_info_by_index(member_info, 0 /* discriminator id */);
@@ -1134,7 +1138,7 @@ namespace reflex {
         template <class Opt>
         static void initialize_optional(Opt & opt)
         {
-          typename detail::optional_traits<Opt>::value_type temp;
+          typename reflex::type_traits::optional_traits<Opt>::value_type temp;
           opt = temp;
         }
 

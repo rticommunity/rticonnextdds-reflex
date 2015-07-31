@@ -44,19 +44,30 @@ namespace reflex {
 
   namespace codegen 
   {
-
     struct MemberInfo
     {
       std::string name;
       unsigned char value;
 
-      MemberInfo() {}
-
-      MemberInfo(std::string n,
-                 unsigned char v)
-        : name(reflex::detail::remove_parenthesis(n)), value(v)
-      {}
+      MemberInfo();
+      MemberInfo(const std::string & n, unsigned char v);
     };
+  } // namespace codegen
+
+  namespace detail {
+
+    struct DefaultMemberNames
+    {
+      REFLEX_DLL_EXPORT static reflex::codegen::MemberInfo get_member_info(int i);
+      REFLEX_DLL_EXPORT static const char * basename(const char *);
+      REFLEX_DLL_EXPORT static std::string type_name(const char * prefix);
+      REFLEX_DLL_EXPORT static std::string demangle(const char* name);
+    };
+
+  } // namespace detail
+
+  namespace codegen 
+  {
 
     // specialize this trait for every user-defined type
     template <class T, unsigned I>
@@ -90,7 +101,7 @@ namespace reflex {
       static std::string get()
       {
 #ifdef HAVE_CXA_DEMANGLE
-        return DefaultMemberNames::demangle(typeid(T).name());
+        return reflex::detail::DefaultMemberNames::demangle(typeid(T).name());
 #else
         return reflex::detail::DefaultMemberNames::type_name("DefaultTypeName");
 #endif
@@ -135,17 +146,6 @@ namespace reflex {
 
   } // namespace codegen
 
-  namespace detail {
-
-    struct DefaultMemberNames
-    {
-      REFLEX_DLL_EXPORT static reflex::codegen::MemberInfo get_member_info(int i);
-      REFLEX_DLL_EXPORT static const char * basename(const char *);
-      REFLEX_DLL_EXPORT static std::string type_name(const char * prefix);
-      REFLEX_DLL_EXPORT static std::string demangle(const char* name);
-    };
-
-  } // namespace detail
 
 } // namespace reflex
 

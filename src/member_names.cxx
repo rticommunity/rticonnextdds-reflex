@@ -83,4 +83,17 @@ namespace reflex {
 
   } // namespace detail
 
+  namespace codegen {
+
+      REFLEX_INLINE MemberInfo::MemberInfo() {}
+
+      REFLEX_INLINE MemberInfo::MemberInfo(
+                 const std::string & n,
+                 unsigned char v)
+        : name(reflex::detail::remove_parenthesis(n)), 
+          value(v)
+      {}
+
+  } // namespace codegen
+
 } // namespace reflex
