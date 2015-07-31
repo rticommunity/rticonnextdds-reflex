@@ -72,7 +72,7 @@ namespace reflex {
     template <class T>
     T * primitive_ptr_cast(T * t,
                            typename
-                            enable_if<is_primitive_and_not_bool<T>::value &&
+                            reflex::meta::enable_if<reflex::type_traits::is_primitive_and_not_bool<T>::value &&
                                       !std::is_same<signed char, T>::value>::type * = 0)
     {
       // see the signed char overload.
@@ -89,7 +89,7 @@ namespace reflex {
     template <class T>
     uint32_t array_length(const T &)
     {
-      return dim_list_multiply<typename make_dim_list<T>::type>::value;
+      return reflex::meta::dim_list_multiply<typename reflex::meta::make_dim_list<T>::type>::value;
     }
 
     struct set_member_overload_resolution_helper
@@ -121,7 +121,7 @@ namespace reflex {
               DDS_DynamicData & instance,
               const MemberAccess &ma,
               const Str & val,
-              typename enable_if<detail::is_string<Str>::value>::type * = 0)
+              typename reflex::meta::enable_if<reflex::type_traits::is_string<Str>::value>::type * = 0)
       {
         DDS_ReturnCode_t rc;
         if (ma.access_by_id()) {
@@ -140,7 +140,7 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const T & val,
-        typename enable_if<detail::is_enum<T>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_enum<T>::value>::type * = 0)
       {
         DDS_ReturnCode_t rc;
 
@@ -164,10 +164,10 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess & ma,
         const Typelist & val,
-        typename disable_if<detail::is_enum<Typelist>::value ||
-                            is_container<Typelist>::value    ||
-                            is_string<Typelist>::value       ||
-                            is_optional<Typelist>::value
+        typename reflex::meta::disable_if<reflex::type_traits::is_enum<Typelist>::value ||
+                            reflex::type_traits::is_container<Typelist>::value    ||
+                            reflex::type_traits::is_string<Typelist>::value       ||
+                            reflex::type_traits::is_optional<Typelist>::value
                       >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -183,17 +183,17 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const C & val,
-        typename enable_if<
-                          is_container<C>::value &&
-                          (is_primitive<typename container_traits<C>::value_type>::value ||
-                           detail::is_enum<typename container_traits<C>::value_type>::value) &&
-                          (is_vector<C>::value ?
-                           is_bool_or_enum<typename container_traits<C>::value_type>::value : true)
+        typename reflex::meta::enable_if<
+                          reflex::type_traits::is_container<C>::value &&
+                          (reflex::type_traits::is_primitive<typename reflex::type_traits::container_traits<C>::value_type>::value ||
+                           reflex::type_traits::is_enum<typename reflex::type_traits::container_traits<C>::value_type>::value) &&
+                          (reflex::type_traits::is_vector<C>::value ?
+                           reflex::type_traits::is_bool_or_enum<typename reflex::type_traits::container_traits<C>::value_type>::value : true)
                        >::type * = 0)
       {
         if (do_serialize(val))
         {
-          typename DynamicDataSeqTraits<typename container_traits<C>::value_type>::type seq;
+          typename DynamicDataSeqTraits<typename reflex::type_traits::container_traits<C>::value_type>::type seq;
           seq.ensure_length(val.size(), val.size());
 
           size_t i = 0;
@@ -213,11 +213,11 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const C & val,
-        typename disable_if<
-                     !is_container<C>::value ||
-                      is_optional<C>::value  ||
-                      is_string<C>::value    ||
-                      is_primitive_or_enum<typename container_traits<C>::value_type>::value
+        typename reflex::meta::disable_if<
+                     !reflex::type_traits::is_container<C>::value ||
+                      reflex::type_traits::is_optional<C>::value  ||
+                      reflex::type_traits::is_string<C>::value    ||
+                      reflex::type_traits::is_primitive_or_enum<typename reflex::type_traits::container_traits<C>::value_type>::value
                  >::type * = 0)
       {
         if (do_serialize(val))
@@ -234,7 +234,7 @@ namespace reflex {
           set_seq_length(
             seq_member,
             val.size(),
-            is_string<typename container_traits<C>::value_type>::value);
+            reflex::type_traits::is_string<typename reflex::type_traits::container_traits<C>::value_type>::value);
 
           size_t i = 0;
           for (auto const &elem : val)
@@ -256,7 +256,7 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const std::vector<T> & val,
-        typename enable_if<is_primitive_and_not_bool<T>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_primitive_and_not_bool<T>::value>::type * = 0)
       {
         // Sequences of primitive types are loaned and unloaned as an optimization.
         // bools and enums don't use this optimization because vector<bool> storage is
@@ -283,7 +283,7 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const reflex::match::Range<T> & range,
-        typename enable_if<is_primitive_or_enum<T>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_primitive_or_enum<T>::value>::type * = 0)
       {
         typename DynamicDataSeqTraits<T>::type seq;
 
@@ -306,7 +306,7 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const reflex::match::Range<T> & range,
-        typename disable_if<is_primitive_or_enum<T>::value>::type * = 0)
+        typename reflex::meta::disable_if<reflex::type_traits::is_primitive_or_enum<T>::value>::type * = 0)
       {
         DDS_DynamicData seq_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, seq_member, ma);
@@ -319,7 +319,7 @@ namespace reflex {
         // the dynamic data instance is off by 1. This function seems
         // to handle nested empty sequences.
         // BTW, sequence of strings seem to work fine without magic.
-        set_seq_length(seq_member, size, is_string<T>::value);
+        set_seq_length(seq_member, size, reflex::type_traits::is_string<T>::value);
 
         size_t i = 0;
         for (typename match::Range<T>::const_iterator iter = boost::begin(range);
@@ -394,16 +394,16 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess & ma,
         const T(&val)[Dim],
-        typename disable_if<
-            is_primitive_or_enum<
-                typename remove_all_extents<T>::type>::value
+        typename reflex::meta::disable_if<
+            reflex::type_traits::is_primitive_or_enum<
+              typename reflex::meta::remove_all_extents<T>::type>::value
             >::type * = 0)
       {
         DDS_DynamicData arr_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, arr_member, ma);
 
-        typename remove_all_extents<T>::type const * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type const *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type const * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type const *>(&val[0]);
 
         DDS_UnsignedLong length = array_length(val);
         for (DDS_UnsignedLong i = 0; i < length; ++i)
@@ -417,13 +417,13 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const T(&val)[Dim],
-        typename enable_if<
-           is_primitive_or_enum<
-               typename remove_all_extents<T>::type>::value
+        typename reflex::meta::enable_if<
+           reflex::type_traits::is_primitive_or_enum<
+           typename reflex::meta::remove_all_extents<T>::type>::value
            >::type * = 0)
       {
-        typename remove_all_extents<T>::type const * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type const *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type const * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type const *>(&val[0]);
 
         DDS_ReturnCode_t rc =
           detail::set_array(instance, ma, array_length(val), arr);
@@ -436,16 +436,16 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess & ma,
         const std::array<T, Dim> & val,
-        typename disable_if<
-            is_primitive_or_enum<
-                 typename remove_all_extents<T>::type>::value
+        typename reflex::meta::disable_if<
+            reflex::type_traits::is_primitive_or_enum<
+            typename reflex::meta::remove_all_extents<T>::type>::value
             >::type * = 0)
       {
         DDS_DynamicData arr_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, arr_member, ma);
 
-        typename remove_all_extents<T>::type const * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type const *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type const * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type const *>(&val[0]);
 
         DDS_UnsignedLong length = array_length(val);
         for (DDS_UnsignedLong i = 0; i < length; ++i)
@@ -459,13 +459,13 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const std::array<T, Dim> & val,
-        typename enable_if<
-            is_primitive_or_enum<
-                typename remove_all_extents<T>::type>::value
+        typename reflex::meta::enable_if<
+            reflex::type_traits::is_primitive_or_enum<
+            typename reflex::meta::remove_all_extents<T>::type>::value
             >::type * = 0)
       {
-        typename remove_all_extents<T>::type const * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type const *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type const * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type const *>(&val[0]);
 
         DDS_ReturnCode_t rc =
           detail::set_array(instance, ma, array_length(val), arr);
@@ -498,7 +498,7 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const Opt & opt,
-        typename detail::enable_if<detail::is_optional<Opt>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_optional<Opt>::value>::type * = 0)
       {
         if (opt)
         {
@@ -558,7 +558,7 @@ namespace reflex {
             const DDS_DynamicData & instance,
             const MemberAccess &ma,
             Str & val,
-            typename enable_if<is_string<Str>::value>::type * = 0)
+            typename reflex::meta::enable_if<reflex::type_traits::is_string<Str>::value>::type * = 0)
       {
         RawStorage raw; 
         char * buf = raw.buf;
@@ -598,7 +598,7 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           T & val,
-          typename enable_if<detail::is_enum<T>::value>::type * = 0)
+          typename reflex::meta::enable_if<reflex::type_traits::is_enum<T>::value>::type * = 0)
       {
         DDS_ReturnCode_t rc;
         DDS_Long out;
@@ -613,7 +613,7 @@ namespace reflex {
         detail::check_retcode("get_member_value: get_long (for enums) failed, error = ", rc);
         
         // argument dependent lookup here.
-        enum_cast(val, out); // cast required for enums
+        reflex::codegen::enum_cast(val, out); // cast required for enums
       }
 
       template <class Typelist>
@@ -626,10 +626,10 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           Typelist & val,
-          typename disable_if<detail::is_enum<Typelist>::value ||
-                              is_container<Typelist>::value    ||
-                              is_optional<Typelist>::value     ||
-                              is_string<Typelist>::value
+          typename reflex::meta::disable_if<reflex::type_traits::is_enum<Typelist>::value ||
+                              reflex::type_traits::is_container<Typelist>::value    ||
+                              reflex::type_traits::is_optional<Typelist>::value     ||
+                              reflex::type_traits::is_string<Typelist>::value
                       >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -688,8 +688,8 @@ namespace reflex {
       }
 
       template <class C>
-      typename detail::container_traits<C>::iterator
-      static begin(C & c, typename enable_if<is_container<C>::value>::type * = 0)
+      typename reflex::type_traits::container_traits<C>::iterator
+      static begin(C & c, typename reflex::meta::enable_if<reflex::type_traits::is_container<C>::value>::type * = 0)
       {
         return c.begin();
       }
@@ -699,9 +699,9 @@ namespace reflex {
           const Seq & seq,
           size_t count,
           C & c,
-          typename disable_if<is_stdset<C>::value>::type * = 0)
+          typename reflex::meta::disable_if<reflex::type_traits::is_stdset<C>::value>::type * = 0)
       {
-        typename detail::container_traits<C>::iterator iter = begin(c);
+        typename reflex::type_traits::container_traits<C>::iterator iter = begin(c);
         for (size_t i = 0; i < count; ++i, ++iter)
         {
           // Cast required for enums
@@ -735,12 +735,12 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           C & val,
-          typename enable_if <
-                              is_container<C>::value &&
-                              (is_primitive<typename container_traits<C>::value_type>::value ||
-                               detail::is_enum<typename container_traits<C>::value_type>::value) &&
-                              (is_vector<C>::value ?
-                               is_bool_or_enum<typename container_traits<C>::value_type>::value : true) 
+          typename reflex::meta::enable_if <
+                              reflex::type_traits::is_container<C>::value &&
+                              (reflex::type_traits::is_primitive<typename reflex::type_traits::container_traits<C>::value_type>::value ||
+                              reflex::type_traits::is_enum<typename reflex::type_traits::container_traits<C>::value_type>::value) &&
+                              (reflex::type_traits::is_vector<C>::value ?
+                              reflex::type_traits::is_bool_or_enum<typename reflex::type_traits::container_traits<C>::value_type>::value : true)
                               > ::type * = 0)
       {
         DDS_DynamicDataMemberInfo seq_info;
@@ -755,7 +755,7 @@ namespace reflex {
 
         if (seq_info.element_count > 0)
         {
-          typename DynamicDataSeqTraits<typename container_traits<C>::value_type>::type seq;
+          typename DynamicDataSeqTraits<typename reflex::type_traits::container_traits<C>::value_type>::type seq;
           seq.ensure_length(seq_info.element_count,
             seq_info.element_count);
 
@@ -772,8 +772,8 @@ namespace reflex {
           const Seq & seq,
           size_t count,
           C & c,
-          typename disable_if<is_stdset<C>::value ||
-                              is_stdmap<C>::value
+          typename reflex::meta::disable_if<reflex::type_traits::is_stdset<C>::value ||
+                              reflex::type_traits::is_stdmap<C>::value
                        >::type * = 0)
       {
         if (count > 0)
@@ -802,7 +802,7 @@ namespace reflex {
           for (size_t i = 0; i < count; ++i)
           {
             typedef typename std::map<Key, T, Comp, Alloc>::value_type PairType;
-            std::pair<typename std::remove_const<typename PairType::first_type>::type,
+            std::pair<typename reflex::meta::remove_const<typename PairType::first_type>::type,
               typename PairType::second_type> temp;
             get_member_value(seq, MemberAccess::BY_ID(i + 1), temp);
             map.insert(std::move(temp));
@@ -838,10 +838,10 @@ namespace reflex {
             const DDS_DynamicData & instance,
             const MemberAccess &ma,
             C & val,
-            typename disable_if<!is_container<C>::value ||
-                                 is_string<C>::value    ||
-                                 is_primitive_or_enum<
-                                    typename container_traits<C>::value_type>::value
+            typename reflex::meta::disable_if<!reflex::type_traits::is_container<C>::value ||
+                                 reflex::type_traits::is_string<C>::value    ||
+                                 reflex::type_traits::is_primitive_or_enum<
+                                 typename reflex::type_traits::container_traits<C>::value_type>::value
                                >::type * = 0)
       {
         DDS_DynamicData seq_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -866,7 +866,7 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           std::vector<T> & val,
-          typename enable_if<is_primitive_and_not_bool<T>::value>::type * = 0)
+          typename reflex::meta::enable_if<reflex::type_traits::is_primitive_and_not_bool<T>::value>::type * = 0)
       {
         // Sequences of primitive types are loaned and unloaned as an optimization.
         // bools and enums don;t use this optimization because vector<bool> storage is
@@ -914,8 +914,8 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           reflex::match::Range<T> & range,
-          typename enable_if<
-                             is_primitive_or_enum<T>::value
+          typename reflex::meta::enable_if<
+                             reflex::type_traits::is_primitive_or_enum<T>::value
                             >::type * = 0)
       {
         typename DynamicDataSeqTraits<T>::type seq;
@@ -953,8 +953,8 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           reflex::match::Range<T> & range,
-          typename disable_if<
-                              is_primitive_or_enum<T>::value
+          typename reflex::meta::disable_if<
+                              reflex::type_traits::is_primitive_or_enum<T>::value
                              >::type * = 0)
       {
         DDS_DynamicData seq_member(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
@@ -1010,9 +1010,9 @@ namespace reflex {
         const DDS_DynamicData & instance,
         const MemberAccess & ma,
         T(&val)[Dim],
-        typename disable_if<
-                            is_primitive_or_enum<
-                                 typename remove_all_extents<T>::type
+        typename reflex::meta::disable_if<
+                            reflex::type_traits::is_primitive_or_enum<
+                                 typename reflex::meta::remove_all_extents<T>::type
                                      >::value
                            >::type * = 0)
       {
@@ -1021,8 +1021,8 @@ namespace reflex {
 
         DDS_UnsignedLong length = array_length(val);
 
-        typename remove_all_extents<T>::type * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type *>(&val[0]);
 
         for (DDS_UnsignedLong i = 0; i < length; ++i)
         {
@@ -1035,16 +1035,16 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess & ma,
           T(&val)[Dim],
-          typename enable_if<
-                             is_primitive_or_enum<
-                                  typename remove_all_extents<T>::type
+          typename reflex::meta::enable_if<
+                             reflex::type_traits::is_primitive_or_enum<
+                                  typename reflex::meta::remove_all_extents<T>::type
                                       >::value
                             >::type * = 0)
       {
         DDS_UnsignedLong length = array_length(val);
 
-        typename remove_all_extents<T>::type * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type *>(&val[0]);
 
         DDS_ReturnCode_t rc = detail::get_array(instance, arr, &length, ma);
         detail::check_retcode("get_member_value: get_array error = ", rc);
@@ -1055,9 +1055,9 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess & ma,
           std::array<T, Dim> &val,
-          typename disable_if<
-                              is_primitive_or_enum<
-                                 typename remove_all_extents<T>::type
+          typename reflex::meta::disable_if<
+                              reflex::type_traits::is_primitive_or_enum<
+                                 typename reflex::meta::remove_all_extents<T>::type
                                     >::value
                              >::type * = 0)
       {
@@ -1066,8 +1066,8 @@ namespace reflex {
 
         DDS_UnsignedLong length = array_length(val);
 
-        typename remove_all_extents<T>::type * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type *>(&val[0]);
 
         for (DDS_UnsignedLong i = 0; i < length; ++i)
         {
@@ -1083,16 +1083,16 @@ namespace reflex {
             const DDS_DynamicData & instance,
             const MemberAccess & ma,
             std::array<T, Dim> & val,
-            typename enable_if<
-                              is_primitive_or_enum<
-                                  typename remove_all_extents<T>::type
+            typename reflex::meta::enable_if<
+                              reflex::type_traits::is_primitive_or_enum<
+                                  typename reflex::meta::remove_all_extents<T>::type
                                      >::value
                               >::type * = 0)
       {
         DDS_UnsignedLong length = array_length(val);
 
-        typename remove_all_extents<T>::type * arr =
-          reinterpret_cast<typename remove_all_extents<T>::type *>(&val[0]);
+        typename reflex::meta::remove_all_extents<T>::type * arr =
+          reinterpret_cast<typename reflex::meta::remove_all_extents<T>::type *>(&val[0]);
 
         DDS_ReturnCode_t rc = detail::get_array(instance, arr, &length, ma);
         detail::check_retcode("get_member_value: get_array error = ", rc);
@@ -1158,7 +1158,7 @@ namespace reflex {
         const DDS_DynamicData & instance,
         const MemberAccess &ma,
         Opt & opt,
-        typename detail::enable_if<detail::is_optional<Opt>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_optional<Opt>::value>::type * = 0)
       {
         const char * member_name
           = ma.access_by_id() ? NULL : ma.get_name();

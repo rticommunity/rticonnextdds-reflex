@@ -25,6 +25,15 @@ namespace reflex {
 
   namespace detail {
 
+    REFLEX_INLINE std::string remove_parenthesis(std::string s)
+    {
+      std::string::iterator end = s.end();
+
+      if (*--end == ')' && *--end == '(')
+        return std::string(s.begin(), end);
+      else
+        return s;
+    }
     REFLEX_INLINE const char * DefaultMemberNames::basename(const char * str)
     {
       if (!str)  return str; // null string
@@ -65,11 +74,11 @@ namespace reflex {
     }
 
     REFLEX_INLINE REFLEX_DLL_EXPORT 
-      MemberInfo DefaultMemberNames::get_member_info(int i)
+      reflex::codegen::MemberInfo DefaultMemberNames::get_member_info(int i)
     { 
       char member_name[32];
       snprintf(member_name, 32, "m%d", i);
-      return MemberInfo(member_name, DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
+      return reflex::codegen::MemberInfo(member_name, DDS_TYPECODE_NONKEY_REQUIRED_MEMBER);
     }
 
   } // namespace detail

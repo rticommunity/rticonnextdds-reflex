@@ -25,16 +25,16 @@
 #include "reflex.h"
 
 namespace reflex { 
-  namespace detail {
+  namespace type_traits {
 
 template <class T>
-struct is_container<xsd::cxx::tree::sequence<T>> : true_type {};
+struct is_container<xsd::cxx::tree::sequence<T>> : reflex::meta::true_type {};
 
 template <>
-struct is_container<osacbm::listOfDouble> : true_type {};
+struct is_container<osacbm::listOfDouble> : reflex::meta::true_type {};
 
 template <>
-struct is_container<xml_schema::base64_binary> : true_type {};
+struct is_container<xml_schema::base64_binary> : reflex::meta::true_type {};
 
 template <>
 struct container_traits<xml_schema::base64_binary> 
@@ -44,7 +44,7 @@ struct container_traits<xml_schema::base64_binary>
 };
 
 template <class T>
-struct is_optional<xsd::cxx::tree::optional<T>> : true_type {};
+struct is_optional<xsd::cxx::tree::optional<T>> : reflex::meta::true_type {};
 
 template <class T>
 struct optional_traits<xsd::cxx::tree::optional<T>> 
@@ -53,7 +53,7 @@ struct optional_traits<xsd::cxx::tree::optional<T>>
 };
 
 template <>
-struct is_string<xml_schema::string> : true_type {};
+struct is_string<xml_schema::string> : reflex::meta::true_type {};
 
   } // namespace detail
 } // namespace reflex

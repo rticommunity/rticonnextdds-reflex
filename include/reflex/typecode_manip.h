@@ -40,46 +40,22 @@ namespace reflex {
       print_IDL(
       const DDS_TypeCode * tc,
       DDS_UnsignedLong indent);
-    /*
-    DDS_TypeCode * create_array_tc(DDS_TypeCode * inner,
-      const DDS_UnsignedLongSeq &dims);
-
-    DDS_TypeCode * create_seq_tc(DDS_TypeCode *inner,
-      size_t bound);
-
-    DDS_TypeCode * create_string_tc(size_t bound);
-    DDS_TypeCode * create_struct_tc(const char * name);
-    DDS_TypeCode * create_sparse_tc(const char * name);
-    DDS_TypeCode * create_value_tc(const char * name,
-                                   DDS_TypeCode * basetc);
-
-    DDS_TypeCode * create_enum_tc(
-      const char * name,
-      const DDS_EnumMemberSeq & enum_seq,
-      const std::vector<MemberInfo> &);
-
-    DDS_TypeCode * create_union_tc(
-      const char * name,
-      DDS_TypeCode * discTc,
-      DDS_UnsignedLong default_case,
-      DDS_UnionMemberSeq & member_seq);
-      */
 
     template <size_t I, class DimList>
     struct CopyDims;
 
     template <size_t I, size_t Head, size_t... Tail>
-    struct CopyDims <I, dim_list<Head, Tail...>>
+    struct CopyDims <I, reflex::meta::dim_list<Head, Tail...>>
     {
       static void exec(DDS_UnsignedLongSeq & seq)
       {
         seq[I] = Head;
-        detail::CopyDims<I + 1, dim_list<Tail...>>::exec(seq);
+        detail::CopyDims<I + 1, reflex::meta::dim_list<Tail...>>::exec(seq);
       }
     };
 
     template <size_t I, size_t Last>
-    struct CopyDims<I, dim_list<Last>>
+    struct CopyDims<I, reflex::meta::dim_list<Last>>
     {
       static void exec(DDS_UnsignedLongSeq & seq)
       {
@@ -170,9 +146,10 @@ namespace reflex {
       struct SetEnumMembers
       {
         static void exec(DDS_EnumMemberSeq & enum_seq,
-                         std::vector<detail::MemberInfo> & info_seq)
+                         std::vector<reflex::codegen::MemberInfo> & info_seq)
         {
           using namespace detail;
+          using reflex::codegen::EnumDef;
 
           info_seq[I] = EnumDef<T>::template EnumMember<I>::info();
           enum_seq[I].name = const_cast<char *>(info_seq[I].name.c_str());
@@ -185,9 +162,10 @@ namespace reflex {
       struct SetEnumMembers<MAX, MAX>
       {
         static void exec(DDS_EnumMemberSeq & enum_seq,
-                         std::vector<detail::MemberInfo> & info_seq)
+          std::vector<reflex::codegen::MemberInfo> & info_seq)
         {
           using namespace detail;
+          using reflex::codegen::EnumDef;
 
           info_seq[MAX] = EnumDef<T>::template EnumMember<MAX>::info();
           enum_seq[MAX].name = const_cast<char *>(info_seq[MAX].name.c_str());
@@ -202,13 +180,13 @@ namespace reflex {
       template <class T>
       static SafeTypeCode<T> get_typecode_struct(
         const char * name,
-        false_type /* T has no base */)
+        reflex::meta::false_type /* T has no base */)
       {
         DDS_TypeCodeFactory * factory =
           DDS_TypeCodeFactory::get_instance();
 
         std::string struct_name =
-          detail::StructName<typename detail::remove_refs<T>::type>::get();
+          reflex::codegen::StructName<typename reflex::meta::remove_refs<T>::type>::get();
 
         const char * type_name =
           name ? name : struct_name.c_str();
@@ -228,7 +206,7 @@ namespace reflex {
         detail::TypelistIterator<
           T,
           0,
-          detail::Size<T>::value - 1>::add(
+          reflex::meta::Size<T>::value - 1>::add(
           factory, safetc.get());
 
         return safetc;
@@ -237,23 +215,23 @@ namespace reflex {
       template <class T>
       static SafeTypeCode<T> get_typecode_struct(
         const char * name,
-        true_type /* T has base */)
+        reflex::meta::true_type /* T has base */)
       {
         DDS_TypeCodeFactory * factory =
           DDS_TypeCodeFactory::get_instance();
 
         std::string struct_name =
-          detail::StructName<typename detail::remove_refs<T>::type>::get();
+          reflex::codegen::StructName<typename reflex::meta::remove_refs<T>::type>::get();
 
         const char * type_name =
           name ? name : struct_name.c_str();
 
-        typedef typename InheritanceTraits<T>::basetype BaseType;
+        typedef typename reflex::type_traits::InheritanceTraits<T>::basetype BaseType;
 
         SafeTypeCode<BaseType> baseTc =
           get_typecode_struct<BaseType>(
           0,
-          typename InheritanceTraits<BaseType>::has_base());
+          typename reflex::type_traits::InheritanceTraits<BaseType>::has_base());
 
         DDS_ExceptionCode_t ex;
         DDS_TypeCode *valueTc =
@@ -274,7 +252,7 @@ namespace reflex {
         detail::TypelistIterator<
           T,
           0,
-          detail::Size<T>::value - 1>
+          reflex::meta::Size<T>::value - 1>
           ::add(factory, aggregateTc.get());
 
         return aggregateTc;
@@ -301,13 +279,13 @@ namespace reflex {
         get_typecode(
             DDS_TypeCodeFactory * factory,
             const Str *,
-            typename enable_if<is_string<Str>::value>::type * = 0)
+            typename reflex::meta::enable_if<reflex::type_traits::is_string<Str>::value>::type * = 0)
       {
           DDS_ExceptionCode_t ex;
 
           SafeTypeCode<Str> stringTc(
             factory, 
-            factory->create_string_tc(detail::static_string_bound<Str>::value, 
+            factory->create_string_tc(reflex::type_traits::static_string_bound<Str>::value, 
                                       ex));
           
           check_exception_code(
@@ -324,16 +302,16 @@ namespace reflex {
       static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
         const T *,
-        typename disable_if<detail::is_enum<T>::value ||
-                            is_primitive<T>::value    ||
-                            is_container<T>::value    ||
-                            is_optional<T>::value     ||
-                            is_string<T>::value       ||
-                            is_stdarray<T>::value>::type * = 0)
+        typename reflex::meta::disable_if<reflex::type_traits::is_enum<T>::value ||
+                            reflex::type_traits::is_primitive<T>::value    ||
+                            reflex::type_traits::is_container<T>::value    ||
+                            reflex::type_traits::is_optional<T>::value     ||
+                            reflex::type_traits::is_string<T>::value       ||
+                            reflex::type_traits::is_stdarray<T>::value>::type * = 0)
       {
         return Struct_TC_Helper::get_typecode_struct<T>(
                 0 /* name */,
-                typename detail::InheritanceTraits<T>::has_base());
+                typename reflex::type_traits::InheritanceTraits<T>::has_base());
       }
 
       template <class T>
@@ -341,7 +319,7 @@ namespace reflex {
       static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
         const T * primitive,
-        typename enable_if<is_primitive<T>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0)
       {
         return SafeTypeCode<T>(factory, 
                                Primitive_TC_Helper::get_primitive_tc(factory, primitive));
@@ -352,14 +330,15 @@ namespace reflex {
       static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
         const T *,
-        typename enable_if<detail::is_enum<T>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_enum<T>::value>::type * = 0)
       {
         // The lifetime of info_seq must be until create_enum_tc is invoked
         // because enum_seq[i].name is just a pointer to MemberInfo.name strings
+        using reflex::codegen::EnumDef;
 
         DDS_ExceptionCode_t ex;
         DDS_EnumMemberSeq enum_seq;
-        std::vector<MemberInfo> info_seq(EnumDef<T>::size);
+        std::vector<reflex::codegen::MemberInfo> info_seq(EnumDef<T>::size);
         enum_seq.ensure_length(EnumDef<T>::size, EnumDef<T>::size);
         Enum_TC_Helper<T>::template SetEnumMembers<0, EnumDef<T>::size - 1>::exec(enum_seq, info_seq);
         
@@ -378,7 +357,7 @@ namespace reflex {
       static SafeTypeCode<reflex::match::Bounded<C, Bound>> get_typecode(
             DDS_TypeCodeFactory * factory,
             const reflex::match::Bounded<C, Bound> *,
-            typename enable_if<is_container<C>::value>::type * = 0)
+            typename reflex::meta::enable_if<reflex::type_traits::is_container<C>::value>::type * = 0)
       {
           SafeTypeCode<typename C::value_type> innerTc
             = TC_Helper::get_typecode(
@@ -401,17 +380,17 @@ namespace reflex {
       static SafeTypeCode<C> get_typecode(
          DDS_TypeCodeFactory * factory,
          const C *,
-         typename enable_if<is_container<C>::value>::type * = 0)
+         typename reflex::meta::enable_if<reflex::type_traits::is_container<C>::value>::type * = 0)
       {
-          SafeTypeCode<typename container_traits<C>::value_type> innerTc
+          SafeTypeCode<typename reflex::type_traits::container_traits<C>::value_type> innerTc
             = TC_Helper::get_typecode(
                 factory,
-                static_cast<typename container_traits<C>::value_type *>(0));
+                static_cast<typename reflex::type_traits::container_traits<C>::value_type *>(0));
 
           DDS_ExceptionCode_t ex;
           SafeTypeCode<C> seqTc(
             factory, 
-            factory->create_sequence_tc(detail::static_container_bound<C>::value, 
+            factory->create_sequence_tc(reflex::type_traits::static_container_bound<C>::value, 
                                         innerTc.get(), 
                                         ex));
 
@@ -427,7 +406,7 @@ namespace reflex {
           DDS_TypeCodeFactory * factory,
           const std::array<T, N> *)
       {
-          typedef typename remove_all_extents<T>::type BasicType;
+          typedef typename reflex::meta::remove_all_extents<T>::type BasicType;
           SafeTypeCode<BasicType> basicTc
             = TC_Helper::get_typecode(
                 factory, 
@@ -435,7 +414,7 @@ namespace reflex {
 
           DDS_UnsignedLongSeq dims;
           typedef typename
-            detail::make_dim_list<std::array<T, N>>::type DimList;
+            reflex::meta::make_dim_list<std::array<T, N>>::type DimList;
           dims.ensure_length(DimList::size, DimList::size);
           detail::CopyDims<0, DimList>::exec(dims);
 
@@ -474,16 +453,16 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         const reflex::match::Range<T> *)
       {
-        SafeTypeCode<typename remove_reference<T>::type> innerTc
+        SafeTypeCode<typename reflex::meta::remove_reference<T>::type> innerTc
           = TC_Helper::get_typecode(
                   factory,
-                  static_cast<typename remove_reference<T>::type *>(0));
+                  static_cast<typename reflex::meta::remove_reference<T>::type *>(0));
 
         DDS_ExceptionCode_t ex;
         SafeTypeCode<match::Range<T>> seqTc(
           factory,
           factory->create_sequence_tc(
-            detail::static_container_bound<match::Range<T>>::value, 
+            reflex::type_traits::static_container_bound<match::Range<T>>::value, 
             innerTc.get(), 
             ex));
 
@@ -530,11 +509,11 @@ namespace reflex {
       static SafeTypeCode<Opt> get_typecode(
         DDS_TypeCodeFactory * factory,
         const Opt * opt,
-        typename detail::enable_if<detail::is_optional<Opt>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_optional<Opt>::value>::type * = 0)
       {
         typedef 
-            typename detail::remove_const<
-                        typename detail::remove_reference<
+            typename reflex::meta::remove_const<
+                        typename reflex::meta::remove_reference<
                           decltype(**opt)
                         >::type
                      >::type
@@ -562,10 +541,10 @@ namespace reflex {
             DDS_TypeCodeFactory * factory,
             const reflex::match::BoundedRange<T, Bound> *)
       {
-          SafeTypeCode<typename remove_reference<T>::type> innerTc
+          SafeTypeCode<typename reflex::meta::remove_reference<T>::type> innerTc
             = TC_Helper::get_typecode(
                 factory,
-                static_cast<typename remove_reference<T>::type *>(0));
+                static_cast<typename reflex::meta::remove_reference<T>::type *>(0));
 
           DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
           SafeTypeCode<match::BoundedRange<T, Bound>> seqTc(
@@ -587,7 +566,7 @@ namespace reflex {
           DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
           SafeTypeCode<reflex::match::Sparse<Args...>> sparseTc(
             factory,
-            factory->create_sparse_tc(StructName<reflex::match::Sparse<Args...>>::get().c_str(), 
+            factory->create_sparse_tc(reflex::codegen::StructName<reflex::match::Sparse<Args...>>::get().c_str(), 
                                       DDS_VM_NONE,
                                       NULL, 
                                       ex));
@@ -601,7 +580,7 @@ namespace reflex {
 
           TypelistIterator<RawTuple,
                            0,
-                           Size<RawTuple>::value - 1>::add(
+                           reflex::meta::Size<RawTuple>::value - 1>::add(
                              factory, sparseTc.get());
 
           return sparseTc;
@@ -654,16 +633,16 @@ namespace reflex {
       static SafeTypeCode<T> get_typecode(
         DDS_TypeCodeFactory * factory,
         T *,
-        typename detail::enable_if<is_builtin_array<T>::value>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_builtin_array<T>::value>::type * = 0)
       {
-        typedef typename remove_all_extents<T>::type InnerType;
+        typedef typename reflex::meta::remove_all_extents<T>::type InnerType;
 
         SafeTypeCode<InnerType> innerTc =
           TC_Helper::get_typecode(
           factory,
           static_cast<InnerType *>(0));
 
-        typedef typename make_dim_list<T>::type DimList;
+        typedef typename reflex::meta::make_dim_list<T>::type DimList;
 
         DDS_UnsignedLongSeq dims;
         dims.ensure_length(DimList::size, DimList::size);
@@ -706,7 +685,7 @@ namespace reflex {
       unsigned char flags,
       int id,
       T *)//,
-      //typename disable_if<is_builtin_array<T>::value>::type * = 0)
+      //typename reflex::meta::disable_if<reflex::type_traits::is_builtin_array<T>::value>::type * = 0)
     {
       DDS_ExceptionCode_t ex;
       SafeTypeCode<T> innerTc =
@@ -736,20 +715,20 @@ namespace reflex {
       unsigned char flags,
       int id,
       const T *,
-      typename enable_if<is_builtin_array<T>::value>::type * = 0)
+      typename reflex::meta::enable_if<reflex::type_traits::is_builtin_array<T>::value>::type * = 0)
     {
       // Simple overloading is not used to get typecode for built-in
       // arrays because square brackets must be expanded syntactically.
       // I.e., For N-dimensional array you have to write a template of N 
       // integral parameters because there is no way to say [0...N]. Sigh!
-      typedef typename remove_all_extents<T>::type InnerType;
+      typedef typename reflex::meta::remove_all_extents<T>::type InnerType;
 
       SafeTypeCode<InnerType> innerTc =
         TC_Helper::get_typecode(
             factory, 
             static_cast<InnerType *>(0));
 
-      typedef typename make_dim_list<T>::type DimList;
+      typedef typename reflex::meta::make_dim_list<T>::type DimList;
 
       DDS_UnsignedLongSeq dims;
       dims.ensure_length(DimList::size, DimList::size);
@@ -785,7 +764,7 @@ namespace reflex {
       int id,
       const T * tptr)
     {
-      if (is_optional<T>::value)
+      if (reflex::type_traits::is_optional<T>::value)
       {
         if (flags == DDS_TYPECODE_KEY_MEMBER)
         {
@@ -851,8 +830,8 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         const char * member_name,
         DDS_UnionMember & umember)//,
-        //typename disable_if<
-        //                    is_builtin_array<typename Case::type
+        //typename reflex::meta::disable_if<
+        //                    reflex::type_traits::is_builtin_array<typename Case::type
         //                   >::value>::type * = 0)
     {
       DDS_LongSeq label_seq;
@@ -863,9 +842,9 @@ namespace reflex {
 
       umember.name = const_cast<char *>(member_name);
       umember.is_pointer =
-        is_pointer<typename Case::type>::value;
+        reflex::type_traits::is_pointer<typename Case::type>::value;
 
-      typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
+      typedef typename reflex::meta::remove_reference<typename Case::type>::type CaseTypeNoRef;
       // typecodes are deleted in get_typecode() overload for Union.
       umember.type =
         TC_Helper::get_typecode(
@@ -880,8 +859,8 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         const char * member_name,
         DDS_UnionMember & umember,
-        typename enable_if<
-                           is_builtin_array<typename Case::type>::value
+        typename reflex::meta::enable_if<
+                           reflex::type_traits::is_builtin_array<typename Case::type>::value
                           >::type * = 0) 
     {
       DDS_LongSeq label_seq;
@@ -892,11 +871,11 @@ namespace reflex {
 
       umember.name = const_cast<char *>(member_name);
       umember.is_pointer =
-        is_pointer<typename Case::type>::value;
+        reflex::type_traits::is_pointer<typename Case::type>::value;
 
       // typecodes is deleted in get_typecode() overload for Union.
       typedef typename
-        remove_all_extents<typename Case::type>::type BasicType;
+        reflex::meta::remove_all_extents<typename Case::type>::type BasicType;
 
       SafeTypeCode<BasicType> basicTc =
         TC_Helper::get_typecode(
@@ -904,7 +883,7 @@ namespace reflex {
             static_cast<BasicType *>(0));
 
       SafeTypeCode<BasicType, 
-                   typename make_dim_list<typename Case::type>::type>
+                   typename reflex::meta::make_dim_list<typename Case::type>::type>
         arrayTc(factory, basicTc);
 
       umember.type = arrayTc.release();
@@ -925,7 +904,7 @@ namespace reflex {
     void deleteTc_impl(
             DDS_TypeCodeFactory * factory,
             DDS_TypeCode * tc,
-            typename enable_if<is_primitive<T>::value, T>::type * = 0)
+            typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value, T>::type * = 0)
     {
       // No-op
     }
@@ -934,7 +913,7 @@ namespace reflex {
     void deleteTc_impl(
             DDS_TypeCodeFactory * factory,
             DDS_TypeCode * tc,
-            typename disable_if<is_primitive<T>::value, T>::type * = 0)
+            typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value, T>::type * = 0)
     {
       DDS_ExceptionCode_t ex;
       factory->delete_tc(tc, ex);

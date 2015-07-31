@@ -111,7 +111,7 @@ namespace reflex {
     class GenericDataWriter<std::tuple<Args...>>
       : public detail::DataWriterBase
     {
-      typedef typename detail::remove_refs<std::tuple<Args...>>::type NoRefsTuple;
+      typedef typename reflex::meta::remove_refs<std::tuple<Args...>>::type NoRefsTuple;
 
     public:
       GenericDataWriter(DDSDomainParticipant *participant,

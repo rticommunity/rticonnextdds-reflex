@@ -19,13 +19,8 @@ damages arising out of the use or inability to use the software.
 #include "reflex/enable_if.h"
 
 namespace reflex {
-  namespace detail {
 
-    template <class T> struct is_char_ptr : false_type {};
-    template <> struct is_char_ptr<char *> : true_type{};
-    template <> struct is_char_ptr<const char *> : true_type{};
-    template <> struct is_char_ptr<char * const> : true_type{};
-    template <> struct is_char_ptr<const char * const> : true_type{};
+  namespace detail {
 
     struct DefaultMemberNames;
 

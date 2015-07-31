@@ -34,7 +34,7 @@ create_ddwriter(const char *type_name,
                 DDSDynamicDataTypeSupport *type_support);
 
 namespace reflex {
-  namespace detail {
+  namespace type_traits {
 
     template <class T>
     struct static_container_bound<std::vector<T>>
@@ -235,7 +235,7 @@ void write_large_type(int domain_id)
     
     auto stc = reflex::make_typecode<TupleFull>();
     
-    typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
+    typedef reflex::meta::remove_refs<decltype(t1)>::type Tuple;
 
     std::shared_ptr<DDSDynamicDataTypeSupport> 
       safe_typeSupport(new DDSDynamicDataTypeSupport(stc.get(), props));

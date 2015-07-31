@@ -67,7 +67,7 @@ damages arising out of the use or inability to use the software.
  * @see   REFLEX_ADAPT_ENUM
  */
 #define REFLEX_ENUM_DEF_CUSTOM(EnumType, Name, Size)     \
-namespace reflex { namespace detail {             \
+namespace reflex { namespace codegen {            \
   template <>                                     \
   struct EnumDef<EnumType>                        \
   {                                               \
@@ -80,7 +80,7 @@ namespace reflex { namespace detail {             \
                                                   \
       template <unsigned Index>                   \
       struct EnumMember {                         \
-        static reflex::detail::MemberInfo info(); \
+        static MemberInfo info(); \
       };                                          \
   };                                              \
 } } // namespace reflex::detail                         
@@ -97,7 +97,7 @@ namespace reflex { namespace detail {             \
 * @param Ordinal The integer value of the enumeration item.
 */
 #define REFLEX_ENUM_MEMBER_DEF_CUSTOM(EnumType, Index, Name, Ordinal)   \
-namespace reflex { namespace detail {                            \
+namespace reflex { namespace codegen {                           \
   template<>                                                     \
   inline MemberInfo                                              \
   EnumDef<EnumType>::EnumMember<Index>::info()                   \
@@ -166,7 +166,7 @@ namespace reflex { namespace detail {                            \
 * @see   REFLEX_ADAPT_STRUCT
 */
 #define REFLEX_STRUCT_NAME_DEF_CUSTOM(FullyQualifiedType, Name)   \
-namespace reflex { namespace detail {                             \
+namespace reflex { namespace codegen {                            \
   template <>                                                     \
   struct StructName<FullyQualifiedType>                           \
   {                                                               \
@@ -188,13 +188,13 @@ namespace reflex { namespace detail {                             \
 *        and \link REFLEX_OPTIONAL \endlink
 */
 #define REFLEX_STRUCT_MEMBER_DEF_CUSTOM(FullyQualifiedType, Index, Name, Flags)   \
-namespace reflex { namespace detail {                                             \
+namespace reflex { namespace codegen {                                            \
   template <>                                                                     \
   struct MemberTraits<FullyQualifiedType, Index>                                  \
     {                                                                             \
-    static reflex::detail::MemberInfo member_info()                               \
+    static MemberInfo member_info()                               \
         {                                                                         \
-      return reflex::detail::MemberInfo(Name, Flags);                             \
+      return MemberInfo(Name, Flags);                             \
         }                                                                         \
     };                                                                            \
 } } // namespace reflex::detail                         
@@ -228,13 +228,13 @@ namespace reflex { namespace detail {                                           
 * @see   REFLEX_ENUM_DEF_CUSTOM
 */
 #define REFLEX_ADAPT_ENUM(EnumType, Attributes)              \
-namespace reflex { namespace detail {                        \
+namespace reflex { namespace codegen {                       \
   template <>                                                \
   struct EnumDef<EnumType>                                   \
         {                                                    \
     static const char *name() {                              \
       return                                                 \
-        DefaultMemberNames::basename                         \
+        detail::DefaultMemberNames::basename                 \
          (#EnumType);                                        \
                 }                                            \
                                                              \
@@ -245,7 +245,7 @@ namespace reflex { namespace detail {                        \
                                                              \
     template <unsigned Index>                                \
     struct EnumMember {                                      \
-      static reflex::detail::MemberInfo info();              \
+      static MemberInfo info();             \
                 };                                           \
         };                                                   \
 } } /* namespace reflex::detail */                           \
@@ -334,19 +334,19 @@ BOOST_PP_SEQ_FOR_EACH_I(RTI_ENUM_MEMBER_INFO_INTERNAL,       \
 #ifndef REFLEX_DOXYGEN
 
 #define RTI_STRUCT_NAME_DEF_INTERNAL(FullyQualifiedType)          \
-  namespace reflex { namespace detail {                           \
+  namespace reflex { namespace codegen {                          \
   template <>                                                     \
   struct StructName<FullyQualifiedType>                           \
     {                                                             \
     static std::string get()                                      \
         {                                                         \
-      return DefaultMemberNames::basename(#FullyQualifiedType);   \
+      return detail::DefaultMemberNames::basename(#FullyQualifiedType);   \
         }                                                         \
     };                                                            \
 } } // namespace reflex::detail                         
 
 #define RTI_INHERITANCE_TRAITS(Derived, Base)      \
-namespace reflex { namespace detail {              \
+namespace reflex { namespace type_traits {         \
   template <>                                      \
   struct InheritanceTraits<Derived> {              \
     typedef true_type has_base;                    \
@@ -385,7 +385,7 @@ namespace reflex { namespace detail {              \
 // RTI_GET_NAME_FLAGS macro eats the parenthesis around Attr.
 // RTI_DUMMY_VAR is used on for Win32 only
 #define RTI_MEMBER_INFO_INTERNAL(R,Data,I,Attr)        \
-namespace reflex { namespace detail {                  \
+namespace reflex { namespace codegen {                 \
   template<>                                           \
   MemberInfo MemberTraits<Data, I>::member_info()      \
     {                                                  \
@@ -444,7 +444,7 @@ namespace reflex { namespace detail {                  \
 
 
 #define RTI_ENUM_MEMBER_INFO_INTERNAL(R,EnumType,Index,Attr)       \
-namespace reflex { namespace detail {                              \
+namespace reflex { namespace codegen {                             \
   template<>                                                       \
   MemberInfo EnumDef<EnumType>::EnumMember<Index>::info()          \
     {                                                              \

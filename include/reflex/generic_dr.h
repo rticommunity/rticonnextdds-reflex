@@ -306,7 +306,7 @@ namespace reflex {
       : public detail::DataReaderBase
     {
       typedef typename
-      detail::remove_refs<std::tuple<Args...>>::type
+      reflex::meta::remove_refs<std::tuple<Args...>>::type
       NoRefsTuple;
 
     public:

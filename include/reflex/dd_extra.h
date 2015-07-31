@@ -227,9 +227,6 @@ namespace reflex {
           size_t size,
           bool is_string);
 
-      REFLEX_DLL_EXPORT std::string remove_parenthesis(
-          std::string);
-
   } // namespace detail
 
 } // namespace reflex

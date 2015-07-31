@@ -107,9 +107,7 @@ namespace reflex {
 
   } // namespace match
 
-  namespace detail {
-
-    struct DefaultBase {};
+  namespace meta {
 
     struct true_type {
       enum { value = true };
@@ -119,40 +117,41 @@ namespace reflex {
       enum { value = false };
     };
 
-    template <class T>
-    struct EnumDef 
-    {
-      enum { is_enum = 0 };
-    };
+  } // namespace meta
+
+  namespace type_traits {
+
+    using reflex::meta::false_type;
+    using reflex::meta::true_type;
 
     template <class T>
     struct is_bool : false_type {};
 
     template <>
-    struct is_bool<bool> : true_type {};
+    struct is_bool<bool> : true_type{};
 
     template <class T>
     struct is_primitive : false_type {}; // enum
 
-    template <> struct is_primitive<match::octet_t>     : true_type {};
-    template <> struct is_primitive<bool>               : true_type {};
-    template <> struct is_primitive<char>               : true_type {};
-    template <> struct is_primitive<signed char>        : true_type {};
-    template <> struct is_primitive<int16_t>            : true_type {};
-    template <> struct is_primitive<uint16_t>           : true_type {};
-    template <> struct is_primitive<int32_t>            : true_type {};
-    template <> struct is_primitive<uint32_t>           : true_type {};
-    template <> struct is_primitive<int64_t>            : true_type {};
-    template <> struct is_primitive<uint64_t>           : true_type {};
-    template <> struct is_primitive<float>              : true_type {};
-    template <> struct is_primitive<double>             : true_type {};
-    template <> struct is_primitive<long double>        : true_type {};
+    template <> struct is_primitive<match::octet_t> : true_type{};
+    template <> struct is_primitive<bool>           : true_type{};
+    template <> struct is_primitive<char>           : true_type{};
+    template <> struct is_primitive<signed char>    : true_type{};
+    template <> struct is_primitive<int16_t>        : true_type{};
+    template <> struct is_primitive<uint16_t>       : true_type{};
+    template <> struct is_primitive<int32_t>        : true_type{};
+    template <> struct is_primitive<uint32_t>       : true_type{};
+    template <> struct is_primitive<int64_t>        : true_type{};
+    template <> struct is_primitive<uint64_t>       : true_type{};
+    template <> struct is_primitive<float>          : true_type{};
+    template <> struct is_primitive<double>         : true_type{};
+    template <> struct is_primitive<long double>    : true_type{};
 #ifndef RTI_WIN32
-    template <> struct is_primitive<char32_t>           : true_type {};
+    template <> struct is_primitive<char32_t>       : true_type{};
 #endif
 #if __x86_64__
-    template <> struct is_primitive<long long>          : true_type {};
-    template <> struct is_primitive<unsigned long long> : true_type {};
+    template <> struct is_primitive<long long>          : true_type{};
+    template <> struct is_primitive<unsigned long long> : true_type{};
 #endif 
 
     template <class... Args>
@@ -168,21 +167,21 @@ namespace reflex {
     struct is_primitive<reflex::match::Union<TagType, Cases...>> : false_type{};
 
     template <class T>
-    struct is_enum 
+    struct is_enum
     {
-      enum { value = detail::EnumDef<T>::is_enum };
+      enum { value = reflex::codegen::EnumDef<T>::is_enum };
     };
 
     template <class T>
     struct is_primitive_or_enum
     {
-      enum { value = is_primitive<T>::value || detail::is_enum<T>::value };
+      enum { value = is_primitive<T>::value || is_enum<T>::value };
     };
 
     template <class T>
     struct is_bool_or_enum
     {
-      enum { value = is_bool<T>::value || detail::is_enum<T>::value };
+      enum { value = is_bool<T>::value || is_enum<T>::value };
     };
 
     template <class T>
@@ -195,155 +194,219 @@ namespace reflex {
     struct is_vector : false_type {};
 
     template <class T>
-    struct is_vector<std::vector<T>> : true_type {};
+    struct is_vector<std::vector<T>> : true_type{};
 
     template <class T>
-    struct is_vector<const std::vector<T>> : true_type {};
+    struct is_vector<const std::vector<T>> : true_type{};
 
     template <class T>
     struct is_string : false_type {};
 
     template <>
-    struct is_string<std::string> : true_type {};
+    struct is_string<std::string> : true_type{};
 
     template <>
-    struct is_string<const std::string> : true_type {};
+    struct is_string<const std::string> : true_type{};
 
     template <class T>
     struct is_tuple : false_type {};
 
     template <typename... Args>
-    struct is_tuple<std::tuple<Args...>> : true_type {};
+    struct is_tuple<std::tuple<Args...>> : true_type{};
 
     template <typename... Args>
-    struct is_tuple<const std::tuple<Args...>> : true_type {};
+    struct is_tuple<const std::tuple<Args...>> : true_type{};
 
     template <typename T>
     struct is_stdarray : false_type {};
 
     template <typename T, size_t N>
-    struct is_stdarray<std::array<T, N>> : true_type {};
+    struct is_stdarray<std::array<T, N>> : true_type{};
 
     template <typename T, size_t N>
-    struct is_stdarray<const std::array<T, N>> : true_type {};
+    struct is_stdarray<const std::array<T, N>> : true_type{};
 
     template <class C>
     struct is_stdset : false_type {};
 
     template <class T, class Comp, class Alloc>
-    struct is_stdset<std::set<T, Comp, Alloc>> : true_type {};
+    struct is_stdset<std::set<T, Comp, Alloc>> : true_type{};
 
     template <class T, class Comp, class Alloc>
-    struct is_stdset<const std::set<T, Comp, Alloc>> : true_type {};
+    struct is_stdset<const std::set<T, Comp, Alloc>> : true_type{};
 
     template <class C>
     struct is_stdmap : false_type {};
 
     template <class Key, class T, class Comp, class Alloc>
-    struct is_stdmap<std::map<Key, T, Comp, Alloc>> : true_type {};
+    struct is_stdmap<std::map<Key, T, Comp, Alloc>> : true_type{};
 
     template <class Key, class T, class Comp, class Alloc>
-    struct is_stdmap<const std::map<Key, T, Comp, Alloc>> : true_type {};
+    struct is_stdmap<const std::map<Key, T, Comp, Alloc>> : true_type{};
 
     template <class T>
     struct is_builtin_array : false_type {};
 
     template <class T, size_t Dim>
-    struct is_builtin_array<T[Dim]> : true_type {};
+    struct is_builtin_array<T[Dim]> : true_type{};
 
     template <class T, size_t Dim>
-    struct is_builtin_array<const T[Dim]> : true_type {};
+    struct is_builtin_array<const T[Dim]> : true_type{};
 
     template <class T>
-    struct is_builtin_array<T []> : true_type {};
+    struct is_builtin_array<T []> : true_type{};
 
     template <class T>
-    struct is_builtin_array<const T []> : true_type {};
+    struct is_builtin_array<const T []> : true_type{};
 
     template <class T>
     struct is_pointer : false_type {};
 
     template <class T>
-    struct is_pointer<T *> : true_type {};
+    struct is_pointer<T *> : true_type{};
 
     template <class T>
-    struct is_pointer<const T *> : true_type {};
+    struct is_pointer<const T *> : true_type{};
 
     template <class T>
     struct is_container : false_type {};
 
     template <class T, class Alloc>
-    struct is_container<std::vector<T, Alloc>> : true_type {};
+    struct is_container<std::vector<T, Alloc>> : true_type{};
 
     template <class T, class Alloc>
-    struct is_container<const std::vector<T, Alloc>> : true_type {};
+    struct is_container<const std::vector<T, Alloc>> : true_type{};
 
     template <class T, class Alloc>
-    struct is_container<std::list<T, Alloc>> : true_type {};
+    struct is_container<std::list<T, Alloc>> : true_type{};
 
     template <class T, class Alloc>
-    struct is_container<const std::list<T, Alloc>> : true_type {};
+    struct is_container<const std::list<T, Alloc>> : true_type{};
 
     template <class Key, class Comp, class Alloc>
-    struct is_container<std::set<Key, Comp, Alloc>> : true_type {};
+    struct is_container<std::set<Key, Comp, Alloc>> : true_type{};
 
     template <class Key, class Comp, class Alloc>
-    struct is_container<const std::set<Key, Comp, Alloc>> : true_type {};
+    struct is_container<const std::set<Key, Comp, Alloc>> : true_type{};
 
     template <class Key, class T, class Comp, class Alloc>
-    struct is_container<std::map<Key, T, Comp, Alloc>> : true_type {};
+    struct is_container<std::map<Key, T, Comp, Alloc>> : true_type{};
 
     template <class Key, class T, class Comp, class Alloc>
-    struct is_container<const std::map<Key, T, Comp, Alloc>> : true_type {};
+    struct is_container<const std::map<Key, T, Comp, Alloc>> : true_type{};
 
     template <class T>
     struct is_union : false_type {};
 
     template <class TagType, class... Args>
-    struct is_union<reflex::match::Union<TagType, Args...>> : true_type {};
+    struct is_union<reflex::match::Union<TagType, Args...>> : true_type{};
 
     template <class TagType, class... Args>
-    struct is_union<const reflex::match::Union<TagType, Args...>> : true_type {};
+    struct is_union<const reflex::match::Union<TagType, Args...>> : true_type{};
 
     template <class T>
     struct is_sparse : false_type {};
 
     template <class... Args>
-    struct is_sparse<reflex::match::Sparse<Args...>> : true_type {};
+    struct is_sparse<reflex::match::Sparse<Args...>> : true_type{};
 
     template <class... Args>
-    struct is_sparse<const reflex::match::Sparse<Args...>> : true_type {};
+    struct is_sparse<const reflex::match::Sparse<Args...>> : true_type{};
 
     template <class T>
     struct is_range : false_type {};
 
     template <class T>
-    struct is_range<reflex::match::Range<T>> : true_type {};
+    struct is_range<reflex::match::Range<T>> : true_type{};
 
     template <class T>
-    struct is_range<const reflex::match::Range<T>> : true_type {};
+    struct is_range<const reflex::match::Range<T>> : true_type{};
 
     template <class T, size_t N>
-    struct is_range<reflex::match::BoundedRange<T, N>> : true_type {};
+    struct is_range<reflex::match::BoundedRange<T, N>> : true_type{};
 
     template <class T, size_t N>
-    struct is_range<const reflex::match::BoundedRange<T, N>> : true_type {};
+    struct is_range<const reflex::match::BoundedRange<T, N>> : true_type{};
 
     template <class T>
     struct is_optional : false_type {};
 
 #ifdef RTI_WIN32
     template <class... T>
-    struct is_optional<boost::optional<T...>> : true_type {};
+    struct is_optional<boost::optional<T...>> : true_type{};
 #else
     template <class T>
-    struct is_optional<boost::optional<T>> : true_type {};
+    struct is_optional<boost::optional<T>> : true_type{};
 #endif
 
-    template <class T>
-    struct is_default_member_names {
-      enum { value = std::is_base_of<DefaultBase, T>::value };
+    template <class C, bool>
+    struct container_traits_impl;
+
+    template <class C>
+    struct container_traits_impl<C, true>
+    {
+      typedef typename C::value_type value_type;
+      typedef typename C::iterator iterator;
     };
+
+    template <class C>
+    struct container_traits_impl<C, false>
+    {
+      typedef void value_type;
+      typedef void iterator;
+    };
+
+    template <class C>
+    struct container_traits
+    {
+      typedef typename
+        container_traits_impl<
+        C,
+        is_container<C>::value>::value_type
+        value_type;
+
+      typedef typename
+        container_traits_impl<
+        C,
+        is_container<C>::value>::iterator
+        iterator;
+    };
+
+    template <class T>
+    struct optional_traits;
+
+    template <class T> struct is_char_ptr              : false_type {};
+    template <> struct is_char_ptr<char *>             : true_type{};
+    template <> struct is_char_ptr<const char *>       : true_type{};
+    template <> struct is_char_ptr<char * const>       : true_type{};
+    template <> struct is_char_ptr<const char * const> : true_type{};
+
+    template <class T>
+    struct InheritanceTraits {
+      typedef reflex::meta::false_type has_base;
+    };
+
+    struct DefaultBase { };
+
+    template <class T, class Parent = void, int Index = -1>
+    struct static_string_bound : DefaultBase
+    {
+      static const unsigned int value = REFLEX_STATIC_STRING_BOUND;
+    };
+
+    template <class T, class Parent = void, int Index = -1>
+    struct static_container_bound : DefaultBase
+    {
+      static const unsigned int value = REFLEX_STATIC_SEQUENCE_BOUND;
+    };
+
+    /*template <class T>
+    struct is_default_member_names {
+    enum { value = std::is_base_of<DefaultBase, T>::value };
+    };*/
+  } // namespace type_traits
+
+  namespace meta {
 
     template <bool, class T = void>
     struct enable_if {
@@ -374,42 +437,6 @@ namespace reflex {
     struct dim_list {
       enum { size = sizeof...(Dims) };
     };
-
-    template <class C, bool>
-    struct container_traits_impl;
-
-    template <class C>
-    struct container_traits_impl<C, true>
-    {
-        typedef typename C::value_type value_type;
-        typedef typename C::iterator iterator;
-    };
-
-    template <class C>
-    struct container_traits_impl<C, false>
-    {
-        typedef void value_type;
-        typedef void iterator;
-    };
-
-    template <class C>
-    struct container_traits
-    {
-        typedef typename 
-            container_traits_impl<
-              C, 
-              is_container<C>::value>::value_type 
-          value_type;
-
-        typedef typename 
-            container_traits_impl<
-              C, 
-              is_container<C>::value>::iterator 
-          iterator;
-    };
-
-    template <class T>
-    struct optional_traits;
 
     template <size_t Arg, class DimList>
     struct dim_cat;
@@ -446,16 +473,16 @@ namespace reflex {
 
     template <class T, size_t Dim>
     struct make_dim_list<T[Dim]> {
-      typedef typename 
-        dim_cat<Dim, 
-                typename make_dim_list<T>::type>::type type;
+      typedef typename
+        dim_cat<Dim,
+        typename make_dim_list<T>::type>::type type;
     };
 
     template <class T, size_t Dim>
     struct make_dim_list<std::array<T, Dim>> {
-      typedef typename 
-        dim_cat<Dim, 
-                typename make_dim_list<T>::type>::type type;
+      typedef typename
+        dim_cat<Dim,
+        typename make_dim_list<T>::type>::type type;
     };
 
     template <class T>
@@ -511,7 +538,7 @@ namespace reflex {
     template <size_t Head, size_t... Tail>
     struct multiply {
       static const size_t value =
-      Head * multiply<Tail...>::value;
+        Head * multiply<Tail...>::value;
     };
 
     template <size_t N>
@@ -531,7 +558,7 @@ namespace reflex {
     struct At
     {
       typedef typename
-      boost::fusion::result_of::at_c<FusionSeq, I>::type type;
+        boost::fusion::result_of::at_c<FusionSeq, I>::type type;
     };
 
     template <class... Args, size_t I>
@@ -549,29 +576,31 @@ namespace reflex {
       //
       // I'm not sure if this will even work for references
       // because const references is redundant because references never change.
-      typedef typename 
+      typedef typename
         std::tuple_element<I, std::tuple<Args...>>::type const type;
     };
 
     template <class First, class Second, size_t I>
     struct At<std::pair<First, Second>, I>
     {
-      typedef typename 
+      typedef typename
         std::tuple_element<I, std::pair<First, Second>>::type type;
     };
 
     template <class First, class Second, size_t I>
     struct At<const std::pair<First, Second>, I>
     {
-      typedef typename 
+      typedef typename
         std::tuple_element<I, std::pair<First, Second>>::type const type;
     };
 
     template <class FusionSeq>
     struct Size
     {
-      enum { value = 
-        boost::fusion::result_of::size<FusionSeq>::type::value };
+      enum {
+        value =
+        boost::fusion::result_of::size<FusionSeq>::type::value
+      };
     };
 
     template <class First, class Second>
@@ -599,19 +628,19 @@ namespace reflex {
     };
 
     template <size_t I, class FusionSeq>
-    typename disable_if_lazy <is_tuple<FusionSeq>::value,
-                              At<FusionSeq, I>> ::type
+    typename disable_if_lazy <reflex::type_traits::is_tuple<FusionSeq>::value,
+      At<FusionSeq, I >> ::type
       Get(FusionSeq & seq)
     {
-        return boost::fusion::at_c<I>(seq);
+      return boost::fusion::at_c<I>(seq);
     }
 
     template <size_t I, class FusionSeq>
-    typename disable_if_lazy <is_tuple<FusionSeq>::value,
-                              At<const FusionSeq, I>> ::type
+    typename disable_if_lazy <reflex::type_traits::is_tuple<FusionSeq>::value,
+      At<const FusionSeq, I >> ::type
       Get(const FusionSeq & seq)
     {
-        return boost::fusion::at_c<I>(seq);
+      return boost::fusion::at_c<I>(seq);
     }
 
     template <size_t I, class... Args>
@@ -619,7 +648,7 @@ namespace reflex {
     typename At<std::tuple<Args...>, I>::type &
       Get(std::tuple<Args...> & tuple)
     {
-        return std::get<I>(tuple);
+      return std::get<I>(tuple);
     }
 
     template <size_t I, class... Args>
@@ -627,7 +656,7 @@ namespace reflex {
     typename At<const std::tuple<Args...>, I>::type &
       Get(const std::tuple<Args...> & tuple)
     {
-        return std::get<I>(tuple);
+      return std::get<I>(tuple);
     }
 
     template <size_t I, class First, class Second>
@@ -635,7 +664,7 @@ namespace reflex {
     typename At<std::pair<First, Second>, I>::type &
       Get(std::pair<First, Second> & pair)
     {
-        return std::get<I>(pair);
+      return std::get<I>(pair);
     }
 
     template <size_t I, class First, class Second>
@@ -643,7 +672,7 @@ namespace reflex {
     typename At<const std::pair<First, Second>, I>::type &
       Get(const std::pair<First, Second> & pair)
     {
-        return std::get<I>(pair);
+      return std::get<I>(pair);
     }
 
     template <class T>
@@ -664,25 +693,25 @@ namespace reflex {
       typedef const std::tuple<typename remove_reference<Args>::type...> type;
     };
 
+
+  } // namespace meta
+
+  namespace codegen {
+
+    template <class T>
+    struct EnumDef
+    {
+      enum { is_enum = 0 };
+    };
+
     template <class T>
     void enum_cast(T & dst, DDS_Long src)
     {
       dst = static_cast<T>(src); // cast required for enums         
     }
 
-    template <class T, class Parent = void, int Index = -1>
-    struct static_string_bound : DefaultBase
-    {
-      static const unsigned int value = REFLEX_STATIC_STRING_BOUND;
-    };
-    
-    template <class T, class Parent = void, int Index = -1>
-    struct static_container_bound : DefaultBase
-    { 
-      static const unsigned int value = REFLEX_STATIC_SEQUENCE_BOUND;
-    };
 
-  } // namespace detail
+  } // namespace codegen
 
   namespace match {
 

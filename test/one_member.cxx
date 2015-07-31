@@ -27,7 +27,7 @@ void write_one_member(int)
     reflex::AutoDynamicData d2(safe_typeSupport.get());
 
     one_member one;
-    one.member = 12.3456;
+    one.member = 12;
 
     reflex::write_dynamicdata(d1, one);
     

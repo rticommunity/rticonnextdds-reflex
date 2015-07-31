@@ -68,10 +68,10 @@ namespace reflex {
         int discriminator_value,
         TUnion& val)
     {
-        typedef typename At<Typelist, I>::type CaseI;
+        typedef typename reflex::meta::At<Typelist, I>::type CaseI;
         if (CaseI::matches(discriminator_value))
         {
-          typename CaseI::type * data_ptr = Get<I>(val.get_caseptr_tuple());
+          typename CaseI::type * data_ptr = reflex::meta::Get<I>(val.get_caseptr_tuple());
           bool data_in_case_ptr = data_ptr ? true : false;
 
           if (data_in_case_ptr == false)
@@ -94,8 +94,8 @@ namespace reflex {
                 *data_ptr);
           else
           {
-            MemberInfo info =
-              MemberTraits<typename remove_refs<Typelist>::type, 
+            reflex::codegen::MemberInfo info =
+              reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                            I>::member_info();
 
             get_member_forward(
@@ -123,9 +123,9 @@ namespace reflex {
         if ((I == val.get_active_index()) ||
             (I == val.get_variant().which() - 1))
         {
-          typedef typename At<Typelist, I>::type CaseI;
+          typedef typename reflex::meta::At<Typelist, I>::type CaseI;
           typename CaseI::type const * data_ptr =
-            Get<I>(val.get_caseptr_tuple()) ? :
+            reflex::meta::Get<I>(val.get_caseptr_tuple()) ? :
               &(boost::get<CaseI>(val.get_variant()).get());
 
           if (ma.access_by_id())
@@ -135,8 +135,8 @@ namespace reflex {
                        *data_ptr);
           else
           {
-            MemberInfo info =
-              MemberTraits<typename remove_refs<Typelist>::type, 
+            reflex::codegen::MemberInfo info =
+              reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                            I>::member_info();
 
             set_member_forward(
@@ -169,23 +169,23 @@ namespace reflex {
         unsigned i = I;
         UNUSED_VAR(i);
         std::string member_name =
-          MemberTraits<Typelist, I>::member_info().name;
+          reflex::codegen::MemberTraits<Typelist, I>::member_info().name;
 #endif
 
         if (ma.access_by_id())
         {
-          set_member_forward(instance, ma, Get<I>(tuple));
+          set_member_forward(instance, ma, reflex::meta::Get<I>(tuple));
           Next::set(instance, ma + 1, tuple);
         }
         else
         {
-          MemberInfo info =
-            MemberTraits<typename remove_refs<Typelist>::type, I>::member_info();
+          reflex::codegen::MemberInfo info =
+            reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, I>::member_info();
 
           set_member_forward(
                      instance,
                      MemberAccess::BY_NAME(info.name.c_str()),
-                     Get<I>(tuple));
+                     reflex::meta::Get<I>(tuple));
 
           Next::set(instance, ma, tuple);
         }
@@ -200,23 +200,23 @@ namespace reflex {
         unsigned i = I;
         UNUSED_VAR(i);
         std::string member_name =
-          MemberTraits<Typelist, I>::member_info().name;
+          reflex::codegen::MemberTraits<Typelist, I>::member_info().name;
 #endif
         if (ma.access_by_id())
         {
-          get_member_forward(instance, ma, Get<I>(tuple));
+          get_member_forward(instance, ma, reflex::meta::Get<I>(tuple));
           Next::get(instance, ma + 1, tuple);
         }
         else
         {
-          MemberInfo info =
-            MemberTraits<typename remove_refs<Typelist>::type,
+          reflex::codegen::MemberInfo info =
+            reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type,
                          I>::member_info();
 
           get_member_forward(
               instance,
               MemberAccess::BY_NAME(info.name.c_str()),
-              Get<I>(tuple));
+              reflex::meta::Get<I>(tuple));
           Next::get(instance, ma, tuple);
         }
       }
@@ -229,14 +229,14 @@ namespace reflex {
         unsigned i = I;
         UNUSED_VAR(i);
         std::string member_name =
-          MemberTraits<Typelist, I>::member_info().name;
+          reflex::codegen::MemberTraits<Typelist, I>::member_info().name;
 #endif
 
-        typedef typename At<Typelist, I>::type Inner;
-        typedef typename remove_reference<Inner>::type InnerNoRef;
+        typedef typename reflex::meta::At<Typelist, I>::type Inner;
+        typedef typename reflex::meta::remove_reference<Inner>::type InnerNoRef;
 
-        MemberInfo info =
-          MemberTraits<typename remove_refs<Typelist>::type, 
+        reflex::codegen::MemberInfo info =
+          reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                        I
                       >::member_info();
 
@@ -254,10 +254,10 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename At<Typelist, I>::type CaseI;
+        typedef typename reflex::meta::At<Typelist, I>::type CaseI;
 
-        MemberInfo info =
-          MemberTraits<typename remove_refs<Typelist>::type, 
+        reflex::codegen::MemberInfo info =
+          reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                        I
                       >::member_info();
 
@@ -270,8 +270,8 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename At<Typelist, I>::type Case;
-        typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
+        typedef typename reflex::meta::At<Typelist, I>::type Case;
+        typedef typename reflex::meta::remove_reference<typename Case::type>::type CaseTypeNoRef;
         deleteTc_forward<CaseTypeNoRef>(
             factory, 
             const_cast<DDS_TypeCode *>(seq[I].type));
@@ -313,23 +313,23 @@ namespace reflex {
         unsigned max = MAX_INDEX;
         UNUSED_VAR(max);
         std::string member_name =
-          MemberTraits<Typelist, MAX_INDEX>::member_info().name;
+          reflex::codegen::MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
 
         if (ma.access_by_id()) 
         {
-          set_member_forward(instance, ma, Get<MAX_INDEX>(tuple));
+          set_member_forward(instance, ma, reflex::meta::Get<MAX_INDEX>(tuple));
         }
         else
         {
-          MemberInfo info =
-            MemberTraits<typename remove_refs<Typelist>::type, 
+          reflex::codegen::MemberInfo info =
+            reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                          MAX_INDEX>::member_info();
 
           set_member_forward(
                      instance,
                      MemberAccess::BY_NAME(info.name.c_str()),
-                     Get<MAX_INDEX>(tuple));
+                     reflex::meta::Get<MAX_INDEX>(tuple));
         }
       }
 
@@ -341,23 +341,23 @@ namespace reflex {
         unsigned max = MAX_INDEX;
         UNUSED_VAR(max);
         std::string member_name =
-          MemberTraits<Typelist, MAX_INDEX>::member_info().name;
+          reflex::codegen::MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
 
         if (ma.access_by_id())
         {
-          get_member_forward(instance, ma, Get<MAX_INDEX>(tuple));
+          get_member_forward(instance, ma, reflex::meta::Get<MAX_INDEX>(tuple));
         }
         else
         {
-          MemberInfo info =
-            MemberTraits<typename remove_refs<Typelist>::type, 
+          reflex::codegen::MemberInfo info =
+            reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                          MAX_INDEX>::member_info();
 
           get_member_forward(
               instance,
               MemberAccess::BY_NAME(info.name.c_str()),
-              Get<MAX_INDEX>(tuple));
+              reflex::meta::Get<MAX_INDEX>(tuple));
         }
       }
 
@@ -369,14 +369,14 @@ namespace reflex {
         unsigned max = MAX_INDEX;
         UNUSED_VAR(max);
         std::string member_name =
-          MemberTraits<Typelist, MAX_INDEX>::member_info().name;
+          reflex::codegen::MemberTraits<Typelist, MAX_INDEX>::member_info().name;
 #endif
 
-        typedef typename At<Typelist, MAX_INDEX>::type Inner;
-        typedef typename remove_reference<Inner>::type InnerNoRef;
+        typedef typename reflex::meta::At<Typelist, MAX_INDEX>::type Inner;
+        typedef typename reflex::meta::remove_reference<Inner>::type InnerNoRef;
 
-        MemberInfo info =
-          MemberTraits<typename remove_refs<Typelist>::type, 
+        reflex::codegen::MemberInfo info =
+          reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                        MAX_INDEX>::member_info();
 
         add_member_forward(factory,
@@ -391,9 +391,9 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename At<Typelist, MAX_INDEX>::type CaseI;
-        MemberInfo info =
-          MemberTraits<typename remove_refs<Typelist>::type, 
+        typedef typename reflex::meta::At<Typelist, MAX_INDEX>::type CaseI;
+        reflex::codegen::MemberInfo info =
+          reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
                        MAX_INDEX>::member_info();
 
         case_add_forward<CaseI>(factory, info.name.c_str(), seq[MAX_INDEX]);
@@ -403,8 +403,8 @@ namespace reflex {
         DDS_TypeCodeFactory * factory,
         DDS_UnionMemberSeq & seq)
       {
-        typedef typename At<Typelist, MAX_INDEX>::type Case;
-        typedef typename remove_reference<typename Case::type>::type CaseTypeNoRef;
+        typedef typename reflex::meta::At<Typelist, MAX_INDEX>::type Case;
+        typedef typename reflex::meta::remove_reference<typename Case::type>::type CaseTypeNoRef;
         deleteTc_forward<CaseTypeNoRef>(
             factory, 
             const_cast<DDS_TypeCode *>(seq[MAX_INDEX].type));

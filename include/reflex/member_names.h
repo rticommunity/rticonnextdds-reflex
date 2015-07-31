@@ -29,6 +29,22 @@ namespace reflex {
 
   namespace detail {
 
+    REFLEX_DLL_EXPORT std::string remove_parenthesis(std::string);
+
+  } // namespace detail
+
+  namespace match {
+
+    template <class... Args>
+    struct Sparse;
+
+    template <class TagType, class... Cases>
+    struct Union;
+  } // namespace match
+
+  namespace codegen 
+  {
+
     struct MemberInfo
     {
       std::string name;
@@ -38,29 +54,8 @@ namespace reflex {
 
       MemberInfo(std::string n,
                  unsigned char v)
-        : name(remove_parenthesis(n)), value(v)
+        : name(reflex::detail::remove_parenthesis(n)), value(v)
       {}
-    };
-
-    struct DefaultMemberNames
-    {
-      REFLEX_DLL_EXPORT static MemberInfo get_member_info(int i);
-      REFLEX_DLL_EXPORT static const char * basename(const char *);
-      REFLEX_DLL_EXPORT static std::string type_name(const char * prefix);
-      REFLEX_DLL_EXPORT static std::string demangle(const char* name);
-    };
-
-    template <class T>
-    struct StructName
-    {
-      static std::string get()
-      {
-#ifdef HAVE_CXA_DEMANGLE
-        return DefaultMemberNames::demangle(typeid(T).name());
-#else
-        return DefaultMemberNames::type_name("DefaultTypeName");
-#endif
-      }
     };
 
     // specialize this trait for every user-defined type
@@ -68,7 +63,7 @@ namespace reflex {
     struct MemberTraits
     {
       static MemberInfo member_info() {
-        return DefaultMemberNames::get_member_info(I);
+        return reflex::detail::DefaultMemberNames::get_member_info(I);
       }
     };
 
@@ -88,30 +83,26 @@ namespace reflex {
       }
     };
 
+
     template <class T>
-    struct InheritanceTraits {
-      typedef false_type has_base;
+    struct StructName
+    {
+      static std::string get()
+      {
+#ifdef HAVE_CXA_DEMANGLE
+        return DefaultMemberNames::demangle(typeid(T).name());
+#else
+        return reflex::detail::DefaultMemberNames::type_name("DefaultTypeName");
+#endif
+      }
     };
 
-  } // namespace detail
-
-  namespace match {
-
-    template <class... Args>
-    struct Sparse;
-
-    template <class TagType, class... Cases>
-    struct Union;
-  } // namespace match
-
-  namespace detail 
-  {
     template <class First, class Second>
     struct StructName<std::pair<First, Second>>
     {
       static std::string get()
       {
-        return DefaultMemberNames::type_name("DefaultPairTypeName");
+        return reflex::detail::DefaultMemberNames::type_name("DefaultPairTypeName");
       }
     };
 
@@ -120,7 +111,7 @@ namespace reflex {
     {
       static std::string get()
       {
-        return DefaultMemberNames::type_name("DefaultSparseTypeName");
+        return reflex::detail::DefaultMemberNames::type_name("DefaultSparseTypeName");
       }
     };
 
@@ -129,7 +120,7 @@ namespace reflex {
     {
       static std::string get()
       {
-        return DefaultMemberNames::type_name("DefaultUnionName");
+        return reflex::detail::DefaultMemberNames::type_name("DefaultUnionName");
       }
     };
 
@@ -138,8 +129,20 @@ namespace reflex {
     {
       static std::string get()
       {
-        return DefaultMemberNames::type_name("DefaultTupleName");
+        return reflex::detail::DefaultMemberNames::type_name("DefaultTupleName");
       }
+    };
+
+  } // namespace codegen
+
+  namespace detail {
+
+    struct DefaultMemberNames
+    {
+      REFLEX_DLL_EXPORT static reflex::codegen::MemberInfo get_member_info(int i);
+      REFLEX_DLL_EXPORT static const char * basename(const char *);
+      REFLEX_DLL_EXPORT static std::string type_name(const char * prefix);
+      REFLEX_DLL_EXPORT static std::string demangle(const char* name);
     };
 
   } // namespace detail

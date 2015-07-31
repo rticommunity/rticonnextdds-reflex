@@ -21,7 +21,7 @@ create_ddwriter(const char *type_name,
                 DDSDynamicDataTypeSupport *type_support);
 
 namespace reflex {
-  namespace detail {
+  namespace type_traits {
 
     // For interoperability with the Shapes Demo string size must be 128
     template <>
@@ -141,7 +141,7 @@ void write_shape_type_extended(int domain_id)
   shape.fillKind() = HORIZONTAL_HATCH_FILL;
 
   std::cout << "Writing "
-    << reflex::detail::StructName<ShapeTypeExtended>::get()
+    << reflex::codegen::StructName<ShapeTypeExtended>::get()
     << " topic = "
     << topic_name
     << " (domain = "
@@ -190,7 +190,7 @@ void write_shape_type(int domain_id)
   auto t1 = std::tie(color, x, y, shapesize);
   //auto t1 = ShapeType(color, x, y, shapesize);
 
-  typedef reflex::detail::remove_refs<decltype(t1)>::type Tuple;
+  typedef reflex::meta::remove_refs<decltype(t1)>::type Tuple;
   reflex::SafeTypeCode<Tuple> stc =
     reflex::make_typecode<Tuple>();
   
@@ -209,7 +209,7 @@ void write_shape_type(int domain_id)
   // multi-value assignment using tie
   std::tie(ddWriter, participant) = 
     create_ddwriter(
-      reflex::detail::StructName<Tuple>::get().c_str(), 
+      reflex::codegen::StructName<Tuple>::get().c_str(), 
       topic_name, 
       safe_typeSupport.get());
 
@@ -217,7 +217,7 @@ void write_shape_type(int domain_id)
     return;
 
   std::cout << "Writing " 
-            << reflex::detail::StructName<Tuple>::get()
+            << reflex::codegen::StructName<Tuple>::get()
             << " topic = " 
             << topic_name
             << " (domain = " 

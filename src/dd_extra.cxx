@@ -303,16 +303,6 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         SafeBinder binder(seq, item, NULL, size);
       }
 
-      REFLEX_INLINE std::string remove_parenthesis(std::string s)
-      {
-        std::string::iterator end = s.end();
-
-        if (*--end == ')' && *--end == '(')
-          return std::string(s.begin(), end);
-        else
-          return s;
-      }
-
       REFLEX_INLINE const char *get_readable_retcode(DDS_ReturnCode_t rc)
       {
         switch (rc) 
