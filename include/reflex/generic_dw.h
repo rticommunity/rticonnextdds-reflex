@@ -16,6 +16,7 @@ damages arising out of the use or inability to use the software.
 #include "reflex/dllexport.h"
 #include "reflex/reflex_fwd.h"
 #include "reflex/enable_if.h"
+#include "reflex/type_manager.h"
 
 #include <memory>
 
@@ -27,118 +28,149 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
-  namespace detail {
+  namespace detail { 
 
-    class DataWriterBase
-    {
-    protected:
+    REFLEX_DLL_EXPORT 
+      std::shared_ptr<DDSDynamicDataWriter> initialize_writer(DDSDomainParticipant *participant,
+                                                              const DDS_DataWriterQos & dwqos,
+                                                              const char * topic_name,
+                                                              const char * type_name,
+                                                              DDSDynamicDataTypeSupport * support,
+                                                              DDSDataWriterListener * listener,
+                                                              DDS_DynamicDataTypeProperty_t props);
 
-      SafeTypeCode<DDS_TypeCode> safe_typecode_;
-      std::unique_ptr<DDSDynamicDataTypeSupport> safe_typesupport_;
-      std::shared_ptr<DDSDynamicDataWriter> safe_datawriter_;
-      AutoDynamicData dd_instance_;
-
-      REFLEX_DLL_EXPORT DataWriterBase(DDSDomainParticipant *participant,
-        const char * topic_name,
-        const char * type_name,
-        DDS_TypeCode * tc,
-        DDS_DynamicDataTypeProperty_t props =
-        DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-
-      REFLEX_DLL_EXPORT DataWriterBase(DDSDomainParticipant *participant,
-        const DDS_DataWriterQos & dwqos,
-        const char * topic_name,
-        const char * type_name,
-        DDS_TypeCode * tc,
-        void * listener,
-        DDS_DynamicDataTypeProperty_t props =
-        DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-
-      DDSDataWriter * underlying();
-      DDSDataWriter * operator -> ();
-
-      static void deleter(DDSDynamicDataWriter * ddWriter) throw();
-
-    public:
-      REFLEX_DLL_EXPORT const DDS_TypeCode * get_typecode() const;
-      REFLEX_DLL_EXPORT DDS_TypeCode * get_typecode();
-    };
-
-    template <class T>
-    class GenericDataWriter : public detail::DataWriterBase
-    {
-    public:
-      GenericDataWriter(DDSDomainParticipant *participant,
-        const char * topic_name,
-        const char * type_name = 0)
-        : detail::DataWriterBase(
-            participant,
-            topic_name,
-            type_name,
-            make_typecode<T>(type_name).release())
-      { }
-
-      GenericDataWriter(DDSDomainParticipant *participant,
-        DDS_DataWriterQos & dwqos,
-        const char * topic_name,
-        const char * type_name = 0,
-        void * listener = 0)
-        : detail::DataWriterBase(
-            participant,
-            dwqos,
-            topic_name,
-            type_name,
-            make_typecode<T>(type_name).release(),
-            listener)
-      { }
-
-      template <class U>
-      DDS_ReturnCode_t write(U & data)
-      {
-        write_dynamicdata(*dd_instance_.get(), data);
-        return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
-      }
-
-      template <class U>
-      DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
-      {
-        write_dynamicdata(*dd_instance_.get(), data);
-        return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
-      }
-    };
-
-    template <class... Args>
-    class GenericDataWriter<std::tuple<Args...>>
-      : public detail::DataWriterBase
-    {
-      typedef typename reflex::meta::remove_refs<std::tuple<Args...>>::type NoRefsTuple;
-
-    public:
-      GenericDataWriter(DDSDomainParticipant *participant,
-        const char * topic_name,
-        const char * type_name)
-        : DataWriterBase(participant,
-        topic_name,
-        type_name,
-        make_typecode<NoRefsTuple>(type_name).release())
-      { }
-
-      template <class U>
-      DDS_ReturnCode_t write(U & data)
-      {
-        write_dynamicdata(*dd_instance_.get(), data);
-        return safe_datawriter_->write(*dd_instance_.get(), DDS_HANDLE_NIL);
-      }
-
-      template <class U>
-      DDS_ReturnCode_t write_w_params(U & data, DDS_WriteParams_t & params)
-      {
-        write_dynamicdata(*dd_instance_.get(), data);
-        return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
-      }
-    };
+    REFLEX_DLL_EXPORT void dw_deleter(DDSDynamicDataWriter * ddWriter) throw();
 
   } // namespace detail
+
+  /**
+  * @brief Contains generic data publisher for adapted types
+  */
+  namespace pub {
+
+    /**
+     * @brief A datawriter for adapted aggregate types
+     *
+     */
+    template <class T>
+    class GenericDataWriter
+    {
+      TypeManager<T> type_manager_;
+      AutoDynamicData dd_instance_;
+      std::shared_ptr<DDSDynamicDataWriter> safe_datawriter_;
+
+    public:
+      GenericDataWriter(DDSDomainParticipant *participant,
+                        const char * topic_name,
+                        const char * type_name = 0,
+                        DDS_DynamicDataTypeProperty_t props =
+                          DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
+       : type_manager_(props),
+         dd_instance_(type_manager_.get_type_support()),
+         safe_datawriter_(detail::initialize_writer(
+                                    participant,
+                                    DDS_DATAWRITER_QOS_DEFAULT,
+                                    topic_name,
+                                    type_name,
+                                    type_manager_.get_type_support(),
+                                    0, /* listener */
+                                    props))
+      { }
+
+      GenericDataWriter(DDSDomainParticipant *participant,
+                        DDS_DataWriterQos & dwqos,
+                        const char * topic_name,
+                        const char * type_name = 0,
+                        DDSDataWriterListener * listener = 0,
+                        DDS_DynamicDataTypeProperty_t props =
+                          DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
+        : type_manager_(props),
+          dd_instance_(type_manager_.get_type_support()),
+          safe_datawriter_(detail::initialize_datawriter(
+                                      participant,
+                                      dwqos,
+                                      topic_name,
+                                      type_name,
+                                      type_manager_.get_type_support(),
+                                      listener,
+                                      props))
+      { }
+
+      /**
+       * @brief Publish an instance of type T
+       * @param data An object of type T
+       * @param handle (Optional) A handle to a DDS instance
+       * @return DDS_RETCODE_OK if successful.
+       */
+      DDS_ReturnCode_t write(const T & data, 
+                             const DDS_InstanceHandle_t& handle = DDS_HANDLE_NIL)
+      {
+        reflex::write_dynamicdata(dd_instance_, data);
+        return safe_datawriter_->write(*dd_instance_.get(), handle);
+      }
+
+      /**
+      * @brief Publish an instance of type T
+      * @param data An object of type T
+      * @param params  Special parameters for publishing a value
+      * @return DDS_RETCODE_OK if successful.
+      */
+      DDS_ReturnCode_t write_w_params(const T & data, DDS_WriteParams_t & params)
+      {
+        reflex::write_dynamicdata(dd_instance_, data);
+        return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
+      }
+
+      /**
+       * @brief Return the underlying DDSDynamicDataWriter
+       */
+      DDSDynamicDataWriter * underlying() 
+      {
+        return safe_datawriter_.get();
+      }
+
+      /**
+      * @brief Return the underlying DDSDynamicDataWriter
+      */
+      DDSDynamicDataWriter * operator -> () {
+        return underlying();
+      }
+
+      /**
+      * Return the underlying DynamicData properties.
+      */
+      const DDS_DynamicDataTypeProperty_t & get_properties() const
+      {
+        return type_manager_.get_properties();
+      }
+
+      /**
+      * Return the underlying SafeTypeCode object.
+      */
+      const SafeTypeCode<T> & get_safe_typecode() const
+      {
+        return type_manager_.get_safe_typecode();
+      }
+
+      /**
+      * Return the underlying TypeCode object.
+      */
+      const DDS_TypeCode* get_typecode() const
+      {
+        return type_manager_.get_typecode();
+      }
+
+      /**
+      * Return the underlying DynamicDataTypeSupport.
+      */
+      const DDSDynamicDataTypeSupport * get_type_support() const
+      {
+        return type_manager_.get_type_support();
+      }
+      
+    };
+
+  } // namespace pub
 } // namespace reflex
 
 #ifndef REFLEX_NO_HEADER_ONLY

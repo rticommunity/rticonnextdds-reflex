@@ -18,45 +18,24 @@ namespace reflex {
 
   namespace detail {
 
-    REFLEX_INLINE DataReaderBase::DataReaderBase(
-      DDSDomainParticipant *participant,
-      DDSDataReaderListener * listener,
-      const char * topic_name,
-      const char * type_name,
-      DDS_TypeCode * tc,
-      DDS_DynamicDataTypeProperty_t props)
-      : DataReaderBase(participant,
-      DDS_DATAREADER_QOS_DEFAULT,
-      listener,
-      topic_name,
-      type_name,
-      tc,
-      props)
-    {}
-
-    REFLEX_INLINE DataReaderBase::DataReaderBase(
-      DDSDomainParticipant *participant,
-      const DDS_DataReaderQos & drqos,
-      DDSDataReaderListener * listener,
-      const char * topic_name,
-      const char * type_name,
-      DDS_TypeCode * tc,
-      DDS_DynamicDataTypeProperty_t props)
-
-      : safe_typecode_(tc), // tc will be deleted automatically
-      safe_typesupport_(new DDSDynamicDataTypeSupport(safe_typecode_.get(), props)),
-      safe_datareader_(), // default constructor
-      dd_instance_(safe_typesupport_.get())
+    REFLEX_INLINE
+    std::shared_ptr<DDSDynamicDataReader> initialize_reader(DDSDomainParticipant *participant,
+                                                            const DDS_DataReaderQos & drqos,
+                                                            const char * topic_name,
+                                                            const char * type_name,
+                                                            DDSDynamicDataTypeSupport * support,
+                                                            DDSDataReaderListener * listener,
+                                                            DDS_DynamicDataTypeProperty_t props)
     {
       DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
-      type_name = type_name ? type_name : tc->name(ex);
+      type_name = type_name ? type_name : support->get_type_name();
 
       detail::check_exception_code(
         "DataReaderBase::DataWriterBase: Can't get typecode name. ex = ",
         ex);
 
       DDS_ReturnCode_t rc =
-        safe_typesupport_->register_type(participant, type_name);
+        support->register_type(participant, type_name);
 
       if (rc != DDS_RETCODE_OK)
       {
@@ -68,18 +47,17 @@ namespace reflex {
       }
 
       DDSTopic * topic = participant->create_topic(
-        topic_name,
-        type_name,
-        DDS_TOPIC_QOS_DEFAULT,
-        NULL,           /* listener */
-        DDS_STATUS_MASK_NONE);
+                                        topic_name,
+                                        type_name,
+                                        DDS_TOPIC_QOS_DEFAULT,
+                                        NULL,           /* listener */
+                                        DDS_STATUS_MASK_NONE);
 
       if (topic == NULL)
       {
         std::stringstream stream;
         stream << "DataReaderBase::DataReaderBase: Unable to create topic "
-          << topic_name
-          << ".";
+               << topic_name;
         throw std::runtime_error(stream.str());
       }
 
@@ -100,7 +78,7 @@ namespace reflex {
         subscriber->create_datareader(topic,
         drqos,
         listener,
-        DDS_STATUS_MASK_ALL);
+        DDS_DATA_AVAILABLE_STATUS);
 
       if (dataReader == NULL)
       {
@@ -119,10 +97,10 @@ namespace reflex {
         throw std::runtime_error(stream.str());
       }
 
-      safe_datareader_.reset(ddReader, &DataReaderBase::deleter);
+      return std::shared_ptr<DDSDynamicDataReader> (ddReader, &dr_deleter);
     }
 
-    REFLEX_INLINE void DataReaderBase::deleter(DDSDynamicDataReader * ddReader) throw()
+    REFLEX_INLINE void dr_deleter(DDSDynamicDataReader * ddReader) throw()
     {
       DDS_ReturnCode_t rc =
         ddReader->get_subscriber()->delete_datareader(ddReader);
@@ -132,37 +110,6 @@ namespace reflex {
         // Do not throw
       }
     }
-
-    REFLEX_INLINE DDS_TypeCode * DataReaderBase::get_typecode() 
-    {
-      return safe_typecode_.get();
-    }
-
-    REFLEX_INLINE const DDS_TypeCode * DataReaderBase::get_typecode() const
-    {
-      return safe_typecode_.get();
-    }
-
-    REFLEX_INLINE DDSDataReader * DataReaderBase::underlying()
-    {
-      return safe_datareader_.get();
-    }
-
-    REFLEX_INLINE DDSDataReader * DataReaderBase::operator -> ()
-    {
-      return underlying();
-    }
-
-    REFLEX_INLINE DataReaderBase::~DataReaderBase()
-    {
-      safe_datareader_->set_listener(NULL, DDS_STATUS_MASK_ALL);
-    }
-
-    REFLEX_INLINE std::shared_ptr<DDSDynamicDataReader> DataReaderBase::dd_reader()
-    {
-      return safe_datareader_;
-    }
-
 
   } // namespace detail
 

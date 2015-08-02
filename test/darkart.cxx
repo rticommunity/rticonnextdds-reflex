@@ -57,14 +57,20 @@ void write_darkart_type(unsigned domain_id)
   }
 
   /* Option 1: Using darkart::TopLevel */
-  reflex::detail::GenericDataWriter<darkart::TopLevel>
+  reflex::pub::GenericDataWriter<darkart::TopLevel>
     top_level_writer(participant, "DarkartTopLevelTopic", "DarkartTopLevelType");
 
   std::cout << "Printing IDL\n";
   reflex::detail::print_IDL(top_level_writer.get_typecode(), 0);
 
   /* Option 2: using tuple */
-  auto all = std::tie(vb, vc, event, sp, truth, vw);
+  std::tuple<darkart::BaselineData &,
+             darkart::ChannelInfo &,
+             darkart::EventInfo &,
+             darkart::PmtInfo &,
+             darkart::VetoTruth &,
+             darkart::Waveforms &>
+     all = std::tie(vb, vc, event, sp, truth, vw);
 
   // The following line is to ensure that the library
   // is not making hidden copy-ctor and move-ctor calls.
@@ -86,7 +92,7 @@ void write_darkart_type(unsigned domain_id)
   // FIXME: Causes a run-time crash.
   // ddi1.get()->print(stdout, 2);
 
-  reflex::detail::GenericDataWriter<decltype(all)>
+  reflex::pub::GenericDataWriter<decltype(all)>
     tuple_writer(participant, "DarkartTopic", "DarkartAllTupleType");
 
   for(;;)
@@ -99,7 +105,7 @@ void write_darkart_type(unsigned domain_id)
       break;
     }
 
-    rc = tuple_writer.write(toplevel);
+    rc = tuple_writer.write(all);
     if(rc != DDS_RETCODE_OK) {
       std::cerr << "Write error = " 
                 << reflex::detail::get_readable_retcode(rc) 

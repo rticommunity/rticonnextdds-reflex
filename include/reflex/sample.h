@@ -15,8 +15,11 @@ struct DDS_SampleInfo;
 
 namespace reflex {
 
-  namespace detail {
+  namespace sub {
 
+    /**
+     * @brief A valuetype that combines an instance of type T (data) and DDS_SampleInfo
+     */
     template <class T>
     class Sample
     {
@@ -30,20 +33,8 @@ namespace reflex {
 
       Sample(T &t, DDS_SampleInfo &i)
         : val(t),
-        val_info(i)
+          val_info(i)
       { }
-
-      Sample(const Sample &s)
-        : val(s.data()),
-        val_info(s.info())
-      {}
-
-      Sample & operator = (const Sample &s)
-      {
-        val = s.data();
-        val_info = s.info();
-        return *this;
-      }
 
       T & data()
       {
@@ -76,7 +67,7 @@ namespace reflex {
       }
     };
 
-  } // namespace detail
+  } // namespace sub
 } // namespace reflex
 
 

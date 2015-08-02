@@ -103,6 +103,37 @@ namespace reflex
     /**
     * Return the underlying DynamicData properties.
     */
+    DDS_DynamicDataTypeProperty_t & get_properties() 
+    {
+      return _props;
+    }
+
+    /**
+    * Return the underlying SafeTypeCode object.
+    */
+    SafeTypeCode<T> & get_safe_typecode() 
+    {
+      return _safe_typecode;
+    }
+
+    /**
+    * Return the underlying TypeCode object.
+    */
+    DDS_TypeCode* get_typecode() 
+    {
+      return _safe_typecode.get();
+    }
+
+    /**
+    * Return the underlying DynamicDataTypeSupport.
+    */
+    DDSDynamicDataTypeSupport * get_type_support()
+    {
+      return _type_support.get();
+    }
+    /**
+    * Return the underlying DynamicData properties.
+    */
     const DDS_DynamicDataTypeProperty_t & get_properties() const
     {
       return _props;
@@ -117,11 +148,19 @@ namespace reflex
     }
 
     /**
+    * Return the underlying TypeCode object.
+    */
+    const DDS_TypeCode* get_typecode() const
+    {
+      return _safe_typecode.get();
+    }
+
+    /**
     * Return the underlying DynamicDataTypeSupport.
     */
-    DDSDynamicDataTypeSupport * get_type_support() const
+    const DDSDynamicDataTypeSupport * get_type_support() const
     {
-      return _type_support;
+      return _type_support.get();
     }
 
   };
