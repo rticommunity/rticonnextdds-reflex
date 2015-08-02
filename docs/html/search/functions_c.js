@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_7eautodynamicdata',['~AutoDynamicData',['../classreflex_1_1_auto_dynamic_data.html#a571f6d08af89d9b738c793bbae92b94b',1,'reflex::AutoDynamicData']]],
-  ['_7esafetypecode',['~SafeTypeCode',['../classreflex_1_1_safe_type_code.html#ad9dbf7808ab6c0c96a60ea94ec5dde10',1,'reflex::SafeTypeCode']]]
+  ['underlying',['underlying',['../classreflex_1_1sub_1_1_generic_data_reader.html#a64d9048c8b90444e5fb87e652211ea57',1,'reflex::sub::GenericDataReader::underlying()'],['../classreflex_1_1pub_1_1_generic_data_writer.html#a1a2cdb54c3fe4e17fb1dce614b3e463b',1,'reflex::pub::GenericDataWriter::underlying()']]],
+  ['union',['Union',['../structreflex_1_1match_1_1_union.html#a7cf243c340e610d2771a58b9e0c1277a',1,'reflex::match::Union::Union()'],['../structreflex_1_1match_1_1_union.html#aa1005bd8a0eb0a1fb4be8d5a512a39fe',1,'reflex::match::Union::Union(const Union &amp;other)'],['../structreflex_1_1match_1_1_union.html#a93d4da1c682dcf601865326f6bf91199',1,'reflex::match::Union::Union(const variant_type &amp;v)'],['../structreflex_1_1match_1_1_union.html#a16d6212169aa25281ed45ef514a62fe7',1,'reflex::match::Union::Union(const Case&lt; CaseType, Tags...&gt; &amp;c)'],['../structreflex_1_1match_1_1_union.html#a1480f15742825ed6e6a7b990050c2a20',1,'reflex::match::Union::Union(const Union&lt; Tag, C...&gt; &amp;u)']]]
 ];

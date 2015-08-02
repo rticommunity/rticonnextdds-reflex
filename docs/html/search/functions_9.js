@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['type',['type',['../structreflex_1_1match_1_1_union.html#a89c07d12b63287b4a43e6da62cd9636c',1,'reflex::match::Union']]],
-  ['typemanager',['TypeManager',['../classreflex_1_1_type_manager.html#a65916ffb7a47424b21dc1406296a6e28',1,'reflex::TypeManager::TypeManager(const DDS_DynamicDataTypeProperty_t &amp;props=DDS_DynamicDataTypeProperty_t())'],['../classreflex_1_1_type_manager.html#a8db67f9058fc1e6678daaa3d69e956aa',1,'reflex::TypeManager::TypeManager(DDSDynamicDataTypeSupport *support)']]]
+  ['read_5fdynamicdata',['read_dynamicdata',['../namespacereflex.html#a4df31cef4573ea48d622e2d26af7785b',1,'reflex::read_dynamicdata(T &amp;dest, const DDS_DynamicData &amp;src)'],['../namespacereflex.html#a95ce90b30eb40aad2deb645f77815b43',1,'reflex::read_dynamicdata(T &amp;dest, const AutoDynamicData &amp;src)']]],
+  ['release',['release',['../classreflex_1_1_safe_type_code.html#a05687b70fe6ae92923265dcf3707f16f',1,'reflex::SafeTypeCode']]],
+  ['reset_5fcaseptr_5ftuple',['reset_caseptr_tuple',['../structreflex_1_1match_1_1_union.html#a7ce03f046847d2c2f6f441cb3e5405da',1,'reflex::match::Union']]]
 ];

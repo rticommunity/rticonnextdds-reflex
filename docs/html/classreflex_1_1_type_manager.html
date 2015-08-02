@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -112,13 +112,23 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a753e635b2a950b5c7954299723c048b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bba46a17cdc1638b477b98744c8cf87"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#a1bba46a17cdc1638b477b98744c8cf87">create_instance</a> (const <a class="el" href="classreflex_1_1_safe_dynamic_data.html">SafeDynamicData</a>&lt; T &gt; &amp;src) const </td></tr>
 <tr class="separator:a1bba46a17cdc1638b477b98744c8cf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb893b8a9f6530305d3333a8babf710c"><td class="memItemLeft" align="right" valign="top">DDS_DynamicDataTypeProperty_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#aeb893b8a9f6530305d3333a8babf710c">get_properties</a> ()</td></tr>
+<tr class="separator:aeb893b8a9f6530305d3333a8babf710c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b2051e441423d0136f71b1adc3660e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classreflex_1_1_safe_type_code.html">SafeTypeCode</a>&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#a3b2051e441423d0136f71b1adc3660e8">get_safe_typecode</a> ()</td></tr>
+<tr class="separator:a3b2051e441423d0136f71b1adc3660e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb8338c71d7792ea93ae41634055010"><td class="memItemLeft" align="right" valign="top">DDS_TypeCode *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#aabb8338c71d7792ea93ae41634055010">get_typecode</a> ()</td></tr>
+<tr class="separator:aabb8338c71d7792ea93ae41634055010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfff7721d71b9917095f44fcd2e5ab4f"><td class="memItemLeft" align="right" valign="top">DDSDynamicDataTypeSupport *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#acfff7721d71b9917095f44fcd2e5ab4f">get_type_support</a> ()</td></tr>
+<tr class="separator:acfff7721d71b9917095f44fcd2e5ab4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62c523f6d05afd60cb9d2f0b903f21cb"><td class="memItemLeft" align="right" valign="top">const <br class="typebreak"/>
 DDS_DynamicDataTypeProperty_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#a62c523f6d05afd60cb9d2f0b903f21cb">get_properties</a> () const </td></tr>
 <tr class="separator:a62c523f6d05afd60cb9d2f0b903f21cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad37e38169507144cd380a47fe4c3866a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classreflex_1_1_safe_type_code.html">SafeTypeCode</a>&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#ad37e38169507144cd380a47fe4c3866a">get_safe_typecode</a> () const </td></tr>
 <tr class="separator:ad37e38169507144cd380a47fe4c3866a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35a4090e55e9bed831022af99f4e1a23"><td class="memItemLeft" align="right" valign="top">DDSDynamicDataTypeSupport *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#a35a4090e55e9bed831022af99f4e1a23">get_type_support</a> () const </td></tr>
-<tr class="separator:a35a4090e55e9bed831022af99f4e1a23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9aabaa2010e56512257b98ee6c84b64"><td class="memItemLeft" align="right" valign="top">const DDS_TypeCode *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#ac9aabaa2010e56512257b98ee6c84b64">get_typecode</a> () const </td></tr>
+<tr class="separator:ac9aabaa2010e56512257b98ee6c84b64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28bb4a9718dee610b8355686f21780f8"><td class="memItemLeft" align="right" valign="top">const DDSDynamicDataTypeSupport *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classreflex_1_1_type_manager.html#a28bb4a9718dee610b8355686f21780f8">get_type_support</a> () const </td></tr>
+<tr class="separator:a28bb4a9718dee610b8355686f21780f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;class T&gt;<br/>
@@ -270,6 +280,32 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="aeb893b8a9f6530305d3333a8babf710c"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">DDS_DynamicDataTypeProperty_t&amp; <a class="el" href="classreflex_1_1_type_manager.html">reflex::TypeManager</a>&lt; T &gt;::get_properties </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the underlying DynamicData properties. </p>
+
+</div>
+</div>
 <a class="anchor" id="a62c523f6d05afd60cb9d2f0b903f21cb"></a>
 <div class="memitem">
 <div class="memproto">
@@ -293,6 +329,32 @@ template&lt;class T &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Return the underlying DynamicData properties. </p>
+
+</div>
+</div>
+<a class="anchor" id="a3b2051e441423d0136f71b1adc3660e8"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classreflex_1_1_safe_type_code.html">SafeTypeCode</a>&lt;T&gt;&amp; <a class="el" href="classreflex_1_1_type_manager.html">reflex::TypeManager</a>&lt; T &gt;::get_safe_typecode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the underlying <a class="el" href="classreflex_1_1_safe_type_code.html" title="A type-safe, exception-safe wrapper for DDS TypeCode. ">SafeTypeCode</a> object. </p>
 
 </div>
 </div>
@@ -322,7 +384,7 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a35a4090e55e9bed831022af99f4e1a23"></a>
+<a class="anchor" id="acfff7721d71b9917095f44fcd2e5ab4f"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -333,6 +395,32 @@ template&lt;class T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">DDSDynamicDataTypeSupport* <a class="el" href="classreflex_1_1_type_manager.html">reflex::TypeManager</a>&lt; T &gt;::get_type_support </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the underlying DynamicDataTypeSupport. </p>
+
+</div>
+</div>
+<a class="anchor" id="a28bb4a9718dee610b8355686f21780f8"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const DDSDynamicDataTypeSupport* <a class="el" href="classreflex_1_1_type_manager.html">reflex::TypeManager</a>&lt; T &gt;::get_type_support </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -348,13 +436,65 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="aabb8338c71d7792ea93ae41634055010"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">DDS_TypeCode* <a class="el" href="classreflex_1_1_type_manager.html">reflex::TypeManager</a>&lt; T &gt;::get_typecode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the underlying TypeCode object. </p>
+
+</div>
+</div>
+<a class="anchor" id="ac9aabaa2010e56512257b98ee6c84b64"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const DDS_TypeCode* <a class="el" href="classreflex_1_1_type_manager.html">reflex::TypeManager</a>&lt; T &gt;::get_typecode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the underlying TypeCode object. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/project/myOSS/rticonnextdds-reflex/include/reflex/<a class="el" href="type__manager_8h_source.html">type_manager.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 21 2015 16:26:49 for RefleX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Aug 1 2015 22:45:35 for RefleX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

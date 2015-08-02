@@ -1,31 +1,4 @@
 var searchData=
 [
-  ['reflex_3a_20reflection_20for_20dds_20x_2dtypes',['RefleX: Reflection for DDS X-Types',['../index.html',1,'']]],
-  ['match',['match',['../namespacereflex_1_1match.html',1,'reflex']]],
-  ['range',['Range',['../namespacereflex_1_1match.html#aed057a8d135fec4bc56e8afa83759b99',1,'reflex::match']]],
-  ['raw_5ftuple_5ftype',['raw_tuple_type',['../structreflex_1_1match_1_1_sparse.html#ae06604d1bdc97aed17a5a0f3f60164a9',1,'reflex::match::Sparse']]],
-  ['read_5fdynamicdata',['read_dynamicdata',['../namespacereflex.html#a4df31cef4573ea48d622e2d26af7785b',1,'reflex::read_dynamicdata(T &amp;dest, const DDS_DynamicData &amp;src)'],['../namespacereflex.html#a95ce90b30eb40aad2deb645f77815b43',1,'reflex::read_dynamicdata(T &amp;dest, const AutoDynamicData &amp;src)']]],
-  ['reflex',['reflex',['../namespacereflex.html',1,'']]],
-  ['reflex_2ecxx',['reflex.cxx',['../reflex_8cxx.html',1,'']]],
-  ['reflex_2eh',['reflex.h',['../reflex_8h.html',1,'']]],
-  ['reflex_5fadapt_5fenum',['REFLEX_ADAPT_ENUM',['../adapt__macros_8h.html#a2b6f9289c2be483e1b872fa909e41bee',1,'adapt_macros.h']]],
-  ['reflex_5fadapt_5fstruct',['REFLEX_ADAPT_STRUCT',['../adapt__macros_8h.html#a59ad4a3d5b57768295d1492cdc359b34',1,'adapt_macros.h']]],
-  ['reflex_5fadapt_5fvaluetype',['REFLEX_ADAPT_VALUETYPE',['../adapt__macros_8h.html#ac0cb9f78865617fe47c75c40fe6ae891',1,'adapt_macros.h']]],
-  ['reflex_5fdeclspec',['REFLEX_DECLSPEC',['../dllexport_8h.html#af2d5a2a101c220cef42814a7bb852894',1,'dllexport.h']]],
-  ['reflex_5fdll_5fexport',['REFLEX_DLL_EXPORT',['../dllexport_8h.html#a03ef009201502e225a5991d3a9b96e0c',1,'dllexport.h']]],
-  ['reflex_5fenum_5fdef_5fcustom',['REFLEX_ENUM_DEF_CUSTOM',['../adapt__macros_8h.html#a815a16035beb104cf7458ae73641c3cf',1,'adapt_macros.h']]],
-  ['reflex_5fenum_5fmember_5fdef_5fcustom',['REFLEX_ENUM_MEMBER_DEF_CUSTOM',['../adapt__macros_8h.html#a1217737ff5c0c52066e98bfc7d4f925b',1,'adapt_macros.h']]],
-  ['reflex_5fexpimp_5ftemplate',['REFLEX_EXPIMP_TEMPLATE',['../dllexport_8h.html#afcaffb119e3004ca42e176f4bd4e746d',1,'dllexport.h']]],
-  ['reflex_5fextends',['REFLEX_EXTENDS',['../adapt__macros_8h.html#a33e7bda778113081801d9c94be2b49ba',1,'adapt_macros.h']]],
-  ['reflex_5ffwd_2eh',['reflex_fwd.h',['../reflex__fwd_8h.html',1,'']]],
-  ['reflex_5finline',['REFLEX_INLINE',['../dllexport_8h.html#a140215720edbb2f6ddf58ebbb47b80ea',1,'dllexport.h']]],
-  ['reflex_5fkey',['REFLEX_KEY',['../adapt__macros_8h.html#afe342743f1b6d86ef2ededc33bc82c7a',1,'adapt_macros.h']]],
-  ['reflex_5foptional',['REFLEX_OPTIONAL',['../adapt__macros_8h.html#adb9113c4d2720d9cbd2e4219b3ce9e66',1,'adapt_macros.h']]],
-  ['reflex_5frequired',['REFLEX_REQUIRED',['../adapt__macros_8h.html#a1aa9479f2307c9ae70f0ad82a759f500',1,'adapt_macros.h']]],
-  ['reflex_5fstatic_5fcontainer_5fbound',['REFLEX_STATIC_CONTAINER_BOUND',['../adapt__macros_8h.html#a86e61a8610fa613e95f945adf9016dfb',1,'adapt_macros.h']]],
-  ['reflex_5fstatic_5fstring_5fbound',['REFLEX_STATIC_STRING_BOUND',['../adapt__macros_8h.html#ae37bda07853de611a86a03e4ad7ae614',1,'adapt_macros.h']]],
-  ['reflex_5fstruct_5fmember_5fdef_5fcustom',['REFLEX_STRUCT_MEMBER_DEF_CUSTOM',['../adapt__macros_8h.html#afcd553b93ce6cbba74777b90c11352c6',1,'adapt_macros.h']]],
-  ['reflex_5fstruct_5fname_5fdef_5fcustom',['REFLEX_STRUCT_NAME_DEF_CUSTOM',['../adapt__macros_8h.html#ad7b5758ef6761dde77deadce220fa3d3',1,'adapt_macros.h']]],
-  ['release',['release',['../classreflex_1_1_safe_type_code.html#a05687b70fe6ae92923265dcf3707f16f',1,'reflex::SafeTypeCode']]],
-  ['reset_5fcaseptr_5ftuple',['reset_caseptr_tuple',['../structreflex_1_1match_1_1_union.html#a7ce03f046847d2c2f6f441cb3e5405da',1,'reflex::match::Union']]]
+  ['listenertype',['ListenerType',['../classreflex_1_1sub_1_1_generic_data_reader.html#a5f348a36e260d7ca4e04f90716e024d7',1,'reflex::sub::GenericDataReader']]]
 ];

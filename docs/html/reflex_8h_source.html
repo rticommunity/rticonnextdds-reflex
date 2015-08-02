@@ -70,7 +70,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -131,27 +131,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">struct </span>MembersInBasesImpl;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">struct </span>MembersInBasesImpl&lt;T, false_type&gt;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">struct </span>MembersInBasesImpl&lt;T, reflex::<a class="code" href="structreflex_1_1meta_1_1false__type.html">meta::false_type</a>&gt;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keyword">enum</span> { value = 0 };</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    };</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">struct </span>MembersInBasesImpl&lt;T, true_type&gt;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">struct </span>MembersInBasesImpl&lt;T, reflex::<a class="code" href="structreflex_1_1meta_1_1true__type.html">meta::true_type</a>&gt;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> InheritanceTraits&lt;T&gt;::basetype  Base;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> InheritanceTraits&lt;Base&gt;::has_base BaseHasBase;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> <a class="code" href="structreflex_1_1type__traits_1_1inheritance__traits.html">reflex::type_traits::inheritance_traits&lt;T&gt;::basetype</a>  Base;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::type_traits::inheritance_traits&lt;Base&gt;::has_base</a> BaseHasBase;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keyword">enum</span> {</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        value = MembersInBasesImpl&lt;Base, BaseHasBase&gt;::value +</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        Size&lt;Base&gt;::value</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <a class="code" href="structreflex_1_1meta_1_1size.html">reflex::meta::size&lt;Base&gt;::value</a></div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      };</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    };</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">struct </span>MembersInBases</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> InheritanceTraits&lt;T&gt;::has_base HasBase;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::type_traits::inheritance_traits&lt;T&gt;::has_base</a> HasBase;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keyword">enum</span> { value = MembersInBasesImpl&lt;T, HasBase&gt;::value };</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    };</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
@@ -160,12 +160,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">void</span> write_dynamicdata_impl(</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      <span class="keyword">const</span> T &amp; data,</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      DDS_DynamicData &amp;instance,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      false_type <span class="comment">/* T has no base */</span>)</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::meta::false_type</a> <span class="comment">/* T has no base */</span>)</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    {</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keyword">typedef</span> detail::TypelistIterator&lt;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        T,</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        0,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        detail::Size&lt;T&gt;::value - 1&gt; TIter;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <a class="code" href="structreflex_1_1meta_1_1size.html">reflex::meta::size&lt;T&gt;::value</a> - 1&gt; TIter;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      TIter::set(</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        instance,</div>
@@ -177,19 +177,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">void</span> write_dynamicdata_impl(</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="keyword">const</span> T &amp; data,</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      DDS_DynamicData &amp;instance,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      true_type <span class="comment">/* T has a base */</span>)</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      <a class="code" href="structreflex_1_1meta_1_1true__type.html">reflex::meta::true_type</a> <span class="comment">/* T has a base */</span>)</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> InheritanceTraits&lt;T&gt;::basetype Base;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> <a class="code" href="structreflex_1_1type__traits_1_1inheritance__traits.html">reflex::type_traits::inheritance_traits&lt;T&gt;::basetype</a> Base;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      write_dynamicdata_impl(</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        static_cast&lt;const Base &amp;&gt;(data),</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        instance,</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <span class="keyword">typename</span> detail::InheritanceTraits&lt;Base&gt;::has_base());</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <span class="keyword">typename</span> <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::type_traits::inheritance_traits&lt;Base&gt;::has_base</a>());</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keyword">typedef</span> detail::TypelistIterator&lt;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        T,</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        0,</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        detail::Size&lt;T&gt;::value - 1&gt; TIter;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <a class="code" href="structreflex_1_1meta_1_1size.html">reflex::meta::size&lt;T&gt;::value</a> - 1&gt; TIter;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      TIter::set(</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        instance,</div>
@@ -201,14 +201,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordtype">void</span> read_dynamicdata_impl(</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      <span class="keyword">const</span> DDS_DynamicData &amp; instance,</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      T &amp; data,</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      false_type <span class="comment">/* T has no base*/</span>)</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::meta::false_type</a> <span class="comment">/* T has no base*/</span>)</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    {</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      <span class="keyword">typedef</span> detail::TypelistIterator&lt;</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        T,</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        0,</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        detail::Size&lt;T&gt;::value - 1&gt; TIter;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <a class="code" href="structreflex_1_1meta_1_1size.html">reflex::meta::size&lt;T&gt;::value</a> - 1&gt; TIter;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      TIter::get(</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      <a class="code" href="namespacereflex_1_1meta.html#a0f828561609032004cb8fefae134e803">TIter::get</a>(</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        instance,</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        detail::MemberAccess::BY_ID(1),</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        data);</div>
@@ -218,21 +218,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordtype">void</span> read_dynamicdata_impl(</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      <span class="keyword">const</span> DDS_DynamicData &amp; instance,</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      T &amp; data,</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;      true_type <span class="comment">/* T has a base*/</span>)</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;      <a class="code" href="structreflex_1_1meta_1_1true__type.html">reflex::meta::true_type</a> <span class="comment">/* T has a base*/</span>)</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    {</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> InheritanceTraits&lt;T&gt;::basetype Base;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      <span class="keyword">typedef</span> <span class="keyword">typename</span> <a class="code" href="structreflex_1_1type__traits_1_1inheritance__traits.html">reflex::type_traits::inheritance_traits&lt;T&gt;::basetype</a> Base;</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      read_dynamicdata_impl(</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        instance,</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        static_cast&lt;Base &amp;&gt;(data),</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="keyword">typename</span> InheritanceTraits&lt;Base&gt;::has_base());</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="keyword">typename</span> <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::type_traits::inheritance_traits&lt;Base&gt;::has_base</a>());</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;      <span class="keyword">typedef</span> detail::TypelistIterator&lt;</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        T,</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        0,</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        detail::Size&lt;T&gt;::value - 1&gt; TIter;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <a class="code" href="structreflex_1_1meta_1_1size.html">reflex::meta::size&lt;T&gt;::value</a> - 1&gt; TIter;</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      TIter::get(</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      <a class="code" href="namespacereflex_1_1meta.html#a0f828561609032004cb8fefae134e803">TIter::get</a>(</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        instance,</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        detail::MemberAccess::BY_ID(MembersInBases&lt;T&gt;::value + 1),</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        data);</div>
@@ -246,7 +246,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    detail::write_dynamicdata_impl(</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      src,</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;      dest,</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;      <span class="keyword">typename</span> detail::InheritanceTraits&lt;T&gt;::has_base());</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;      <span class="keyword">typename</span> <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::type_traits::inheritance_traits&lt;T&gt;::has_base</a>());</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  }</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
@@ -255,7 +255,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    detail::write_dynamicdata_impl(</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      src,</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;      *dest.<a class="code" href="classreflex_1_1_auto_dynamic_data.html#a33f4262b8e462877e3fa4ee51343ec1e">get</a>(),</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      <span class="keyword">typename</span> detail::InheritanceTraits&lt;T&gt;::has_base());</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      <span class="keyword">typename</span> <a class="code" href="structreflex_1_1type__traits_1_1inheritance__traits.html#a4e030a1b494371273ad4b8849b5de3db">reflex::type_traits::inheritance_traits&lt;T&gt;::has_base</a>());</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  }</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
@@ -264,7 +264,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <a class="code" href="classreflex_1_1_safe_type_code.html">SafeTypeCode&lt;T&gt;</a> aggregateTc =</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;      detail::Struct_TC_Helper::get_typecode_struct&lt;T&gt;(</div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        name,</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        <span class="keyword">typename</span> detail::InheritanceTraits&lt;T&gt;::has_base());</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        <span class="keyword">typename</span> <a class="code" href="structreflex_1_1type__traits_1_1inheritance__traits.html#a4e030a1b494371273ad4b8849b5de3db">reflex::type_traits::inheritance_traits&lt;T&gt;::has_base</a>());</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keywordflow">return</span> aggregateTc;</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  }</div>
@@ -275,7 +275,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    detail::read_dynamicdata_impl(</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;      src,</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      dest,</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keyword">typename</span> detail::InheritanceTraits&lt;T&gt;::has_base());</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keyword">typename</span> <a class="code" href="structreflex_1_1meta_1_1false__type.html">reflex::type_traits::inheritance_traits&lt;T&gt;::has_base</a>());</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  }</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
@@ -284,7 +284,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    detail::read_dynamicdata_impl(</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      *src.<a class="code" href="classreflex_1_1_auto_dynamic_data.html#a33f4262b8e462877e3fa4ee51343ec1e">get</a>(),</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      dest,</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      <span class="keyword">typename</span> detail::InheritanceTraits&lt;T&gt;::has_base());</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      <span class="keyword">typename</span> <a class="code" href="structreflex_1_1type__traits_1_1inheritance__traits.html#a4e030a1b494371273ad4b8849b5de3db">reflex::type_traits::inheritance_traits&lt;T&gt;::has_base</a>());</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  }</div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;} <span class="comment">// namespace reflex</span></div>
@@ -301,10 +301,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="auto__dd_8h_html"><div class="ttname"><a href="auto__dd_8h.html">auto_dd.h</a></div></div>
 <div class="ttc" id="namespacereflex_html_ad2da5031adbf4a14ba51b055bfeb1451"><div class="ttname"><a href="namespacereflex.html#ad2da5031adbf4a14ba51b055bfeb1451">reflex::write_dynamicdata</a></div><div class="ttdeci">void write_dynamicdata(DDS_DynamicData &amp;dest, const T &amp;src)</div><div class="ttdoc">Copies source data into the destination DDS_DynamicData instance. </div><div class="ttdef"><b>Definition:</b> reflex.h:157</div></div>
 <div class="ttc" id="namespacereflex_html_a1485930b66cfa8199e3445150fc83901"><div class="ttname"><a href="namespacereflex.html#a1485930b66cfa8199e3445150fc83901">reflex::make_typecode</a></div><div class="ttdeci">SafeTypeCode&lt; T &gt; make_typecode(const char *name)</div><div class="ttdoc">Creates a TypeCode for structured type T. </div><div class="ttdef"><b>Definition:</b> reflex.h:175</div></div>
+<div class="ttc" id="structreflex_1_1meta_1_1true__type_html"><div class="ttname"><a href="structreflex_1_1meta_1_1true__type.html">reflex::meta::true_type</a></div><div class="ttdef"><b>Definition:</b> enable_if.h:115</div></div>
 <div class="ttc" id="generic__dw_8h_html"><div class="ttname"><a href="generic__dw_8h.html">generic_dw.h</a></div></div>
+<div class="ttc" id="structreflex_1_1meta_1_1size_html"><div class="ttname"><a href="structreflex_1_1meta_1_1size.html">reflex::meta::size</a></div><div class="ttdef"><b>Definition:</b> enable_if.h:679</div></div>
 <div class="ttc" id="classreflex_1_1_auto_dynamic_data_html_a33f4262b8e462877e3fa4ee51343ec1e"><div class="ttname"><a href="classreflex_1_1_auto_dynamic_data.html#a33f4262b8e462877e3fa4ee51343ec1e">reflex::AutoDynamicData::get</a></div><div class="ttdeci">DDS_DynamicData * get()</div><div class="ttdoc">Return the underlying DynamicData instance. </div><div class="ttdef"><b>Definition:</b> auto_dd.cxx:98</div></div>
 <div class="ttc" id="classreflex_1_1_auto_dynamic_data_html"><div class="ttname"><a href="classreflex_1_1_auto_dynamic_data.html">reflex::AutoDynamicData</a></div><div class="ttdoc">Automatically manages the memory of a DynamicData instance. </div><div class="ttdef"><b>Definition:</b> auto_dd.h:33</div></div>
 <div class="ttc" id="bounded_8h_html"><div class="ttname"><a href="bounded_8h.html">bounded.h</a></div></div>
+<div class="ttc" id="namespacereflex_1_1meta_html_a0f828561609032004cb8fefae134e803"><div class="ttname"><a href="namespacereflex_1_1meta.html#a0f828561609032004cb8fefae134e803">reflex::meta::get</a></div><div class="ttdeci">disable_if_lazy&lt; reflex::type_traits::is_tuple&lt; FusionSeq &gt;::value, at&lt; FusionSeq, I &gt; &gt;::type get(FusionSeq &amp;seq)</div><div class="ttdef"><b>Definition:</b> enable_if.h:714</div></div>
 <div class="ttc" id="dllexport_8h_html"><div class="ttname"><a href="dllexport_8h.html">dllexport.h</a></div></div>
 <div class="ttc" id="type__manager_8h_html"><div class="ttname"><a href="type__manager_8h.html">type_manager.h</a></div></div>
 <div class="ttc" id="namespacereflex_html_a4df31cef4573ea48d622e2d26af7785b"><div class="ttname"><a href="namespacereflex.html#a4df31cef4573ea48d622e2d26af7785b">reflex::read_dynamicdata</a></div><div class="ttdeci">void read_dynamicdata(T &amp;dest, const DDS_DynamicData &amp;src)</div><div class="ttdoc">Extracts data out from the source DDS_DynamicData instance and copies into the destination object of ...</div><div class="ttdef"><b>Definition:</b> reflex.h:186</div></div>
@@ -313,14 +316,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="memberwise_8h_html"><div class="ttname"><a href="memberwise_8h.html">memberwise.h</a></div></div>
 <div class="ttc" id="generic__dr_8h_html"><div class="ttname"><a href="generic__dr_8h.html">generic_dr.h</a></div></div>
 <div class="ttc" id="sample_8h_html"><div class="ttname"><a href="sample_8h.html">sample.h</a></div></div>
+<div class="ttc" id="structreflex_1_1type__traits_1_1inheritance__traits_html"><div class="ttname"><a href="structreflex_1_1type__traits_1_1inheritance__traits.html">reflex::type_traits::inheritance_traits</a></div><div class="ttdef"><b>Definition:</b> enable_if.h:466</div></div>
 <div class="ttc" id="safe__dynamicdata_8h_html"><div class="ttname"><a href="safe__dynamicdata_8h.html">safe_dynamicdata.h</a></div></div>
+<div class="ttc" id="structreflex_1_1type__traits_1_1inheritance__traits_html_a4e030a1b494371273ad4b8849b5de3db"><div class="ttname"><a href="structreflex_1_1type__traits_1_1inheritance__traits.html#a4e030a1b494371273ad4b8849b5de3db">reflex::type_traits::inheritance_traits::has_base</a></div><div class="ttdeci">reflex::meta::false_type has_base</div><div class="ttdef"><b>Definition:</b> enable_if.h:467</div></div>
 <div class="ttc" id="reflex__fwd_8h_html"><div class="ttname"><a href="reflex__fwd_8h.html">reflex_fwd.h</a></div></div>
 <div class="ttc" id="classreflex_1_1_safe_type_code_html"><div class="ttname"><a href="classreflex_1_1_safe_type_code.html">reflex::SafeTypeCode</a></div><div class="ttdoc">A type-safe, exception-safe wrapper for DDS TypeCode. </div><div class="ttdef"><b>Definition:</b> reflex_fwd.h:27</div></div>
 <div class="ttc" id="member__names_8h_html"><div class="ttname"><a href="member__names_8h.html">member_names.h</a></div></div>
+<div class="ttc" id="structreflex_1_1meta_1_1false__type_html"><div class="ttname"><a href="structreflex_1_1meta_1_1false__type.html">reflex::meta::false_type</a></div><div class="ttdef"><b>Definition:</b> enable_if.h:119</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 21 2015 16:26:48 for RefleX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Aug 1 2015 22:45:34 for RefleX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
