@@ -83,7 +83,7 @@
 {
   <span class="pl-c">// ... setup participant</span>
 
-  reflex::GenericDataWriter&lt;ShapeType&gt;
+  reflex::pub::GenericDataWriter&lt;ShapeType&gt;
       <span class="pl-c1">writer</span>(participant, <span class="pl-s"><span class="pl-pds">"</span>Square<span class="pl-pds">"</span></span>);
   ShapeType <span class="pl-smi">shape</span>(<span class="pl-s"><span class="pl-pds">"</span>BLUE<span class="pl-pds">"</span></span>, <span class="pl-c1">10</span>, <span class="pl-c1">20</span>, <span class="pl-c1">30</span>);
   writer.<span class="pl-c1">write</span>(shape);
