@@ -9,6 +9,30 @@
   #define RANDOM_SEED 0xAC0
 #endif 
 
+// Clang requires forward declarations for overloaded < operators.
+// g++5 does not. Who's correct?
+
+template <class... Args>
+std::ostream & operator << (std::ostream & o, const std::tuple<Args...> & tuple);
+
+template <class T>
+std::ostream & operator << (std::ostream & o, const std::vector<T> & vector);
+
+template <class T>
+std::ostream & operator << (std::ostream & o, const boost::optional<T> & opt);
+
+template <class T, class U>
+std::ostream & operator << (std::ostream & o, const std::pair<T, U> & pair);
+
+template <class T, size_t N>
+std::ostream & operator << (std::ostream & o, const std::array<T, N> & arr)
+{
+  for (auto & elem : arr)
+    o << elem;
+
+  return o << "\n";
+}
+
 template <class T>
 std::ostream & operator << (std::ostream & o, const std::vector<T> & vector)
 {
@@ -58,7 +82,7 @@ struct TuplePrinter<Tuple, 1>
 template <class Tuple>
 struct TuplePrinter<Tuple, 0>
 {
-  static void print(std::ostream & o, const Tuple & tuple)
+  static void print(std::ostream &, const Tuple &)
   {
     // no-op
   }
@@ -85,15 +109,6 @@ std::ostream & operator << (std::ostream & o, const ShapeType & shape)
     << "shape.color = "     << shape.color << "\n";
 
   return o;
-}
-
-template <class T, size_t N>
-std::ostream & operator << (std::ostream & o, const std::array<T, N> & arr)
-{
-  for (auto & elem : arr)
-    o << elem;
-
-  return o << "\n";
 }
 
 auto test_shape_gen()

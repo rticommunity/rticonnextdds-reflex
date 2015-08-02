@@ -13,8 +13,8 @@
 
 namespace gen {
 
-  constexpr unsigned int DEFAULT_MAX_STR_LEN = 3;
-  constexpr unsigned int DEFAULT_MAX_SEQ_LEN = 3;
+  constexpr unsigned int DEFAULT_MAX_STR_LEN = 10;
+  constexpr unsigned int DEFAULT_MAX_SEQ_LEN = 10;
 
 #ifdef RTI_WIN32
   void initialize(unsigned int seed = 0)
@@ -299,7 +299,7 @@ namespace gen {
   } // anonymous namespace
 
   template <class ElemGen, class DimList>
-  auto make_array_gen(ElemGen&& elemgen, DimList dimlist)
+  auto make_array_gen(ElemGen&& elemgen, DimList)
   {
     typedef typename std::remove_reference<ElemGen>::type ElemGenT;
     return detail::ArrayGen<ElemGenT, DimList::size, DimList>::make(elemgen);

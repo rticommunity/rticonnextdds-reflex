@@ -26,11 +26,15 @@ Bad Numbers
 ===========
 
 2152 (test seg-faults)
-sizeof(tuple) > 2MB. Can't create even a single instance of the std::tuple.
+sizeof(tuple) > 2750 KB! Can't create even a single instance of the std::tuple.
+Fails on 64 bit machines as well.
 
 20163 (run-time error)
+Size of tuple = 9728
 DDS_DynamicData_set_long_array:type mismatch for field m1 (id=2)
 terminate called after throwing an instance of 'std::runtime_error'
   what():  set_member_value: Error setting array, error = DDS_RETCODE_ILLEGAL_OPERATION
 Aborted (core dumped)
+== Can't start debugging because gdb fails to load all the symbols.
+
 

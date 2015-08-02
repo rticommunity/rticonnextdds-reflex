@@ -20,12 +20,6 @@ damages arising out of the use or inability to use the software.
 
 #include <memory>
 
-//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataWriter>;
-
-#ifdef RTI_WIN32
-//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
-#endif
-
 namespace reflex {
 
   namespace detail { 
@@ -86,7 +80,7 @@ namespace reflex {
                           DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
         : type_manager_(props),
           dd_instance_(type_manager_.get_type_support()),
-          safe_datawriter_(detail::initialize_datawriter(
+          safe_datawriter_(detail::initialize_writer(
                                       participant,
                                       dwqos,
                                       topic_name,

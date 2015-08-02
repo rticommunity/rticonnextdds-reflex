@@ -22,10 +22,6 @@ damages arising out of the use or inability to use the software.
 
 #include <memory>
 
-//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT reflex::SafeTypeCode<DDS_TypeCode>;
-//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::unique_ptr<DDSDynamicDataTypeSupport>;
-//REFLEX_EXPIMP_TEMPLATE template class REFLEX_DLL_EXPORT std::shared_ptr<DDSDynamicDataReader>;
-
 namespace reflex {
 
   namespace sub {
