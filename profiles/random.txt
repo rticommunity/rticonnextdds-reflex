@@ -21,6 +21,7 @@ Good numbers
 2626   (12 nested)
 10295  (15 nested)
 21525  (41 nested)
+7937   ( 5 nested)
 
 Bad Numbers
 ===========
