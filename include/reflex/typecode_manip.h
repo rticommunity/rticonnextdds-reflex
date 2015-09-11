@@ -307,6 +307,7 @@ namespace reflex {
                             reflex::type_traits::is_container<T>::value    ||
                             reflex::type_traits::is_optional<T>::value     ||
                             reflex::type_traits::is_string<T>::value       ||
+                            reflex::type_traits::is_pointer<T>::value      ||
                             reflex::type_traits::is_stdarray<T>::value>::type * = 0)
       {
         return Struct_TC_Helper::get_typecode_struct<T>(
@@ -321,8 +322,18 @@ namespace reflex {
         const T * primitive,
         typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0)
       {
-        return SafeTypeCode<T>(factory, 
-                               Primitive_TC_Helper::get_primitive_tc(factory, primitive));
+        return SafeTypeCode<T>(factory,
+          Primitive_TC_Helper::get_primitive_tc(factory, primitive));
+      }
+
+      template <class T>
+      // overload for all pointer types.
+      static SafeTypeCode<T> get_typecode(
+        DDS_TypeCodeFactory * factory,
+        const T * primitive,
+        typename reflex::meta::enable_if<reflex::type_traits::is_pointer<T>::value>::type * = 0)
+      {
+        return TC_Helper::get_typecode(factory, static_cast<reflex::meta::remove_const<T>::type>(0));
       }
 
       template <class T>

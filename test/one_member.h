@@ -24,12 +24,12 @@ damages arising out of the use or inability to use the software.
 
 struct one_member
 {
-  int member;
+  int * member;
 };
 
 REFLEX_ADAPT_STRUCT(
     one_member,
-    (int, member))
+    (int *, member))
 
 #endif // MANY_MEMBERS_H
 

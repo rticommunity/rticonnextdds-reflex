@@ -606,6 +606,15 @@ namespace reflex {
       typedef typename remove_all_extents<T>::type type;
     };
 
+    template <class T>
+    struct remove_pointer;
+
+    template <class T>
+    struct remove_pointer <T *>
+    {
+      typedef T type;
+    };
+
     template <class T, class... U>
     struct packhead {
       typedef T type;
