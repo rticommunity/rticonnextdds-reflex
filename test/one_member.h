@@ -18,18 +18,19 @@ damages arising out of the use or inability to use the software.
 #include <list>
 #include <array>
 #include <string>
+#include <memory>
 
 #include "reflex.h"
 
 
 struct one_member
 {
-  int * member;
+  std::shared_ptr<int> member;
 };
 
 REFLEX_ADAPT_STRUCT(
     one_member,
-    (int *, member))
+    (std::shared_ptr<int>, member))
 
 #endif // MANY_MEMBERS_H
 

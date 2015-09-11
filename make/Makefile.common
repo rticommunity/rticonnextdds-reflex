@@ -139,19 +139,21 @@ HEADERS = include/reflex/reflex_fwd.h           \
           include/reflex.h
 
 
-TESTSRCS = test/reflex_test.cxx \
-           test/one_member.cxx \
-           test/all_types.cxx \
+TESTSRCS = test/reflex_test.cxx  \
+           test/one_member.cxx   \
+           test/all_types.cxx    \
            test/many_members.cxx \
-           test/shape_type.cxx \
-           test/darkart.cxx    \
+           test/shape_type.cxx   \
+           test/darkart.cxx      \
+           test/pointers.cxx     \
            test/large_type.cxx 
 
-TESTHEADERS = test/shape_type.h \
-              test/one_member.h \
-              test/all_types.h \
+TESTHEADERS = test/shape_type.h   \
+              test/one_member.h   \
+              test/all_types.h    \
               test/many_members.h \
-              test/darkart.h    \
+              test/darkart.h      \
+              test/pointers.h     \
               test/large_type.h
 
 PERFSRCS = test/reflex_perf.cxx \

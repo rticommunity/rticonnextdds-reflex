@@ -22,6 +22,9 @@
     <ClCompile Include="..\..\test\reflex_test.cxx">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\pointers.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\test\darkart.h">
@@ -40,6 +43,9 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\test\all_types.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\pointers.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

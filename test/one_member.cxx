@@ -11,6 +11,11 @@ damages arising out of the use or inability to use the software.
 #include "one_member.h"
 #include <memory>
 
+bool operator == (const one_member & lhs, const one_member & rhs)
+{
+  return *lhs.member == *rhs.member;
+}
+
 void write_one_member(int) 
 {
     reflex::SafeTypeCode<one_member> 
@@ -26,11 +31,16 @@ void write_one_member(int)
     reflex::AutoDynamicData d1(safe_typeSupport.get());
     reflex::AutoDynamicData d2(safe_typeSupport.get());
 
-    one_member one;
-    one.member = new int(12);
+    one_member x;
+    x.member = std::make_shared<int>(12);
 
-    reflex::write_dynamicdata(d1, one);
-    
-    d1.get()->print(stdout, 2);
+    one_member y;
+    y.member = std::make_shared<int>();
+
+    reflex::write_dynamicdata(d1, x);
+    reflex::read_dynamicdata(y, d1);
+    std::cout << "one_member same = " << std::boolalpha << (x == y);
+
+    //d1.get()->print(stdout, 2);
 }
 

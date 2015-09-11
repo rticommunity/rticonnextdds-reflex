@@ -234,6 +234,7 @@ namespace reflex {
 
         typedef typename reflex::meta::at<Typelist, I>::type Inner;
         typedef typename reflex::meta::remove_reference<Inner>::type InnerNoRef;
+        typedef typename reflex::meta::remove_pointer<InnerNoRef>::type InnerNoRefNoPtr;
 
         reflex::codegen::MemberInfo info =
           reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
@@ -245,7 +246,7 @@ namespace reflex {
                            info.name.c_str(),
                            info.value,
                            I + 1,
-                           static_cast<InnerNoRef *>(0));
+                           static_cast<InnerNoRefNoPtr *>(0));
 
         Next::add(factory, outer_structTc);
       }
@@ -374,6 +375,7 @@ namespace reflex {
 
         typedef typename reflex::meta::at<Typelist, MAX_INDEX>::type Inner;
         typedef typename reflex::meta::remove_reference<Inner>::type InnerNoRef;
+        typedef typename reflex::meta::remove_pointer<InnerNoRef>::type InnerNoRefNoPtr;
 
         reflex::codegen::MemberInfo info =
           reflex::codegen::MemberTraits<typename reflex::meta::remove_refs<Typelist>::type, 
@@ -384,7 +386,7 @@ namespace reflex {
                            info.name.c_str(),
                            info.value,
                            MAX_INDEX + 1,
-                           static_cast<InnerNoRef *>(0));
+                           static_cast<InnerNoRefNoPtr *>(0));
       }
 
       static void add_union_member(

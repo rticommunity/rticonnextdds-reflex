@@ -164,16 +164,36 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess & ma,
         const Typelist & val,
-        typename reflex::meta::disable_if<reflex::type_traits::is_enum<Typelist>::value ||
-                            reflex::type_traits::is_container<Typelist>::value    ||
-                            reflex::type_traits::is_string<Typelist>::value       ||
-                            reflex::type_traits::is_optional<Typelist>::value
+        typename reflex::meta::disable_if<reflex::type_traits::is_enum<Typelist>::value         ||
+                                          reflex::type_traits::is_container<Typelist>::value    ||
+                                          reflex::type_traits::is_string<Typelist>::value       ||
+                                          reflex::type_traits::is_optional<Typelist>::value     ||
+                                          reflex::type_traits::is_smart_ptr<Typelist>::value    ||
+                                          reflex::type_traits::is_pointer<Typelist>::value
                       >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
 
         reflex::write_dynamicdata(inner, val);
+      }
+      
+      // Why isn't this template using typical T* syntax to capture pointer?
+      // Because arrays decay to pointer automatically and cause ambiguous overloads.
+      // Therefore, arrays are eliminated using enable_if and is_pointer type-trait.
+      // Also see: http://stackoverflow.com/questions/21972652/array-decay-to-pointer-and-overload-resolution/32532211#32532211
+      template <class T> // When member is a pointer
+      static void set_member_value(
+        DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        const T & ptr,
+        typename reflex::meta::enable_if<reflex::type_traits::is_pointer<T>::value, void>::type * = 0)
+      {
+        if (ptr == nullptr)
+        {
+          throw std::logic_error("set_member_value: NULL member pointer");
+        }
+        set_member_value(instance, ma, *ptr);
       }
 
       template <class C>
@@ -217,6 +237,7 @@ namespace reflex {
                      !reflex::type_traits::is_container<C>::value ||
                       reflex::type_traits::is_optional<C>::value  ||
                       reflex::type_traits::is_string<C>::value    ||
+                      reflex::type_traits::is_smart_ptr<C>::value ||
                       reflex::type_traits::is_primitive_or_enum<typename reflex::type_traits::container_traits<C>::value_type>::value
                  >::type * = 0)
       {
@@ -514,6 +535,20 @@ namespace reflex {
       {
         set_member_value(instance, ma, static_cast<const T &>(val));
       }
+      
+      template <class SmartPtr>
+      static void set_member_value(
+        DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        const SmartPtr & val,
+        typename reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value, void>::type * = 0)
+      {
+        if (!val)
+        {
+          throw std::logic_error("set_member_value: NULL member smart pointer");
+        }
+        set_member_value(instance, ma, *val);
+      }
     }; // struct set_member_overload_resolution_helper
 
     template <class T>
@@ -592,7 +627,21 @@ namespace reflex {
       }
 
     public:
-    
+      
+      // Why isn't this template using typical T* syntax to capture pointer?
+      // Because arrays decay to pointer automatically and cause ambiguous overloads.
+      // Therefore, arrays are eliminated using enable_if and is_pointer type-trait.
+      // Also see: http://stackoverflow.com/questions/21972652/array-decay-to-pointer-and-overload-resolution/32532211#32532211
+      template <class T> // When member is a pointer
+      static void get_member_value(
+        const DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        T & ptr,
+        typename reflex::meta::enable_if<reflex::type_traits::is_pointer<T>::value, void>::type * = 0)
+      {
+        get_member_value(instance, ma, *ptr);
+      }
+
       template <class T> // When T is an enum
       static void get_member_value(
           const DDS_DynamicData & instance,
@@ -630,11 +679,13 @@ namespace reflex {
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
           Typelist & val,
-          typename reflex::meta::disable_if<reflex::type_traits::is_enum<Typelist>::value ||
-                              reflex::type_traits::is_container<Typelist>::value    ||
-                              reflex::type_traits::is_optional<Typelist>::value     ||
-                              reflex::type_traits::is_string<Typelist>::value
-                      >::type * = 0)
+          typename reflex::meta::disable_if<reflex::type_traits::is_enum<Typelist>::value          ||
+                                            reflex::type_traits::is_container<Typelist>::value     ||
+                                            reflex::type_traits::is_optional<Typelist>::value      ||
+                                            reflex::type_traits::is_pointer<Typelist>::value       ||
+                                            reflex::type_traits::is_smart_ptr<Typelist>::value     ||
+                                            reflex::type_traits::is_string<Typelist>::value
+                                              >::type * = 0)
       {
         DDS_DynamicData inner(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
         SafeBinder binder(instance, inner, ma);
@@ -777,7 +828,7 @@ namespace reflex {
           size_t count,
           C & c,
           typename reflex::meta::disable_if<reflex::type_traits::is_stdset<C>::value ||
-                              reflex::type_traits::is_stdmap<C>::value
+                                            reflex::type_traits::is_stdmap<C>::value
                        >::type * = 0)
       {
         if (count > 0)
@@ -843,8 +894,10 @@ namespace reflex {
             const MemberAccess &ma,
             C & val,
             typename reflex::meta::disable_if<!reflex::type_traits::is_container<C>::value ||
-                                 reflex::type_traits::is_string<C>::value    ||
-                                 reflex::type_traits::is_primitive_or_enum<
+                                               reflex::type_traits::is_string<C>::value    ||
+                                               reflex::type_traits::is_pointer<C>::value   ||
+                                               reflex::type_traits::is_smart_ptr<C>::value ||
+                                               reflex::type_traits::is_primitive_or_enum<
                                  typename reflex::type_traits::container_traits<C>::value_type>::value
                                >::type * = 0)
       {
@@ -902,11 +955,23 @@ namespace reflex {
 
       template <class T, size_t Bound>
       static void get_member_value(
-          const DDS_DynamicData & instance,
-          const MemberAccess &ma,
-          reflex::match::Bounded<T, Bound> & val)
+        const DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        reflex::match::Bounded<T, Bound> & val)
       {
         get_member_value(instance, ma, static_cast<T &>(val));
+      }
+      
+      template <class SmartPtr>
+      static void get_member_value(
+        const DDS_DynamicData & instance,
+        const MemberAccess &ma,
+        SmartPtr & val,
+        typename reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value, void>::type * = 0)
+      {
+        if (!val)
+          val = SmartPtr(new typename SmartPtr::element_type());
+        get_member_value(instance, ma, *val);
       }
 
     private:

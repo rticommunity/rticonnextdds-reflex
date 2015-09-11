@@ -19,6 +19,7 @@ damages arising out of the use or inability to use the software.
 #include <string>
 #include <array>
 #include <type_traits>
+#include <memory>
 #include <boost/range.hpp>
 #include <boost/range/any_range.hpp>
 
@@ -420,6 +421,21 @@ namespace reflex {
     struct is_optional<boost::optional<T>> : true_type{};
 #endif
 
+    template <class T>
+    struct is_smart_ptr : false_type {};
+
+    template <class T>
+    struct is_smart_ptr<std::shared_ptr<T>> : true_type{};
+
+    template <class T>
+    struct is_smart_ptr<const std::shared_ptr<T>> : true_type{};
+
+    template <class T>
+    struct is_smart_ptr<std::unique_ptr<T>> : true_type{};
+
+    template <class T>
+    struct is_smart_ptr<const std::unique_ptr<T>> : true_type{};
+
     template <class C, bool>
     struct container_traits_impl;
 
@@ -607,7 +623,10 @@ namespace reflex {
     };
 
     template <class T>
-    struct remove_pointer;
+    struct remove_pointer
+    {
+      typedef T type;
+    };
 
     template <class T>
     struct remove_pointer <T *>
