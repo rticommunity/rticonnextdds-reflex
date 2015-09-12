@@ -8,6 +8,7 @@
 #include <array>
 #include <ctime>
 #include <limits>
+#include <memory>
 
 #include <boost/optional.hpp>
 

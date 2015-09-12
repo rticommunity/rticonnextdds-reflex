@@ -28,6 +28,7 @@ create_ddwriter(const char *type_name,
                 const char *topic_name,
                 DDSDynamicDataTypeSupport *type_support);
 
+void write_pointers(int);
 void write_large_type(int domain_id);
 void write_shape_type(int domain_id); 
 void write_shape_type_extended(int domain_id);
@@ -49,7 +50,7 @@ int main(int argc, const char **argv)
     */
 
     if (argc <= 1) {
-      std::cout << "Please specify either shapes [pub/sub/pubex], large, darkart, many, one, all\n";
+      std::cout << "Please specify either shapes [pub/sub/pubex], large, darkart, many, one, all, pointers\n";
       return 0;
     }
 
@@ -76,12 +77,14 @@ int main(int argc, const char **argv)
       write_darkart_type(DOMAIN_ID);
     else if (std::string(argv[1]) == "many")
       write_many_members(DOMAIN_ID);
+    else if (std::string(argv[1]) == "pointers")
+      write_pointers(DOMAIN_ID);
     else if (std::string(argv[1]) == "one")
       write_one_member(DOMAIN_ID);
     else if (std::string(argv[1]) == "all")
       test_all_types(DOMAIN_ID);
     else
-      std::cout << "Please specify either shapes, large, darkart, many, one\n";
+      std::cout << "Please specify either shapes, large, darkart, many, one, all, pointers\n";
 
     return 0;
   }

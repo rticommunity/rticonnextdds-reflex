@@ -11,6 +11,19 @@ damages arising out of the use or inability to use the software.
 #include "pointers.h"
 #include <memory>
 
+#ifndef RTI_WIN32
+namespace std {
+
+  template <class T, class... Args>
+  std::unique_ptr<T> make_unique(Args&&... args)
+  {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+  }
+
+}
+#endif // RTI_WIN32
+
+
 bool operator == (const pointers & lhs, const pointers & rhs)
 {
   return (*lhs.int_ptr == *rhs.int_ptr)
@@ -45,8 +58,11 @@ void write_pointers(int)
 
   reflex::write_dynamicdata(d1, x);
   reflex::read_dynamicdata(y, d1);
-  std::cout << "pointers are same = " << std::boolalpha << (x == y);
+  std::cout << "pointers are same = " << std::boolalpha << (x == y) << "\n";
 
   //d1.get()->print(stdout, 2);
+
+  delete x.int_ptr;
+  delete y.int_ptr;
 }
 

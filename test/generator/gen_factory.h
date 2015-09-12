@@ -181,6 +181,30 @@ namespace gen {
     }
   };
 
+  template <class T>
+  struct GenFactory<std::shared_ptr<T>>
+  {
+    static auto make()
+    {
+      auto tgen = GenFactory<T>::make();
+      return make_gen_from([tgen]() mutable {
+            return std::make_shared<T>(tgen.generate());
+          });
+    }
+  };
+
+  template <class T>
+  struct GenFactory<T *>
+  {
+    static auto make()
+    {
+      auto tgen = GenFactory<T>::make();
+      return make_gen_from([tgen]() mutable {
+            return new T(tgen.generate());
+          });
+    }
+  };
+
   template <class... Args>
   struct GenFactory<std::tuple<Args...>>
   {

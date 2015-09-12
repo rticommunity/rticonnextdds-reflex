@@ -450,15 +450,54 @@ namespace reflex {
         return stringTc;
       }
 
+      private:
+      template <class T>
+      // must return const DDS_TypeCode * as in primitive.
+      static const DDS_TypeCode * clone_nonprimitive_tc(
+          DDS_TypeCodeFactory * factory,
+          DDS_TypeCode * tc,
+          typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value,
+                  void>::type * = 0)
+      {
+        // No cloning is necessary if T is a primitive.
+        // Must return const though.
+        return tc;
+      }
+  
+      template <class T>
+      // must return non-const DDS_TypeCode *
+      static /* non-const */ DDS_TypeCode * clone_nonprimitive_tc(
+          DDS_TypeCodeFactory * factory,
+          DDS_TypeCode * tc,
+          typename reflex::meta::enable_if<!reflex::type_traits::is_primitive<T>::value,
+                  void>::type * = 0)
+      {
+        DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+        DDS_TypeCode * cloneTc = factory->clone_tc(tc, ex);
+
+        check_exception_code(
+          "clone_nonprimitive_tc: Unable to clone typecode, error = ",
+          ex);
+        
+        return cloneTc;
+      }
+  
+      public:
       template <class SmartPtr>
       static SafeTypeCode<SmartPtr> get_typecode(
         DDS_TypeCodeFactory * factory,
         const SmartPtr *,
         typename reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value, void>::type * = 0)
       {
-        SafeTypeCode<typename SmartPtr::element_type> stc = 
-          get_typecode(factory, static_cast<typename SmartPtr::element_type *>(0));
-        return SafeTypeCode<SmartPtr>(factory, stc.get());
+        typedef typename SmartPtr::element_type elm_type;
+
+        SafeTypeCode<elm_type> innerTc = 
+          get_typecode(factory, static_cast<elm_type *>(0));
+
+        return SafeTypeCode<SmartPtr>(
+                  factory, 
+                  clone_nonprimitive_tc<elm_type>(factory, 
+                                                  innerTc.get()));
       }
 
       template <class T>
@@ -537,16 +576,10 @@ namespace reflex {
             factory,
             static_cast<OptValuetype *>(0));
 
-        DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
-        SafeTypeCode<Opt> optionalTc(
-          factory, 
-          factory->clone_tc(innerTc.get(), ex));
-
-        check_exception_code(
-          "get_typecode<optional>: Unable to clone typecode, error = ",
-          ex);
-
-        return optionalTc;
+        return SafeTypeCode<Opt>(
+                  factory, 
+                  clone_nonprimitive_tc<OptValuetype>(factory, 
+                                                      innerTc.get()));
       }
 
       template <class T, size_t Bound>

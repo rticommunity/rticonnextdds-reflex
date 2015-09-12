@@ -19,7 +19,6 @@ damages arising out of the use or inability to use the software.
 
 #include "reflex.h"
 
-
 struct pointers
 {
   int * int_ptr;

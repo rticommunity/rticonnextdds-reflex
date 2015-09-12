@@ -1,6 +1,8 @@
 #ifndef RTI_TYPE_GENERATOR_H
 #define RTI_TYPE_GENERATOR_H
 
+#include <type_traits>
+
 #define TYPE_MAP(Idx, Type)   \
   template <uint16_t seed>    \
   struct TypeMap<Idx, seed> { \
@@ -36,7 +38,7 @@ namespace typegen {
     template <uint16_t I, uint16_t seed>
     struct TypeMap;
 
-    constexpr uint16_t MAP_SIZE = 17;
+    constexpr uint16_t MAP_SIZE = 19;
 
     TYPE_MAP(0,  bool);
     TYPE_MAP(1,  char);
@@ -56,8 +58,10 @@ namespace typegen {
     template <uint16_t lfsr>
     struct TypeMap<13, lfsr>
     {
-      // avoid sequence<optional<T>> = 16
-      constexpr static size_t selection = LFSR(lfsr) % (MAP_SIZE-1); 
+      // avoid sequence<shared_ptr<T>> = 16
+      // avoid sequence<raw pointer = 17
+      // avoid sequence<optional<T>> = 18
+      constexpr static size_t selection = LFSR(lfsr) % 16; 
       typedef std::vector<typename TypeMap<selection, LFSR(lfsr)>::type> type;
     };
 
@@ -65,8 +69,10 @@ namespace typegen {
     template <uint16_t lfsr>
     struct TypeMap<14, lfsr>
     {
-      // avoid array<optional<T>> = 16
-      constexpr static size_t selection = LFSR(lfsr) % (MAP_SIZE-1); 
+      // avoid array<optional<T>> = 18
+      // avoid array<raw pointer> = 18
+      // avoid array<shared_ptr<T>> = 16
+      constexpr static size_t selection = LFSR(lfsr) % 16; 
       typedef std::array<typename TypeMap<selection, LFSR(lfsr)>::type,
                          (LFSR(lfsr) % 10) + 1> type;
     };
@@ -75,16 +81,40 @@ namespace typegen {
     template <uint16_t lfsr>
     struct TypeMap<15, lfsr>
     {
-      constexpr static size_t tuplesize = (LFSR(lfsr) % 24) + 1;
+      constexpr static size_t tuplesize = (LFSR(lfsr) % 18) + 1;
       typedef typename RandomTuple<LFSR(lfsr), tuplesize>::type type;
     };
 
-    // optional generator
+    // shared_ptr generator
     template <uint16_t lfsr>
     struct TypeMap<16, lfsr>
     {
-      // avoid optional<optional<T>> = 16
-      constexpr static size_t selection = LFSR(lfsr) % (MAP_SIZE-1); 
+      // avoid shared_ptr<shared_ptr<T>> = 16
+      // avoid shared_ptr<raw pointer> = 17
+      // avoid shared_ptr<optional<T>> = 18
+      constexpr static size_t selection = LFSR(lfsr) % 16; 
+      typedef std::shared_ptr<typename TypeMap<selection, LFSR(lfsr)>::type> type;
+    };
+
+    // raw pointer generator
+    template <uint16_t lfsr>
+    struct TypeMap<17, lfsr>
+    {
+      // avoid raw pointer to shared_ptr<T> = 16
+      // avoid raw pointer to raw pointer = 17
+      // avoid raw pointer to optional<T> = 18
+      constexpr static size_t selection = LFSR(lfsr) % 16; 
+      typedef typename std::add_pointer<typename TypeMap<selection, LFSR(lfsr)>::type>::type type;
+    };
+
+    // optional generator. 
+    template <uint16_t lfsr>
+    struct TypeMap<18, lfsr>
+    {
+      // avoid optional<shared_ptr<T>> = 16
+      // avoid optional<raw pointer> = 17
+      // avoid optional<optional<T>> = 18
+      constexpr static size_t selection = LFSR(lfsr) % 16; 
       typedef boost::optional<typename TypeMap<selection, LFSR(lfsr)>::type> type;
     };
 
@@ -154,6 +184,7 @@ namespace typegen {
     {
       typedef typename RandomTupleImpl<size - 1, LFSR(lfsr)>::type Tuple;
       typedef typename NextUniqueType<LFSR(lfsr), Tuple>::type Next;
+      // For non-unique types, uncomment the following.
       //typedef typename TypeMap<LFSR(lfsr) % MAP_SIZE, LFSR(lfsr)>::type Next;
       typedef typename tuple_cons<Next, Tuple>::type type;
     };
