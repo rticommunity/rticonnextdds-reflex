@@ -487,7 +487,9 @@ namespace reflex {
       static SafeTypeCode<SmartPtr> get_typecode(
         DDS_TypeCodeFactory * factory,
         const SmartPtr *,
-        typename reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value, void>::type * = 0)
+        typename
+        reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value &&
+                               !reflex::type_traits::is_optional<SmartPtr>::value, void>::type * = 0)
       {
         typedef typename SmartPtr::element_type elm_type;
 

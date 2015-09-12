@@ -541,7 +541,9 @@ namespace reflex {
         DDS_DynamicData & instance,
         const MemberAccess &ma,
         const SmartPtr & val,
-        typename reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value, void>::type * = 0)
+        typename
+        reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value &&
+                               !reflex::type_traits::is_optional<SmartPtr>::value, void>::type * = 0)
       {
         if (!val)
         {
@@ -967,7 +969,8 @@ namespace reflex {
         const DDS_DynamicData & instance,
         const MemberAccess &ma,
         SmartPtr & val,
-        typename reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value, void>::type * = 0)
+        typename reflex::meta::enable_if<reflex::type_traits::is_smart_ptr<SmartPtr>::value && 
+                                        !reflex::type_traits::is_optional<SmartPtr>::value, void>::type * = 0)
       {
         if (!val)
           val = SmartPtr(new typename SmartPtr::element_type());
@@ -1205,6 +1208,12 @@ namespace reflex {
         {
           typename reflex::type_traits::optional_traits<Opt>::value_type temp;
           opt = temp;
+        }
+
+        template <class T>
+        static void initialize_optional(std::shared_ptr<T> & sh_ptr)
+        {
+          sh_ptr = std::make_shared<T>();
         }
 
 #ifdef RTI_WIN32

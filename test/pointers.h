@@ -16,20 +16,33 @@ damages arising out of the use or inability to use the software.
 #endif
 
 #include <memory>
+#include <string>
 
 #include "reflex.h"
+
+namespace reflex {
+  namespace type_traits {
+    
+    template <>
+    struct is_optional<std::shared_ptr<int>> : true_type {}; 
+  
+  }
+}
+
 
 struct pointers
 {
   int * int_ptr;
-  std::shared_ptr<int> shared_ptr;
+  std::shared_ptr<int> optional_shared_ptr; // optional
+  std::shared_ptr<std::string> string_shared_ptr; // not optional
   std::unique_ptr<int> unique_ptr;
 };
 
 REFLEX_ADAPT_STRUCT(
   pointers,
   (int *, int_ptr)
-  (std::shared_ptr<int>, shared_ptr)
+  (std::shared_ptr<int>, optional_shared_ptr)
+  (std::shared_ptr<std::string>, string_shared_ptr)
   (std::unique_ptr<int>, unique_ptr))
   
 #endif // POINTERS_H

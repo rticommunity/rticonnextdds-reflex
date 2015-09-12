@@ -26,9 +26,19 @@ namespace std {
 
 bool operator == (const pointers & lhs, const pointers & rhs)
 {
-  return (*lhs.int_ptr == *rhs.int_ptr)
-    && (*lhs.shared_ptr == *rhs.shared_ptr)
-    && (*lhs.unique_ptr == *rhs.unique_ptr);
+  bool opt_same = true;
+  
+  if (lhs.optional_shared_ptr && rhs.optional_shared_ptr)
+    opt_same = (*lhs.optional_shared_ptr == *rhs.optional_shared_ptr);
+  else if(!lhs.optional_shared_ptr && !rhs.optional_shared_ptr)
+    opt_same = true;
+  else
+    opt_same = false;
+
+  return opt_same 
+      && (*lhs.int_ptr == *rhs.int_ptr)
+      && (*lhs.string_shared_ptr == *rhs.string_shared_ptr)
+      && (*lhs.unique_ptr == *rhs.unique_ptr);
 }
 
 void write_pointers(int)
@@ -48,12 +58,14 @@ void write_pointers(int)
 
   pointers x;
   x.int_ptr = new int(12);
-  x.shared_ptr = std::make_shared<int>(22);
+  //x.optional_shared_ptr = std::make_shared<int>(22);
+  x.string_shared_ptr = std::make_shared<std::string>();
   x.unique_ptr = std::make_unique<int>(32);
 
   pointers y;
   y.int_ptr = new int();
-  y.shared_ptr = std::make_shared<int>();
+  //y.optional_shared_ptr = std::make_shared<int>();
+  y.string_shared_ptr = std::make_shared<std::string>();
   y.unique_ptr = std::make_unique<int>();
 
   reflex::write_dynamicdata(d1, x);
