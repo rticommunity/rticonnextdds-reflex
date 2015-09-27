@@ -219,18 +219,7 @@ namespace gen {
   {
     auto make()
     {
-      return make_gen_from([]() mutable {
-        auto space = 32;
-        auto tilde = 126;
-        std::string str;
-        int length = random_int32() % 257;
-
-        str.reserve(length);
-        for (int i = 0; i < length; ++i)
-          str.push_back(static_cast<char>(space + random_int32() % (tilde + 1 - space)));
-
-        return str;
-      });
+      return make_string_gen(make_printable_gen(), 256);
     }
   };
 

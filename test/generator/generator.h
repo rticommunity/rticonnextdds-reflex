@@ -110,7 +110,7 @@ namespace gen {
   }
 
   template <class T>
-  auto make_single_gen(T&& t)
+  auto make_constant_gen(T&& t)
   {
     return make_gen_from([t = std::forward<T>(t)]() { return t; });
   }

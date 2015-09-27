@@ -115,7 +115,7 @@ auto test_shape_gen()
 {
   auto xgen = gen::make_range_gen(0, 200);
   auto ygen = gen::make_range_gen(0, 200);
-  auto sizegen = gen::make_single_gen(30);
+  auto sizegen = gen::make_constant_gen(30);
   auto colorgen = gen::make_oneof_gen({ "RED", "GREEN", "BLUE" });
 
   auto shapegen =
