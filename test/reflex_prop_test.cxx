@@ -158,6 +158,26 @@ void test_generators(void)
 
   auto arraygen = gen::make_array_gen(shapegen, gen::dim_list<2, 2>());
   std::cout << arraygen.generate() << "\n";
+
+  auto inordergen = 
+    gen::make_inorder_gen({ 10, 20 });
+
+  assert(inordergen.generate() == 10);
+  assert(inordergen.generate() == 20);
+
+  auto concatgen = 
+    gen::make_inorder_gen({ 10, 20 })
+       .concat(gen::make_inorder_gen({ 30 }));
+
+  assert(concatgen.generate() == 10);
+  assert(concatgen.generate() == 20);
+  assert(concatgen.generate() == 30);
+
+  auto v1 = gen::make_stepper_gen().take(5).to_vector();
+  std::vector<int> v2 { 0, 1, 2, 3, 4 };
+  assert(v1 == v2);
+
+  std::cout << "All assertions satisfied\n";
 }
 
 template <class Tuple>
@@ -182,7 +202,7 @@ int main(void)
 {
   test_generators();
   
-  test_roundtrip_property<typegen::RandomTuple<RANDOM_SEED>::type>();
+  //test_roundtrip_property<typegen::RandomTuple<RANDOM_SEED>::type>();
   
   //getchar();
 }
