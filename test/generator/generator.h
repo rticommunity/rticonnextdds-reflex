@@ -9,6 +9,7 @@
 #include <ctime>
 #include <limits>
 #include <memory>
+#include <stdexcept>
 
 #include <boost/optional.hpp>
 
@@ -61,7 +62,11 @@ namespace gen {
   public:
     typedef T value_type;
 
-    explicit Gen(GenFunc func)
+    explicit Gen(GenFunc& func)
+      : GenFunc(func)
+    { }
+
+    explicit Gen(GenFunc&& func)
       : GenFunc(std::move(func))
     { }
 
@@ -101,6 +106,65 @@ namespace gen {
       });
     }
 
+    auto take(unsigned int count)
+    {
+      return make_gen_from(
+             [self = *this, count]() mutable {
+                if(count-- > 0)
+                {
+                  return self.generate();
+                }
+                else
+                  throw std::out_of_range("take: generate exceeded take");
+          });
+    }
+
+    template <class UGen>
+    auto concat(UGen&& ugen)
+    {
+      return make_gen_from(
+          [tgen = *this,
+           ugen = std::forward<UGen>(ugen),
+           tdone = false,
+           udone = false]() mutable {
+             if(!tdone)
+             {
+               try {
+                  return tgen.generate();
+               } 
+               catch(std::out_of_range &) {
+                 tdone = true;
+               }
+             }
+
+             if(!udone)
+             {
+               try {
+                  return ugen.generate();
+               } 
+               catch(std::out_of_range &) {
+                 udone = true;
+               }
+             }
+             
+             throw std::out_of_range("concat: both generators completed!");
+          });
+    }
+
+    std::vector<T> to_vector()
+    {
+      std::vector<T> v;
+      try {
+        while(true)
+          v.push_back(this->generate());
+      }
+      catch(std::out_of_range &)
+      {
+        return v;
+      }
+      return v;
+    }
+
   };
 
   template <class GenFunc>
@@ -113,6 +177,29 @@ namespace gen {
   auto make_constant_gen(T&& t)
   {
     return make_gen_from([t = std::forward<T>(t)]() { return t; });
+  }
+
+  template <class T>
+  auto make_empty_gen()
+  {
+    return make_gen_from([]() { 
+        throw std::out_of_range("empty generator!"); 
+        return std::declval<T>();
+      });
+  }
+
+  template <class T>
+  auto make_single_gen(T&& t)
+  {
+    return make_gen_from([t = std::forward<T>(t), done = false]() mutable {
+        if(!done)
+        {
+          done = true;
+          return t; 
+        }
+        else
+          throw std::out_of_range("single generator completed!");
+      });
   }
 
   template <class Integer>
@@ -317,6 +404,38 @@ namespace gen {
     });
   }
 
+  template <class Iter>
+  auto make_inorder_gen(Iter begin, Iter end)
+  {
+    std::vector<typename std::iterator_traits<Iter>::value_type> 
+      range(begin, end);
+    
+    /*
+    auto iter = range.begin();
+    return make_gen_from(
+        [range = std::move(range),
+         iter = std::move(iter)]() mutable {
+           if(iter != range.end())
+             return *iter++;
+           else
+             throw std::out_of_range("in_order_gen: Range traversal completed!");
+    });*/
+    return make_gen_from(
+        [range = std::move(range),
+         i = 0u]() mutable {
+           if(i < range.size())
+             return range[i++];
+           else
+             throw std::out_of_range("in_order_gen: Range traversal completed!");
+    });
+  }
+
+  template <class T>
+  auto make_inorder_gen(std::initializer_list<T> list)
+  {
+    return make_inorder_gen(list.begin(), list.end());
+  }
+
   template <class T>
   auto make_oneof_gen(std::initializer_list<T> list)
   {
@@ -357,6 +476,65 @@ namespace gen {
   auto make_tuple_gen()
   {
     return detail::TupleGen<Tuple>::make();
+  }
+
+  auto make_stepper_gen(int start = 0, 
+                        int max = std::numeric_limits<int>::max(), 
+                        int step = 1, 
+                        bool cycle = false)
+  {
+    bool empty = false;
+    if(step >= 0)
+    {
+      if(start > max)
+        empty = true;
+    }
+    else
+    {
+      if(start < max)
+        empty = true;
+    }
+
+    auto current = start;
+    auto init = false;
+
+    return make_gen_from([start, max, step, cycle, current, init, empty]() mutable 
+           {
+               if(empty)
+                 throw std::out_of_range("stepper: steps over!");
+
+               if(init==false)
+                 init = true;
+               else
+               {
+                 if(step >= 0)
+                 {
+                   if(current + step <= max)
+                      current = current + step;
+                   else
+                   {
+                     if(cycle)
+                       current = start;
+                     else
+                       throw std::out_of_range("stepper: steps over!");
+                   }
+                 }
+                 else
+                 {
+                   if(current + step >= max)
+                      current = current + step;
+                   else
+                   {
+                     if(cycle)
+                       current = start;
+                     else
+                       throw std::out_of_range("stepper: stpes over!");
+                   }
+                 }
+               }
+               
+               return current;
+           });
   }
 
 } // namespace gen
