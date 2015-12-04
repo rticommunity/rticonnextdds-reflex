@@ -39,8 +39,8 @@ namespace reflex {
           (kind == DDS_TK_UNION)  ||
           (kind == DDS_TK_SPARSE))
       {
-        size_t count = tc->member_count(ex);
-        for (size_t i = 0; i < count; ++i)
+        uint32_t count = tc->member_count(ex);
+        for (uint32_t i = 0; i < count; ++i)
         {
           print_recursive_IDL(tc->member_type(i, ex), indent + 1, visited);
         }

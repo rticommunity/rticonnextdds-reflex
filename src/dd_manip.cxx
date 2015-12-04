@@ -122,7 +122,7 @@ namespace reflex {
         // This signed char overload is needed because DDS does not natively
         // support signed char. It supports char and octet, which in C++
         // are char and unsigned char but signed char is a third kind of char
-        // and is separate from first two. It must be explicitly casted 
+        // and is separate from the first two. It must be explicitly casted 
         // to char. Hence the overload.
         return reinterpret_cast<DDS_Char *>(ptr);
       }
@@ -150,11 +150,8 @@ namespace reflex {
               long double & val)
       {
         DDS_ReturnCode_t rc;
-#if (RTI_CDR_SIZEOF_LONG_DOUBLE == 16)
-        DDS_LongDouble longdouble = 0;
-#else
         DDS_LongDouble longdouble = { { 0 } };
-#endif
+
         if (ma.access_by_id())
           rc = instance.get_longdouble(longdouble, NULL, ma.get_id());
         else
@@ -217,9 +214,10 @@ namespace reflex {
           seq.unloan();
           detail::check_retcode("set_member_value: Error setting sequence, error = ", rc);
 #else
-          seq.ensure_length(val.size(), val.size());
+          seq.ensure_length(static_cast<DDS_Long>(val.size()), 
+                            static_cast<DDS_Long>(val.size()));
 
-          size_t i = 0;
+          DDS_Long i = 0;
           for (auto const & elem: val)
           {
             seq[i] = to_LongDouble(elem);
@@ -256,7 +254,7 @@ namespace reflex {
 
           DDS_ReturnCode_t rc = detail::get_sequence(instance, seq, ma);
           detail::check_retcode("get_member_value: get_sequence error = ", rc);
-          for(size_t i = 0;i < seq_info.element_count; ++i)   
+          for(DDS_UnsignedLong i = 0;i < seq_info.element_count; ++i)
           {
             val[i] = from_LongDouble(seq[i]);
           }

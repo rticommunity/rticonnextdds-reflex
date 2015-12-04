@@ -186,7 +186,7 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         const char * member_name,
         DDS_Long member_id)
         : outer_(&const_cast<DDS_DynamicData &>(outer)),
-        inner_(&inner)
+          inner_(&inner)
       {
         DDS_ReturnCode_t rc =
           outer_->bind_complex_member(*inner_, member_name, member_id);
@@ -289,7 +289,8 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         return MemberAccess(false, -1, name);
       }
 
-      REFLEX_INLINE void set_seq_length(DDS_DynamicData & seq,
+      REFLEX_INLINE void set_seq_length(
+        DDS_DynamicData & seq,
         size_t size,
         bool is_string)
       {
@@ -299,8 +300,9 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         if (size == 0)
           size = 1;
 
+        // FIXME: Why am I binding a single element of an unknown type?
         DDS_DynamicData item(NULL, DDS_DYNAMIC_DATA_PROPERTY_DEFAULT);
-        SafeBinder binder(seq, item, NULL, size);
+        SafeBinder binder(seq, item, NULL, static_cast<DDS_Long>(size));
       }
 
       REFLEX_INLINE const char *get_readable_retcode(DDS_ReturnCode_t rc)

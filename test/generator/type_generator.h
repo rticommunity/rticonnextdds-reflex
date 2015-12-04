@@ -28,11 +28,11 @@ namespace typegen {
       return (prev >> 1) | (LFSR_bit(prev) << 15);
     }
 
-    template <size_t lfsr, size_t... values>
+    template <uint16_t lfsr, uint16_t... values>
     struct oneof
     {
-      constexpr static size_t val[sizeof...(values)] = { values... };
-      constexpr static size_t value = val[LFSR(lfsr) % sizeof...(values)];
+      constexpr static uint16_t val[sizeof...(values)] = { values... };
+      constexpr static uint16_t value = val[LFSR(lfsr) % sizeof...(values)];
     };
 
     template <uint16_t I, uint16_t seed>
@@ -166,10 +166,10 @@ namespace typegen {
       constexpr static bool value = false;
     };
 
-    template<size_t lfsr, class... Args>
+    template<uint16_t lfsr, class... Args>
     struct NextUniqueType;
 
-    template<size_t lfsr, class... Args>
+    template<uint16_t lfsr, class... Args>
     struct NextUniqueType<lfsr, std::tuple<Args...>>
     {
       typedef typename TypeMap<LFSR(lfsr) % MAP_SIZE, LFSR(lfsr)>::type Next;
@@ -179,7 +179,7 @@ namespace typegen {
                            
     };
 
-    template <size_t size, uint16_t lfsr>
+    template <uint16_t size, uint16_t lfsr>
     struct RandomTupleImpl
     {
       typedef typename RandomTupleImpl<size - 1, LFSR(lfsr)>::type Tuple;

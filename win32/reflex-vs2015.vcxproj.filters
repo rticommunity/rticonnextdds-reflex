@@ -10,9 +10,6 @@
     <ClCompile Include="..\src\dd_manip.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\default_member_names.cxx">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\generic_dr.cxx">
       <Filter>sources</Filter>
     </ClCompile>
@@ -26,6 +23,9 @@
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="..\src\typecode_manip.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\member_names.cxx">
       <Filter>sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,9 +80,6 @@
     </ClInclude>
     <ClInclude Include="..\include\reflex\memberwise.h">
       <Filter>sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\reflex\default_member_names.h">
-      <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
