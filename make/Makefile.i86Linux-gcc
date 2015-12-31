@@ -36,7 +36,7 @@ CXXLD = g++ -Wl,--no-as-needed
 CXXSTD = c++11
 
 CXXFLAGS = --std=$(CXXSTD) -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 \
-           -Wall -Wno-unused-local-typedefs -DRTI_CDR_SIZEOF_LONG_DOUBLE=12
+           -Wall -Wno-unused-local-typedefs 
 CXXLDFLAGS = -m32 
 SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
 

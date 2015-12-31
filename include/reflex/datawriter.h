@@ -8,8 +8,8 @@ support the Software.  RTI shall not be liable for any incidental or consequenti
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
-#ifndef RTIREFLEX_GENERIC_DW_H
-#define RTIREFLEX_GENERIC_DW_H
+#ifndef RTIREFLEX_DATAWRITER_H
+#define RTIREFLEX_DATAWRITER_H
 
 #include "reflex/safe_typecode.h"
 #include "reflex/auto_dd.h"
@@ -38,7 +38,7 @@ namespace reflex {
   } // namespace detail
 
   /**
-  * @brief Contains generic data publisher for adapted types
+  * @brief Contains DataWriter for adapted types
   */
   namespace pub {
 
@@ -47,14 +47,14 @@ namespace reflex {
      *
      */
     template <class T>
-    class GenericDataWriter
+    class DataWriter
     {
       TypeManager<T> type_manager_;
       AutoDynamicData dd_instance_;
       std::shared_ptr<DDSDynamicDataWriter> safe_datawriter_;
 
     public:
-      GenericDataWriter(DDSDomainParticipant *participant,
+      DataWriter(DDSDomainParticipant *participant,
                         const char * topic_name,
                         const char * type_name = 0,
                         DDS_DynamicDataTypeProperty_t props =
@@ -71,7 +71,7 @@ namespace reflex {
                                     props))
       { }
 
-      GenericDataWriter(DDSDomainParticipant *participant,
+      DataWriter(DDSDomainParticipant *participant,
                         DDS_DataWriterQos & dwqos,
                         const char * topic_name,
                         const char * type_name = 0,
@@ -168,7 +168,7 @@ namespace reflex {
 } // namespace reflex
 
 #ifndef REFLEX_NO_HEADER_ONLY
-#include "reflex/../../src/generic_dw.cxx"
+#include "reflex/../../src/datawriter.cxx"
 #endif
 
-#endif // RTIREFLEX_GENERIC_DW_H
+#endif // RTIREFLEX_DATAWRITER_H

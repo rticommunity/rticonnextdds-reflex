@@ -76,8 +76,8 @@
   <ItemGroup>
     <ClCompile Include="..\src\auto_dd.cxx" />
     <ClCompile Include="..\src\dd_manip.cxx" />
-    <ClCompile Include="..\src\generic_dr.cxx" />
-    <ClCompile Include="..\src\generic_dw.cxx" />
+    <ClCompile Include="..\src\datareader.cxx" />
+    <ClCompile Include="..\src\datawriter.cxx" />
     <ClCompile Include="..\src\dd_extra.cxx" />
     <ClCompile Include="..\src\member_names.cxx" />
     <ClCompile Include="..\src\reflex.cxx" />
@@ -95,8 +95,8 @@
     <ClInclude Include="..\include\reflex\disc_union.h" />
     <ClInclude Include="..\include\reflex\dllexport.h" />
     <ClInclude Include="..\include\reflex\enable_if.h" />
-    <ClInclude Include="..\include\reflex\generic_dr.h" />
-    <ClInclude Include="..\include\reflex\generic_dw.h" />
+    <ClInclude Include="..\include\reflex\datareader.h" />
+    <ClInclude Include="..\include\reflex\datawriter.h" />
     <ClInclude Include="..\include\reflex\memberwise.h" />
     <ClInclude Include="..\include\reflex\member_names.h" />
     <ClInclude Include="..\include\reflex\reflex_fwd.h" />

@@ -8,8 +8,8 @@ support the Software.  RTI shall not be liable for any incidental or consequenti
 damages arising out of the use or inability to use the software.
 **********************************************************************************************/
 
-#ifndef RTIREFLEX_GENERIC_DR_H
-#define RTIREFLEX_GENERIC_DR_H
+#ifndef RTIREFLEX_DATAREADER_H
+#define RTIREFLEX_DATAREADER_H
 
 #include "reflex/safe_typecode.h"
 #include "reflex/auto_dd.h"
@@ -27,10 +27,10 @@ namespace reflex {
   namespace sub {
 
     template <class T>
-    class GenericDataReader;
+    class DataReader;
 
     template <class T>
-    class GenericDataReaderListener;
+    class DataReaderListener;
 
   } // namespace sub
 
@@ -104,15 +104,15 @@ namespace reflex {
     template <class T>
     class DataReaderListenerAdapter : public DDSDataReaderListener
     {
-      reflex::sub::GenericDataReaderListener<T> * generic_listener_;
-      reflex::sub::GenericDataReader<T> * data_reader_;
+      reflex::sub::DataReaderListener<T> * dr_listener_;
+      reflex::sub::DataReader<T> * data_reader_;
 
     public:
 
-      typedef reflex::sub::GenericDataReader<T> DataReaderType;
+      typedef reflex::sub::DataReader<T> DataReaderType;
 
-      explicit DataReaderListenerAdapter(reflex::sub::GenericDataReaderListener<T> * listener)
-        : generic_listener_(listener),
+      explicit DataReaderListenerAdapter(reflex::sub::DataReaderListener<T> * listener)
+        : dr_listener_(listener),
           data_reader_(0)
       {
         if (!listener)
@@ -121,7 +121,7 @@ namespace reflex {
         }
       }
 
-      void set_datareader(reflex::sub::GenericDataReader<T> * dr)
+      void set_datareader(reflex::sub::DataReader<T> * dr)
       {
         data_reader_ = dr;
       }
@@ -134,7 +134,7 @@ namespace reflex {
           std::cerr << "Not a DynamicDataReader!!!\n";
         }
 #endif
-        generic_listener_->on_data_available(*data_reader_);
+        dr_listener_->on_data_available(*data_reader_);
       }
     };
 
@@ -142,34 +142,34 @@ namespace reflex {
   } // namespace detail
 
   /**
-   * @brief Contains generic data subscriber for adapted types
+   * @brief Contains DataReader for adapted types
    */
   namespace sub {
 
     /**
-     * @brief Synchornous data listener for GenericDataReader
+     * @brief Synchornous data listener for DataReader
      */
     template <class T>
-    class GenericDataReaderListener
+    class DataReaderListener
     {
     public:
       /**
        * @brief Callback invoked when new data is available to read from
-       *        GenericDataReader
+       *        DataReader
        */
-      virtual void on_data_available(GenericDataReader<T> & dr) = 0;
+      virtual void on_data_available(DataReader<T> & dr) = 0;
 
-      virtual ~GenericDataReaderListener() { }
+      virtual ~DataReaderListener() { }
     };
 
     /**
     * @brief A datareader for adapted aggregate types
     */
     template <class T>
-    class GenericDataReader
+    class DataReader
     {
     public:
-      typedef GenericDataReaderListener<T> ListenerType;
+      typedef DataReaderListener<T> ListenerType;
 
     private:
       reflex::TypeManager<T> type_manager_;
@@ -178,7 +178,7 @@ namespace reflex {
 
     public:
 
-      GenericDataReader(
+      DataReader(
         DDSDomainParticipant *participant,
         const char * topic_name,
         ListenerType * listener,
@@ -201,7 +201,7 @@ namespace reflex {
             safe_listener_adapter_->set_datareader(this);
       }
 
-      GenericDataReader(
+      DataReader(
         DDSDomainParticipant *participant,
         const DDS_DataReaderQos & drqos,
         const char * topic_name,
@@ -312,10 +312,10 @@ namespace reflex {
 } // namespace reflex
 
 #ifndef REFLEX_NO_HEADER_ONLY
-#include "reflex/../../src/generic_dr.cxx"
+#include "reflex/../../src/datareader.cxx"
 #endif
 
 
 
-#endif // RTIREFLEX_GENERIC_DR_H
+#endif // RTIREFLEX_DATAREADER_H
 

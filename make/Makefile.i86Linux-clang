@@ -37,7 +37,7 @@ CXXFLAGS = --std=$(CXXSTD) -DRTI_UNIX -DRTI_LINUX -m32 -D HAVE_CXA_DEMANGLE=1 \
            -Wall -Wno-return-type-c-linkage \
            -Wno-deprecated-register  \
            -Wno-unused-local-typedef \
-           -ftemplate-depth-1024 -DRTI_CDR_SIZEOF_LONG_DOUBLE=12
+           -ftemplate-depth-1024
 CXXLDFLAGS = -m32 
 SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
 

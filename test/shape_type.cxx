@@ -33,10 +33,10 @@ namespace reflex {
   } 
 }
 
-class MyShapesListener : public reflex::sub::GenericDataReaderListener<ShapeType>
+class MyShapesListener : public reflex::sub::DataReaderListener<ShapeType>
 {
 public:
-  void on_data_available(reflex::sub::GenericDataReader<ShapeType> & dr) override
+  void on_data_available(reflex::sub::DataReader<ShapeType> & dr) override
   {
     std::vector<reflex::sub::Sample<ShapeType>> samples;
     dr.take(samples);
@@ -69,7 +69,7 @@ void read_shape_type(int domain_id)
   }
 
   MyShapesListener shapes_listener;
-  reflex::sub::GenericDataReader<ShapeType>
+  reflex::sub::DataReader<ShapeType>
     shapes_dr(participant, "Square", &shapes_listener);
 
   std::cout << "Subscribed to Square\n";
@@ -122,7 +122,7 @@ void write_shape_type_extended(int domain_id)
     return;
   }
 
-  reflex::pub::GenericDataWriter<ShapeTypeExtended>
+  reflex::pub::DataWriter<ShapeTypeExtended>
     writer(participant, topic_name, "ShapeType");
 
   srand((unsigned int) time(NULL));
@@ -286,10 +286,10 @@ void write_shape_type(int domain_id)
 
 #ifdef USE_SHAPES_TUPLE
 
-class MyShapesTupleListener : public GenericDataReaderListener<ShapeTypeTuple>
+class MyShapesTupleListener : public DataReaderListener<ShapeTypeTuple>
 {
 public:
-  void on_data_available(GenericDataReader<ShapeTypeTuple> & dr) override
+  void on_data_available(DataReader<ShapeTypeTuple> & dr) override
   {
     std::vector<ShapeTypeTuple> samples = dr.take();
     for (auto const &elem : samples)
@@ -304,7 +304,7 @@ public:
 };
 
 MyShapesTupleListener shapes_tuple_listener;
-GenericDataReader<ShapeTypeTuple>
+DataReader<ShapeTypeTuple>
 shapes_tuple_data_reader(participant, &shapes_tuple_listener, "Square");
 
 #endif // USE_SHAPES_TUPLE

@@ -110,8 +110,8 @@ LIBS = -L$(NDDSHOME)/lib/$(ARCH) -Lobjs/$(ARCH) $(NDDSLIBS) $(SYSLIBS)
 
 SOURCES = src/auto_dd.cxx                  \
           src/typecode_manip.cxx           \
-          src/generic_dr.cxx               \
-          src/generic_dw.cxx               \
+          src/datareader.cxx               \
+          src/datawriter.cxx               \
           src/dd_extra.cxx                 \
           src/dd_manip.cxx                 \
           src/reflex.cxx                   \
@@ -121,8 +121,8 @@ SOURCES = src/auto_dd.cxx                  \
 HEADERS = include/reflex/reflex_fwd.h           \
           include/reflex/auto_dd.h              \
           include/reflex/sample.h               \
-          include/reflex/generic_dr.h           \
-          include/reflex/generic_dw.h           \
+          include/reflex/datareader.h           \
+          include/reflex/datawriter.h           \
           include/reflex/dd_manip.h             \
           include/reflex/typecode_manip.h       \
           include/reflex/member_names.h         \

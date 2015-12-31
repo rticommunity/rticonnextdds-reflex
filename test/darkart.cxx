@@ -57,7 +57,7 @@ void write_darkart_type(unsigned domain_id)
   }
 
   /* Option 1: Using darkart::TopLevel */
-  reflex::pub::GenericDataWriter<darkart::TopLevel>
+  reflex::pub::DataWriter<darkart::TopLevel>
     top_level_writer(participant, "DarkartTopLevelTopic", "DarkartTopLevelType");
 
   std::cout << "Printing IDL\n";
@@ -92,7 +92,7 @@ void write_darkart_type(unsigned domain_id)
   // FIXME: Causes a run-time crash.
   // ddi1.get()->print(stdout, 2);
 
-  reflex::pub::GenericDataWriter<decltype(all)>
+  reflex::pub::DataWriter<decltype(all)>
     tuple_writer(participant, "DarkartTopic", "DarkartAllTupleType");
 
   for(;;)
