@@ -70,7 +70,9 @@ void read_shape_type(int domain_id)
 
   MyShapesListener shapes_listener;
   reflex::sub::DataReader<ShapeType>
-    shapes_dr(participant, "Square", &shapes_listener);
+    shapes_dr(reflex::sub::DataReaderParams(participant)
+                .topic_name("Square")
+                .listener(&shapes_listener));
 
   std::cout << "Subscribed to Square\n";
   for (;;)
@@ -123,7 +125,9 @@ void write_shape_type_extended(int domain_id)
   }
 
   reflex::pub::DataWriter<ShapeTypeExtended>
-    writer(participant, topic_name, "ShapeType");
+    writer(reflex::pub::DataWriterParams(participant)
+             .topic_name(topic_name)
+             .type_name("ShapeType"));
 
   srand((unsigned int) time(NULL));
 

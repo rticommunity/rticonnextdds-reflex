@@ -17,11 +17,14 @@ damages arising out of the use or inability to use the software.
 #include "reflex/reflex_fwd.h"
 #include "reflex/enable_if.h"
 #include "reflex/type_manager.h"
+#include "reflex/datawriter_params.h"
+#include "reflex/entity_common.h"
 
 #include <memory>
 
 namespace reflex {
 
+    /*
   namespace detail { 
 
     REFLEX_DLL_EXPORT 
@@ -36,6 +39,7 @@ namespace reflex {
     REFLEX_DLL_EXPORT void dw_deleter(DDSDynamicDataWriter * ddWriter) throw();
 
   } // namespace detail
+  */
 
   /**
   * @brief Contains DataWriter for adapted types
@@ -49,25 +53,51 @@ namespace reflex {
     template <class T>
     class DataWriter
     {
-      TypeManager<T> type_manager_;
-      AutoDynamicData dd_instance_;
+      std::shared_ptr<TypeManager<T>> type_manager_;
+      std::shared_ptr<AutoDynamicData> dd_instance_;
       std::shared_ptr<DDSDynamicDataWriter> safe_datawriter_;
 
     public:
+
+      explicit DataWriter(const reflex::pub::DataWriterParams & params)
+      {
+        if(!params.domain_participant())
+          throw std::logic_error("DataWriterParams: NULL DDSDomainParticipant");
+        
+        if(params.topic() && !params.topic_name().empty())
+          throw std::logic_error("DataWriterParams: Ambiguous parameters. Both topic_name and topic provided");
+
+        type_manager_ = 
+          std::make_shared<reflex::TypeManager<T>>(params.dynamicdata_type_property());
+        
+        safe_datawriter_ = detail::initialize_entity<DDSDynamicDataWriter>(
+            params.domain_participant(),
+            params.publisher(),
+            params.datawriter_qos(),
+            params.topic(),
+            params.topic_name(),
+            params.type_name(),
+            type_manager_->get_type_support(),
+            static_cast<DDSDataWriterListener *>(NULL),
+            params.listener_statusmask(),
+            params.dynamicdata_type_property(),
+            "DynamicDataWriter");
+      }
+      /*
       DataWriter(DDSDomainParticipant *participant,
                         const char * topic_name,
                         const char * type_name = 0,
                         DDS_DynamicDataTypeProperty_t props =
                           DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-       : type_manager_(props),
-         dd_instance_(type_manager_.get_type_support()),
+       : type_manager_(std::make_shared<TypeManager<T>>(props)),
+         dd_instance_(std::make_shared<AutoDynamicData>(type_manager_->get_type_support())),
          safe_datawriter_(detail::initialize_writer(
                                     participant,
                                     DDS_DATAWRITER_QOS_DEFAULT,
                                     topic_name,
                                     type_name,
-                                    type_manager_.get_type_support(),
-                                    0, /* listener */
+                                    type_manager_->get_type_support(),
+                                    0, // listener 
                                     props))
       { }
 
@@ -78,18 +108,18 @@ namespace reflex {
                         DDSDataWriterListener * listener = 0,
                         DDS_DynamicDataTypeProperty_t props =
                           DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-        : type_manager_(props),
-          dd_instance_(type_manager_.get_type_support()),
+        : type_manager_(std::make_shared<TypeManager<T>>(props)),
+          dd_instance_(std::make_shared<AutoDynamicData>(type_manager_->get_type_support())),
           safe_datawriter_(detail::initialize_writer(
                                       participant,
                                       dwqos,
                                       topic_name,
                                       type_name,
-                                      type_manager_.get_type_support(),
+                                      type_manager_->get_type_support(),
                                       listener,
                                       props))
       { }
-
+*/
       /**
        * @brief Publish an instance of type T
        * @param data An object of type T
@@ -99,8 +129,8 @@ namespace reflex {
       DDS_ReturnCode_t write(const T & data, 
                              const DDS_InstanceHandle_t& handle = DDS_HANDLE_NIL)
       {
-        reflex::write_dynamicdata(dd_instance_, data);
-        return safe_datawriter_->write(*dd_instance_.get(), handle);
+        reflex::write_dynamicdata(*dd_instance_, data);
+        return safe_datawriter_->write(*(dd_instance_->get()), handle);
       }
 
       /**
@@ -111,8 +141,8 @@ namespace reflex {
       */
       DDS_ReturnCode_t write_w_params(const T & data, DDS_WriteParams_t & params)
       {
-        reflex::write_dynamicdata(dd_instance_, data);
-        return safe_datawriter_->write_w_params(*dd_instance_.get(), params);
+        reflex::write_dynamicdata(*dd_instance_, data);
+        return safe_datawriter_->write_w_params(*(dd_instance_->get()), params);
       }
 
       /**
@@ -135,7 +165,7 @@ namespace reflex {
       */
       const DDS_DynamicDataTypeProperty_t & get_properties() const
       {
-        return type_manager_.get_properties();
+        return type_manager_->get_properties();
       }
 
       /**
@@ -143,7 +173,7 @@ namespace reflex {
       */
       const SafeTypeCode<T> & get_safe_typecode() const
       {
-        return type_manager_.get_safe_typecode();
+        return type_manager_->get_safe_typecode();
       }
 
       /**
@@ -151,7 +181,7 @@ namespace reflex {
       */
       const DDS_TypeCode* get_typecode() const
       {
-        return type_manager_.get_typecode();
+        return type_manager_->get_typecode();
       }
 
       /**
@@ -159,7 +189,7 @@ namespace reflex {
       */
       const DDSDynamicDataTypeSupport * get_type_support() const
       {
-        return type_manager_.get_type_support();
+        return type_manager_->get_type_support();
       }
       
     };

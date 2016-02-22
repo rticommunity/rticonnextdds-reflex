@@ -14,103 +14,145 @@ damages arising out of the use or inability to use the software.
 #include "reflex/datareader.h"
 #include "reflex/dd_extra.h"
 
+#ifdef WIN32
+#define METHOD_NAME __FUNCTION__
+#else
+#define METHOD_NAME __PRETTY_FUNCTION__
+#endif 
+
 namespace reflex {
 
   namespace detail {
-
+/*
     REFLEX_INLINE
-    std::shared_ptr<DDSDynamicDataReader> initialize_reader(DDSDomainParticipant *participant,
-                                                            const DDS_DataReaderQos & drqos,
-                                                            const char * topic_name,
-                                                            const char * type_name,
-                                                            DDSDynamicDataTypeSupport * support,
-                                                            DDSDataReaderListener * listener,
-                                                            DDS_DynamicDataTypeProperty_t props)
+    std::shared_ptr<DDSDynamicDataReader> initialize_reader(
+        DDSDomainParticipant *participant,
+        DDSSubscriber *subscriber,
+        const DDS_DataReaderQos & drqos,
+        DDSTopic * topic,
+        const std::string & topic_name,
+        const std::string & type_name,
+        DDSDynamicDataTypeSupport * support,
+        DDSDataReaderListener * listener,
+        DDS_StatusMask mask,
+        DDS_DynamicDataTypeProperty_t props)
     {
-      DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
-      type_name = type_name ? type_name : support->get_type_name();
+      DDSDataReader *datareader = NULL;
+      DDSTopicDescription * topic_desc = 0;
+      std::shared_ptr<DDSTopic> auto_topic;
+      std::shared_ptr<DDSDataReader> auto_datareader;
+      std::stringstream err_stream;
 
-      detail::check_exception_code(
-        "DataReaderBase::DataWriterBase: Can't get typecode name. ex = ",
-        ex);
+      err_stream << METHOD_NAME << ": ";
+
+      if(!participant)
+      {
+        err_stream << "Invalid argument: NULL DomainParticipant";
+        throw std::invalid_argument(err_stream.str());
+      }
+      
+      if(!support)
+      {
+        err_stream << "Invalid argument: NULL DDSDynamicDataTypeSupport";
+        throw std::invalid_argument(err_stream.str());
+      }
+
+      //DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
+      std::string final_type_name = 
+        type_name.empty() ? support->get_type_name() : type_name;
+
+      if(final_type_name.empty())
+      {
+        err_stream << "runtime_error: empty typename";
+        throw std::runtime_error(err_stream.str());
+      }
 
       DDS_ReturnCode_t rc =
-        support->register_type(participant, type_name);
+        support->register_type(participant, final_type_name.c_str());
 
       if (rc != DDS_RETCODE_OK)
       {
-        std::stringstream stream;
-        stream << "DataReaderBase::DataReaderBase: Unable to register type = "
-          << type_name
-          << ". Error = ";
-        detail::check_retcode(stream.str().c_str(), rc);
+        err_stream << "Unable to register type = " 
+                   << final_type_name << ". Error = ";
+        detail::check_retcode(err_stream.str().c_str(), rc); // this will throw
       }
 
-      DDSTopic * topic = participant->create_topic(
-                                        topic_name,
-                                        type_name,
-                                        DDS_TOPIC_QOS_DEFAULT,
-                                        NULL,           /* listener */
-                                        DDS_STATUS_MASK_NONE);
-
-      if (topic == NULL)
+      if(!topic_name.empty())
       {
-        std::stringstream stream;
-        stream << "DataReaderBase::DataReaderBase: Unable to create topic "
-               << topic_name;
-        throw std::runtime_error(stream.str());
+        if(topic)
+        {
+          err_stream << "Invalid arguments: Both topic pointer and topic_name should not be specified.";
+          throw std::invalid_argument(err_stream.str());
+        }
+
+        topic_desc = participant->lookup_topicdescription(topic_name.c_str());
+        
+        if(!topic_desc)
+        {
+          topic = participant->create_topic(topic_name.c_str(),
+                                            final_type_name.c_str(),
+                                            DDS_TOPIC_QOS_DEFAULT,
+                                            NULL, // listener 
+                                            DDS_STATUS_MASK_NONE);
+          if (topic)
+          {
+            auto_topic = 
+              std::shared_ptr<DDSTopic>(
+                  topic, 
+                  [participant](DDSTopic *topic) mutable {
+                     participant->delete_topic(topic); 
+                  });
+          }
+          else
+          {
+            err_stream << "Unable to create topic " << topic_name;
+            throw std::runtime_error(err_stream.str());
+          }
+          topic_desc = topic;
+        }
       }
-
-      DDSSubscriber *subscriber = NULL;
-      subscriber = participant->create_subscriber(
-        DDS_SUBSCRIBER_QOS_DEFAULT,
-        NULL,
-        DDS_STATUS_MASK_NONE);
-
-      if (subscriber == NULL)
+      else if(!topic)
       {
-        std::stringstream stream;
-        stream << "DataReaderBase::DataReaderBase: Unable to create subscriber";
-        throw std::runtime_error(stream.str());
+        err_stream << "Invalid arguments: Both topic pointer and topic_name are NULL/empty.";
+        throw std::invalid_argument(err_stream.str());
       }
 
-      DDSDataReader *dataReader =
-        subscriber->create_datareader(topic,
-        drqos,
-        listener,
-        DDS_DATA_AVAILABLE_STATUS);
+      datareader = subscriber ?
+        subscriber->create_datareader(topic_desc, drqos, listener, mask) :
+        participant->create_datareader(topic_desc, drqos, listener, mask);
 
-      if (dataReader == NULL)
+      if(datareader == NULL)
       {
-        std::stringstream stream;
-        stream << "DataReaderBase::DataReaderBase: Unable to create DataReader";
-        throw std::runtime_error(stream.str());
+        err_stream << "Unable to create DataReader";
+        throw std::runtime_error(err_stream.str());
       }
 
-      DDSDynamicDataReader * ddReader =
-        DDSDynamicDataReader::narrow(dataReader);
+      DDSDynamicDataReader * ddreader =
+        DDSDynamicDataReader::narrow(datareader);
 
-      if (ddReader == NULL)
+      if (ddreader == NULL)
       {
-        std::stringstream stream;
-        stream << "DataReaderBase::DataReaderBase: Unable to narrow to DDSDynamicDataReader";
-        throw std::runtime_error(stream.str());
+        err_stream << "Unable to narrow to DDSDynamicDataReader";
+        throw std::runtime_error(err_stream.str());
       }
 
-      return std::shared_ptr<DDSDynamicDataReader> (ddReader, &dr_deleter);
+      // everything went well. Release the deleter, if any.
+      auto_topic.reset();
+
+      return std::shared_ptr<DDSDynamicDataReader> (ddreader, &dr_deleter);
     }
 
-    REFLEX_INLINE void dr_deleter(DDSDynamicDataReader * ddReader) throw()
+    REFLEX_INLINE void dr_deleter(DDSDynamicDataReader * ddreader) throw()
     {
       DDS_ReturnCode_t rc =
-        ddReader->get_subscriber()->delete_datareader(ddReader);
+        ddreader->get_subscriber()->delete_datareader(ddreader);
 
       if (rc != DDS_RETCODE_OK) {
         std::cerr << "DataReaderBase::DataReaderBase: Error deleting DynamicDataReader.\n";
         // Do not throw
       }
     }
-
+    */
   } // namespace detail
 
 } // namespace reflex

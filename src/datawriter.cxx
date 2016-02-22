@@ -17,7 +17,7 @@ damages arising out of the use or inability to use the software.
 namespace reflex {
 
   namespace detail {
-
+/*
     REFLEX_INLINE std::shared_ptr<DDSDynamicDataWriter> initialize_writer(
                         DDSDomainParticipant *participant,
                         const DDS_DataWriterQos & dwqos,
@@ -30,7 +30,7 @@ namespace reflex {
       DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
       type_name = type_name ? type_name : support->get_type_name();
 
-      detail::check_exception_code("DataWriterBase: Can't get typecode name. ex = ", ex);
+      check_exception_code("DataWriterBase: Can't get typecode name. ex = ", ex);
 
       DDS_ReturnCode_t rc =
         support->register_type(participant, type_name);
@@ -48,7 +48,7 @@ namespace reflex {
         topic_name,
         type_name,
         DDS_TOPIC_QOS_DEFAULT,
-        NULL, /* topic listener */
+        NULL, // topic listener 
         DDS_STATUS_MASK_NONE);
 
       if (topic == NULL)
@@ -110,7 +110,7 @@ namespace reflex {
         // Do not throw.
       }
     }
-
+*/
   } // namespace detail
 
 } // namespace reflex

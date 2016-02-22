@@ -19,6 +19,8 @@ damages arising out of the use or inability to use the software.
 #include "reflex/reflex_fwd.h"
 #include "reflex/enable_if.h"
 #include "reflex/type_manager.h"
+#include "reflex/datareader_params.h"
+#include "reflex/entity_common.h"
 
 #include <memory>
 
@@ -32,21 +34,32 @@ namespace reflex {
     template <class T>
     class DataReaderListener;
 
+    class DataReaderListenerBase
+    {
+      public:
+        DataReaderListenerBase() {}
+        virtual ~DataReaderListenerBase() {}
+    };
+
   } // namespace sub
 
   namespace detail {
-
+/*
     REFLEX_DLL_EXPORT
-      std::shared_ptr<DDSDynamicDataReader> initialize_reader(DDSDomainParticipant *participant,
-                                                              const DDS_DataReaderQos & drqos,
-                                                              const char * topic_name,
-                                                              const char * type_name,
-                                                              DDSDynamicDataTypeSupport * support,
-                                                              DDSDataReaderListener * listener,
-                                                              DDS_DynamicDataTypeProperty_t props);
+      std::shared_ptr<DDSDynamicDataReader> initialize_reader(
+          DDSDomainParticipant *participant,
+          DDSSubscriber *subscriber,
+          const DDS_DataReaderQos & drqos,
+          DDSTopic * totpic,
+          const std::string & topic_name,
+          const std::string & type_name,
+          DDSDynamicDataTypeSupport * support,
+          DDSDataReaderListener * listener,
+          DDS_StatusMask mask,
+          DDS_DynamicDataTypeProperty_t props);
 
     REFLEX_DLL_EXPORT void dr_deleter(DDSDynamicDataReader * ddReader) throw();
-
+*/
     template <class T>
     DDS_ReturnCode_t take_impl(
       std::shared_ptr<DDSDynamicDataReader> dr,
@@ -111,19 +124,20 @@ namespace reflex {
 
       typedef reflex::sub::DataReader<T> DataReaderType;
 
-      explicit DataReaderListenerAdapter(reflex::sub::DataReaderListener<T> * listener)
+      explicit DataReaderListenerAdapter(
+          reflex::sub::DataReaderListener<T> * listener,
+          reflex::sub::DataReader<T> * dr)
         : dr_listener_(listener),
-          data_reader_(0)
+          data_reader_(dr)
       {
         if (!listener)
         {
           throw std::runtime_error("DataReaderListenerAdapter: NULL listener");
         }
-      }
-
-      void set_datareader(reflex::sub::DataReader<T> * dr)
-      {
-        data_reader_ = dr;
+        if (!dr)
+        {
+          throw std::runtime_error("DataReaderListenerAdapter: NULL DataReader");
+        }
       }
 
       virtual void on_data_available(DDSDataReader *reader)
@@ -147,10 +161,10 @@ namespace reflex {
   namespace sub {
 
     /**
-     * @brief Synchornous data listener for DataReader
+     * @brief Asynchronous data listener for DataReader
      */
     template <class T>
-    class DataReaderListener
+    class DataReaderListener : public DataReaderListenerBase
     {
     public:
       /**
@@ -172,33 +186,76 @@ namespace reflex {
       typedef DataReaderListener<T> ListenerType;
 
     private:
-      reflex::TypeManager<T> type_manager_;
+      std::shared_ptr<reflex::TypeManager<T>> type_manager_;
       std::shared_ptr<detail::DataReaderListenerAdapter<T>> safe_listener_adapter_;
       std::shared_ptr<DDSDynamicDataReader> safe_datareader_;
 
     public:
 
-      DataReader(
-        DDSDomainParticipant *participant,
-        const char * topic_name,
-        ListenerType * listener,
-        const char * type_name = 0,
-        DDS_DynamicDataTypeProperty_t props =
-          DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-
-        : type_manager_(props),
-          safe_listener_adapter_(listener ? new detail::DataReaderListenerAdapter<T>(listener) : 0),
-          safe_datareader_(detail::initialize_reader(
-                               participant,
-                               DDS_DATAREADER_QOS_DEFAULT,
-                               topic_name,
-                               type_name,
-                               type_manager_.get_type_support(),
-                               safe_listener_adapter_.get(),
-                               props))
+      DataReader(const DataReaderParams & params)
       {
-          if (safe_listener_adapter_)
+        if(!params.domain_participant())
+          throw std::logic_error("DataReaderParams: NULL DDSDomainParticipant");
+        
+        if(params.topic() && !params.topic_name().empty())
+          throw std::logic_error("DataReaderParams: Ambiguous parameters. Both topic_name and topic provided");
+
+        if(params.listener())
+        {
+          reflex::sub::DataReaderListener<T> * derived_listener = 
+            dynamic_cast<reflex::sub::DataReaderListener<T> *>(params.listener());
+          
+          if(!derived_listener)
+          {
+            throw std::logic_error("Listener downcasting error");
+          }
+          
+          safe_listener_adapter_ = 
+              std::make_shared<detail::DataReaderListenerAdapter<T>>(
+                  derived_listener, this);
+        }
+        
+        type_manager_ = 
+          std::make_shared<reflex::TypeManager<T>>(params.dynamicdata_type_property());
+        
+        safe_datareader_ = detail::initialize_entity<DDSDynamicDataReader>(
+            params.domain_participant(),
+            params.subscriber(),
+            params.datareader_qos(),
+            params.topic(),
+            params.topic_name(),
+            params.type_name(),
+            type_manager_->get_type_support(),
+            static_cast<DDSDataReaderListener *>(safe_listener_adapter_.get()),
+            params.listener_statusmask(),
+            params.dynamicdata_type_property(),
+            "DynamicDataReader");
+      }
+/*
+        DataReader(
+          DDSDomainParticipant *participant,
+          const char * topic_name,
+          ListenerType * listener,
+          const char * type_name = 0,
+          DDS_DynamicDataTypeProperty_t props =
+            DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
+
+          : type_manager_(std::make_shared<reflex::TypeManager<T>>(props)),
+            safe_datareader_(detail::initialize_reader(
+                                 participant,
+                                 DDS_DATAREADER_QOS_DEFAULT,
+                                 topic_name,
+                                 type_name,
+                                 type_manager_->get_type_support(),
+                                 safe_listener_adapter_.get(),
+                                 props))
+      {
+          if (listener)
+          {
+            safe_listener_adapter_ = 
+              std::make_shared<detail::DataReaderListenerAdapter<T>>(listener);
             safe_listener_adapter_->set_datareader(this);
+          }
       }
 
       DataReader(
@@ -210,21 +267,21 @@ namespace reflex {
         DDS_DynamicDataTypeProperty_t props =
           DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
 
-          : type_manager_(props),
+          : type_manager_(std::make_shared<reflex::TypeManager<T>>(props)),
             safe_listener_adapter_(listener ? new detail::DataReaderListenerAdapter<T>(listener) : 0),
             safe_datareader_(detail::initialize_reader(
                                 participant,
                                 drqos,
                                 topic_name,
                                 type_name,
-                                type_manager_.get_support(),
+                                type_manager_->get_type_support(),
                                 safe_listener_adapter_.get(),
                                 props))
       {
           if (safe_listener_adapter_)
             safe_listener_adapter_->set_datareader(this);
       }
-
+*/
       DDS_ReturnCode_t take(
         std::vector<Sample<T>> & data,
         int max_samples = DDS_LENGTH_UNLIMITED,
@@ -279,7 +336,7 @@ namespace reflex {
       */
       const DDS_DynamicDataTypeProperty_t & get_properties() const
       {
-        return type_manager_.get_properties();
+        return type_manager_->get_properties();
       }
 
       /**
@@ -287,7 +344,7 @@ namespace reflex {
       */
       const SafeTypeCode<T> & get_safe_typecode() const
       {
-        return type_manager_.get_safe_typecode();
+        return type_manager_->get_safe_typecode();
       }
 
       /**
@@ -295,7 +352,7 @@ namespace reflex {
       */
       const DDS_TypeCode* get_typecode() const
       {
-        return type_manager_.get_typecode();
+        return type_manager_->get_typecode();
       }
 
       /**
@@ -303,7 +360,7 @@ namespace reflex {
       */
       const DDSDynamicDataTypeSupport * get_type_support() const
       {
-        return type_manager_.get_type_support();
+        return type_manager_->get_type_support();
       }
 
     };
