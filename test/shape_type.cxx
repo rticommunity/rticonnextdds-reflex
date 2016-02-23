@@ -58,11 +58,10 @@ void read_shape_type(int domain_id)
 {
   DDSDomainParticipant * participant =
     DDSDomainParticipantFactory::get_instance()->
-    create_participant(
-    domain_id,
-    DDS_PARTICIPANT_QOS_DEFAULT,
-    NULL,   // Listener
-    DDS_STATUS_MASK_NONE);
+      create_participant(domain_id,
+                         DDS_PARTICIPANT_QOS_DEFAULT,
+                         NULL,   // Listener
+                         DDS_STATUS_MASK_NONE);
 
   if (participant == NULL) {
     throw std::runtime_error("Unable to create participant");
@@ -105,7 +104,7 @@ void write_shape_type_extended(int domain_id)
   DDS_ReturnCode_t rc;
   DDSDomainParticipant * participant = NULL;
   DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
-  const char *topic_name = "Triangle";
+  const char *topic_name = "Square";
 
   reflex::SafeTypeCode<ShapeTypeExtended> shape_ex_tc = 
     reflex::make_typecode<ShapeTypeExtended>();
@@ -113,11 +112,10 @@ void write_shape_type_extended(int domain_id)
   reflex::detail::print_IDL(shape_ex_tc.get(), 0);
 
   participant = DDSDomainParticipantFactory::get_instance()->
-    create_participant(
-    domain_id,
-    DDS_PARTICIPANT_QOS_DEFAULT,
-    NULL,   // Listener
-    DDS_STATUS_MASK_NONE);
+    create_participant(domain_id,
+                       DDS_PARTICIPANT_QOS_DEFAULT,
+                       NULL,   // Listener
+                       DDS_STATUS_MASK_NONE);
 
   if (participant == NULL) {
     std::cerr << "! Unable to create DDS domain participant" << std::endl;
@@ -127,7 +125,7 @@ void write_shape_type_extended(int domain_id)
   reflex::pub::DataWriter<ShapeTypeExtended>
     writer(reflex::pub::DataWriterParams(participant)
              .topic_name(topic_name)
-             .type_name("ShapeType"));
+             .type_name("ShapeTypeExtended"));
 
   srand((unsigned int) time(NULL));
 

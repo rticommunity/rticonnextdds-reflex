@@ -128,7 +128,13 @@ namespace reflex {
         const std::string & entity_type)
     {
       DDSTopicDescription * topic_desc = 0;
-      std::shared_ptr<DDSTopic> auto_topic;
+      auto topic_deleter = 
+        [participant](DDSTopic *topic) {
+           if(topic)
+             participant->delete_topic(topic); 
+        };
+      std::unique_ptr<DDSTopic, decltype(topic_deleter)> 
+        auto_topic(nullptr, topic_deleter);
       std::stringstream err_stream;
 
       err_stream << METHOD_NAME << ": ";
@@ -184,12 +190,7 @@ namespace reflex {
                                             DDS_STATUS_MASK_NONE);
           if (topic)
           {
-            auto_topic = 
-              std::shared_ptr<DDSTopic>(
-                  topic, 
-                  [participant](DDSTopic *topic) mutable {
-                     participant->delete_topic(topic); 
-                  });
+            auto_topic.reset(topic); 
           }
           else
           {
@@ -213,10 +214,10 @@ namespace reflex {
         throw std::runtime_error(err_stream.str());
       }
 
-      // everything went well. Release the deleter, if any.
-      auto_topic.reset();
+      // Everything went well. Release the topic, if any.
+      auto_topic.release();
 
-      return std::shared_ptr<Entity> (entity, get_deleter(entity));
+      return std::shared_ptr<Entity>(entity, get_deleter(entity));
     }
 
 

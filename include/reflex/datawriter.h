@@ -69,6 +69,8 @@ namespace reflex {
 
         type_manager_ = 
           std::make_shared<reflex::TypeManager<T>>(params.dynamicdata_type_property());
+
+        dd_instance_ = std::make_shared<AutoDynamicData>(type_manager_->get_type_support());
         
         safe_datawriter_ = detail::initialize_entity<DDSDynamicDataWriter>(
             params.domain_participant(),
