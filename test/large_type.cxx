@@ -63,6 +63,15 @@ namespace reflex {
   }
 }
 
+#ifdef RTI_WIN32
+void write_large_type(int) 
+{
+  std::cout << "Visual C++ compiler can't compile large_type"
+               " test as of Visual Studio 2015 Update 1.\n";
+}
+#endif // RTI_WIN32
+
+#ifndef RTI_WIN32
 void write_large_type(int domain_id) 
 {
     using reflex::match::MultiDimArray;
@@ -312,4 +321,5 @@ void write_large_type(int domain_id)
       delete_entities(participant);
    }
 }
+#endif // RTI_WIN32
 

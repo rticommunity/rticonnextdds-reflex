@@ -257,7 +257,7 @@ namespace reflex {
             val.size(),
             reflex::type_traits::is_string<typename reflex::type_traits::container_traits<C>::value_type>::value);
 
-          size_t i = 0;
+          int i = 0;
           for (auto const &elem : val)
           {
             set_member_value(seq_member, MemberAccess::BY_ID(i + 1), elem);
@@ -287,7 +287,9 @@ namespace reflex {
         {
           typename DynamicDataSeqTraits<T>::type seq;
           std::vector<T> & nc_val = const_cast<std::vector<T> &>(val);
-          if (seq.loan_contiguous(primitive_ptr_cast(&nc_val[0]), val.size(), val.capacity()) != true)
+          int seq_size = static_cast<int>(val.size()); // FIXME: loss of precision on x64
+          int seq_capacity = static_cast<int>(val.capacity()); // FIXME: loss of precision on x64
+          if (seq.loan_contiguous(primitive_ptr_cast(&nc_val[0]), seq_size, seq_capacity) != true)
           {
             throw std::runtime_error("set_member_value: sequence loaning failed");
           }

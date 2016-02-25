@@ -1,5 +1,4 @@
 #include "reflex/datawriter_params.h"
-#include "reflex/dllexport.h"
 
 namespace reflex {
   namespace pub {

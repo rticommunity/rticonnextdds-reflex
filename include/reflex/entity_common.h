@@ -11,13 +11,13 @@ damages arising out of the use or inability to use the software.
 #ifndef REFLEX_ENTITY_COMMON_H
 #define REFLEX_ENTITY_COMMON_H
 
-#include <sstream>
-#include <iostream>
-#include <memory>
-
 #include "ndds/ndds_cpp.h"
 #include "reflex/dd_extra.h"
 #include "reflex/dllexport.h"
+
+#include <sstream>
+#include <iostream>
+#include <memory>
 
 #ifdef WIN32
 #define METHOD_NAME __FUNCTION__
@@ -53,64 +53,6 @@ namespace reflex {
 
     REFLEX_DLL_EXPORT DataWriterDeleterType get_deleter(DDSDynamicDataWriter *);
     REFLEX_DLL_EXPORT DataReaderDeleterType get_deleter(DDSDynamicDataReader *);
-
-/*
-   DDSDynamicDataReader * create_entity(DDSSubscriber * subscriber,
-                                         DDSTpoicDescription * topic_desc,
-                                         const DDSDataReaderQos & drqos,
-                                         const DDSDataReaderListener * listener,
-                                         DDS_StatusMas mask)
-    {
-      return DDSDynamicDataReader::narrow(
-          subscriber ?
-            subscriber->create_datareader(topic_desc, drqos, listener, mask) :
-            participant->create_datareader(topic_desc, drqos, listener, mask));
-    }
-
-    DDSDynamicDataWriter * create_entity(DDSPublisher * publisher,
-                                         DDSTpoicDescription * topic_desc,
-                                         const DDSDataWriterQos & dwqos,
-                                         const DDSDataWriterListener * listener,
-                                         DDS_StatusMas mask)
-    {
-      return DDSDynamicDataWriter::narrow(
-          publisher ?
-            publisher->create_datawriter(topic_desc, dwqos, listener, mask) :
-            participant->create_datawriter(topic_desc, dwqos, listener, mask));
-    }
-
-    REFLEX_INLINE void dr_deleter(DDSDynamicDataReader * ddreader) throw()
-    {
-      DDS_ReturnCode_t rc =
-        ddreader->get_subscriber()->delete_datareader(ddreader);
-
-      if (rc != DDS_RETCODE_OK) {
-        std::cerr << METHOD_NAME << "Unable to delete DynamicDataReader.";
-        // Do not throw
-      }
-    }
-
-    REFLEX_INLINE void dw_deleter(DDSDynamicDataWriter * ddwriter) throw()
-    {
-      DDS_ReturnCode_t rc =
-        ddwriter->get_publisher()->delete_datawriter(ddwriter);
-
-      if (rc != DDS_RETCODE_OK) {
-        std::cerr << METHOD_NAME << "Unable to delete DynamicDataWriter.";
-        // Do not throw
-      }
-    }
-
-    void (*)(DDSDynamicDataWriter *) get_deleter(DDSDynamicDataWriter *)
-    {
-      return dw_deleter;
-    }
-
-    void (*)(DDSDynamicDataReader *) get_deleter(DDSDynamicDataReader *)
-    {
-      return dr_deleter;
-    }
-*/
 
     template <class Entity, class Parent, 
               class Qos,    class Listener>

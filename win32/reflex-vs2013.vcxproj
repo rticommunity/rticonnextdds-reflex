@@ -52,7 +52,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(REFLEXHOME)\include;$(BOOSTHOME);$(BOOSTHOME)\boost;$(NDDSHOME)\include;$(NDDSHOME)\include\ndds</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>REFLEX_HAS_RVALUE_REF;REFLEX_NO_HEADER_ONLY;NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;REFLEX_DEBUG;_CONSOLE;BUILD_DD2TUPLE_DLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REFLEX_HAS_RVALUE_REF;REFLEX_NO_HEADER_ONLY;NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;REFLEX_DEBUG;_CONSOLE;BUILD_REFLEX_DLL</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -65,7 +65,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(REFLEXHOME)\include;$(BOOSTHOME);$(BOOSTHOME)\boost;$(NDDSHOME)\include;$(NDDSHOME)\include\ndds</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>REFLEX_HAS_RVALUE_REF;REFLEX_NO_HEADER_ONLY;NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;_CONSOLE;BUILD_DD2TUPLE_DLL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>REFLEX_HAS_RVALUE_REF;REFLEX_NO_HEADER_ONLY;NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;_CONSOLE;BUILD_REFLEX_DLL</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <OutputFile>$(REFLEXHOME)\objs\i86Win32VS2013\reflex.dll</OutputFile>
@@ -75,10 +75,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\auto_dd.cxx" />
+    <ClCompile Include="..\src\datareader_params.cxx" />
+    <ClCompile Include="..\src\datawriter_params.cxx" />
     <ClCompile Include="..\src\dd_manip.cxx" />
     <ClCompile Include="..\src\datareader.cxx" />
     <ClCompile Include="..\src\datawriter.cxx" />
     <ClCompile Include="..\src\dd_extra.cxx" />
+    <ClCompile Include="..\src\entity_common.cxx" />
     <ClCompile Include="..\src\member_names.cxx" />
     <ClCompile Include="..\src\reflex.cxx" />
     <ClCompile Include="..\src\safe_typecode.cxx" />
@@ -96,7 +99,10 @@
     <ClInclude Include="..\include\reflex\dllexport.h" />
     <ClInclude Include="..\include\reflex\enable_if.h" />
     <ClInclude Include="..\include\reflex\datareader.h" />
+    <ClInclude Include="..\include\reflex\datareader_params.h" />
     <ClInclude Include="..\include\reflex\datawriter.h" />
+    <ClInclude Include="..\include\reflex\datawriter_params.h" />
+    <ClInclude Include="..\include\reflex\entity_common.h" />
     <ClInclude Include="..\include\reflex\memberwise.h" />
     <ClInclude Include="..\include\reflex\member_names.h" />
     <ClInclude Include="..\include\reflex\reflex_fwd.h" />

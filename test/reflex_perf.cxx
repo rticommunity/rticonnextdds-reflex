@@ -196,6 +196,7 @@ extern "C" int publisher_main(bool noreflex, int domainId, int sample_count, Dom
     }
     else 
     {
+      
       const char * darkart_topic = "DarkartChannelTopic";
       const char * channel_typename = "DarkartChannelType";
       reflex::pub::DataWriter<darkart::Channel>

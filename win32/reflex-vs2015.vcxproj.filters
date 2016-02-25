@@ -28,6 +28,15 @@
     <ClCompile Include="..\src\member_names.cxx">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\entity_common.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\datareader_params.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\datawriter_params.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\reflex\auto_dd.h">
@@ -78,8 +87,17 @@
     <ClInclude Include="..\include\reflex\typecode_manip.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\reflex\datareader_params.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\datawriter_params.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reflex\entity_common.h">
+      <Filter>headers</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\reflex\memberwise.h">
-      <Filter>sources</Filter>
+      <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

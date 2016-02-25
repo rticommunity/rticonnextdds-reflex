@@ -44,22 +44,7 @@ namespace reflex {
   } // namespace sub
 
   namespace detail {
-/*
-    REFLEX_DLL_EXPORT
-      std::shared_ptr<DDSDynamicDataReader> initialize_reader(
-          DDSDomainParticipant *participant,
-          DDSSubscriber *subscriber,
-          const DDS_DataReaderQos & drqos,
-          DDSTopic * totpic,
-          const std::string & topic_name,
-          const std::string & type_name,
-          DDSDynamicDataTypeSupport * support,
-          DDSDataReaderListener * listener,
-          DDS_StatusMask mask,
-          DDS_DynamicDataTypeProperty_t props);
 
-    REFLEX_DLL_EXPORT void dr_deleter(DDSDynamicDataReader * ddReader) throw();
-*/
     template <class T>
     DDS_ReturnCode_t take_impl(
       std::shared_ptr<DDSDynamicDataReader> dr,

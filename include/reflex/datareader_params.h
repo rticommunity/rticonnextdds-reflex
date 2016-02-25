@@ -1,8 +1,16 @@
 #ifndef REFLEX_DATAREADER_PARAMS_H
 #define REFLEX_DATAREADER_PARAMS_H
 
-#include <string>
 #include "ndds/ndds_cpp.h"
+#include "reflex/dllexport.h"
+
+#include <string>
+
+#ifdef RTI_WIN32
+#pragma warning(disable: 4251)
+// std::string topic_name_ and type_name_ are private 
+// so it's ok to disable this nasty warning.
+#endif
 
 namespace reflex { 
   namespace sub {
@@ -15,7 +23,7 @@ class DataReaderListener;
 /**
  * @brief A valuetype to contain multiple DataReader parameters.
  */
-class DataReaderParams 
+class REFLEX_DLL_EXPORT DataReaderParams
 {
 public:
     explicit DataReaderParams (DDSDomainParticipant *);

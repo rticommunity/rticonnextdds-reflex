@@ -1,5 +1,4 @@
 #include "reflex/datareader_params.h"
-#include "reflex/dllexport.h"
 
 namespace reflex {
   namespace sub {

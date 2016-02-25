@@ -14,7 +14,7 @@ damages arising out of the use or inability to use the software.
 #ifdef REFLEX_NO_HEADER_ONLY
 
 #ifdef RTI_WIN32
-  #ifdef BUILD_DD2TUPLE_DLL
+  #ifdef BUILD_REFLEX_DLL
     #define REFLEX_DLL_EXPORT   __declspec( dllexport ) 
     #define REFLEX_DECLSPEC    __cdecl 
     #define REFLEX_EXPIMP_TEMPLATE

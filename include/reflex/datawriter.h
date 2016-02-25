@@ -24,22 +24,6 @@ damages arising out of the use or inability to use the software.
 
 namespace reflex {
 
-    /*
-  namespace detail { 
-
-    REFLEX_DLL_EXPORT 
-      std::shared_ptr<DDSDynamicDataWriter> initialize_writer(DDSDomainParticipant *participant,
-                                                              const DDS_DataWriterQos & dwqos,
-                                                              const char * topic_name,
-                                                              const char * type_name,
-                                                              DDSDynamicDataTypeSupport * support,
-                                                              DDSDataWriterListener * listener,
-                                                              DDS_DynamicDataTypeProperty_t props);
-
-    REFLEX_DLL_EXPORT void dw_deleter(DDSDynamicDataWriter * ddWriter) throw();
-
-  } // namespace detail
-  */
 
   /**
   * @brief Contains DataWriter for adapted types
@@ -85,43 +69,7 @@ namespace reflex {
             params.dynamicdata_type_property(),
             "DynamicDataWriter");
       }
-      /*
-      DataWriter(DDSDomainParticipant *participant,
-                        const char * topic_name,
-                        const char * type_name = 0,
-                        DDS_DynamicDataTypeProperty_t props =
-                          DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-       : type_manager_(std::make_shared<TypeManager<T>>(props)),
-         dd_instance_(std::make_shared<AutoDynamicData>(type_manager_->get_type_support())),
-         safe_datawriter_(detail::initialize_writer(
-                                    participant,
-                                    DDS_DATAWRITER_QOS_DEFAULT,
-                                    topic_name,
-                                    type_name,
-                                    type_manager_->get_type_support(),
-                                    0, // listener 
-                                    props))
-      { }
 
-      DataWriter(DDSDomainParticipant *participant,
-                        DDS_DataWriterQos & dwqos,
-                        const char * topic_name,
-                        const char * type_name = 0,
-                        DDSDataWriterListener * listener = 0,
-                        DDS_DynamicDataTypeProperty_t props =
-                          DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-        : type_manager_(std::make_shared<TypeManager<T>>(props)),
-          dd_instance_(std::make_shared<AutoDynamicData>(type_manager_->get_type_support())),
-          safe_datawriter_(detail::initialize_writer(
-                                      participant,
-                                      dwqos,
-                                      topic_name,
-                                      type_name,
-                                      type_manager_->get_type_support(),
-                                      listener,
-                                      props))
-      { }
-*/
       /**
        * @brief Publish an instance of type T
        * @param data An object of type T
