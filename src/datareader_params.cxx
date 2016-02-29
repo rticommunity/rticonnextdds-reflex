@@ -50,7 +50,7 @@ namespace reflex {
     }
 
     REFLEX_INLINE
-    DataReaderParams & DataReaderParams::topic (DDSTopic * topic)
+    DataReaderParams & DataReaderParams::topic (DDSTopicDescription * topic)
     {
       topic_ = topic;
       return *this;
@@ -95,7 +95,7 @@ namespace reflex {
     }
 
     REFLEX_INLINE
-    DDSTopic * DataReaderParams::topic() const
+    DDSTopicDescription * DataReaderParams::topic() const
     {
       return topic_;
     }

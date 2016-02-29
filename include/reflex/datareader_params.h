@@ -33,7 +33,7 @@ public:
     DataReaderParams & datareader_qos(const DDS_DataReaderQos & qos);
     DataReaderParams & topic_name (const std::string &name);
     DataReaderParams & type_name (const std::string &name);
-    DataReaderParams & topic (DDSTopic * topic);
+    DataReaderParams & topic (DDSTopicDescription * topic);
     DataReaderParams & listener_statusmask(DDS_StatusMask mask);
     DataReaderParams & dynamicdata_type_property(DDS_DynamicDataTypeProperty_t);
 
@@ -41,7 +41,7 @@ public:
     DDSSubscriber* subscriber() const;
     const DDS_DataReaderQos & datareader_qos() const;
     DataReaderListenerBase * listener() const;
-    DDSTopic * topic() const;
+    DDSTopicDescription * topic() const;
     std::string topic_name() const;
     std::string type_name() const;
     DDS_StatusMask listener_statusmask() const;
@@ -50,7 +50,7 @@ public:
 private:
     DDSDomainParticipant * participant_;
     DDSSubscriber * subscriber_;
-    DDSTopic * topic_;
+    DDSTopicDescription * topic_;
     DataReaderListenerBase * listener_;
     DDS_DataReaderQos qos_;
     std::string topic_name_;

@@ -32,7 +32,7 @@ namespace reflex {
     REFLEX_DLL_EXPORT
     DDSDynamicDataReader * create_entity(DDSDomainParticipant * participant,
                                          DDSSubscriber * subscriber,
-                                         DDSTopic * topic,
+                                         DDSTopicDescription * topic_desc,
                                          const DDS_DataReaderQos & drqos,
                                          DDSDataReaderListener * listener,
                                          DDS_StatusMask mask);
@@ -40,7 +40,7 @@ namespace reflex {
     REFLEX_DLL_EXPORT
     DDSDynamicDataWriter * create_entity(DDSDomainParticipant * participant,
                                          DDSPublisher * publisher,
-                                         DDSTopic * topic,
+                                         DDSTopicDescription * topic_desc,
                                          const DDS_DataWriterQos & dwqos,
                                          DDSDataWriterListener * listener,
                                          DDS_StatusMask mask);
@@ -60,7 +60,7 @@ namespace reflex {
         DDSDomainParticipant *participant,
         Parent *parent,
         const Qos & qos,
-        DDSTopic * topic,
+        DDSTopicDescription * topic,
         const std::string & topic_name,
         const std::string & type_name,
         DDSDynamicDataTypeSupport * support,
@@ -125,21 +125,21 @@ namespace reflex {
         
         if(!topic_desc)
         {
-          topic = participant->create_topic(topic_name.c_str(),
-                                            final_type_name.c_str(),
-                                            DDS_TOPIC_QOS_DEFAULT,
-                                            NULL, /* listener */
-                                            DDS_STATUS_MASK_NONE);
+          DDSTopic * new_topic = participant->create_topic(topic_name.c_str(),
+                                                           final_type_name.c_str(),
+                                                           DDS_TOPIC_QOS_DEFAULT,
+                                                           NULL, /* listener */
+                                                           DDS_STATUS_MASK_NONE);
           if (topic)
           {
-            auto_topic.reset(topic); 
+            auto_topic.reset(new_topic);
           }
           else
           {
             err_stream << "Unable to create topic " << topic_name;
             throw std::runtime_error(err_stream.str());
           }
-          topic_desc = topic;
+          topic_desc = new_topic;
         }
       }
       else if(!topic)

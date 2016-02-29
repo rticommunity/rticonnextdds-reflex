@@ -17,25 +17,27 @@ namespace reflex {
     REFLEX_INLINE 
       DDSDynamicDataReader * create_entity(DDSDomainParticipant * participant,
                                            DDSSubscriber * subscriber,
-                                           DDSTopic * topic,
+                                           DDSTopicDescription * topic_desc,
                                            const DDS_DataReaderQos & drqos,
                                            DDSDataReaderListener * listener,
                                            DDS_StatusMask mask)
     {
       return DDSDynamicDataReader::narrow(
           subscriber ?
-            subscriber->create_datareader(topic, drqos, listener, mask) :
-            participant->create_datareader(topic, drqos, listener, mask));
+            subscriber->create_datareader(topic_desc, drqos, listener, mask) :
+            participant->create_datareader(topic_desc, drqos, listener, mask));
     }
 
     REFLEX_INLINE 
       DDSDynamicDataWriter * create_entity(DDSDomainParticipant * participant,
                                            DDSPublisher * publisher,
-                                           DDSTopic * topic,
+                                           DDSTopicDescription * topic_desc,
                                            const DDS_DataWriterQos & dwqos,
                                            DDSDataWriterListener * listener,
                                            DDS_StatusMask mask)
     {
+      DDSTopic * topic = dynamic_cast<DDSTopic *>(topic_desc);
+
       return DDSDynamicDataWriter::narrow(
           publisher ?
             publisher->create_datawriter(topic, dwqos, listener, mask) :
