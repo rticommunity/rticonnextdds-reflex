@@ -148,7 +148,7 @@ namespace reflex {
         throw std::invalid_argument(err_stream.str());
       }
 
-      Entity * entity = create_entity(participant, parent, topic, qos, listener, mask);
+      Entity * entity = create_entity(participant, parent, topic_desc, qos, listener, mask);
 
       if (entity == NULL)
       {

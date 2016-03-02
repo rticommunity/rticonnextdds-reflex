@@ -64,7 +64,7 @@ namespace reflex {
             params.topic_name(),
             params.type_name(),
             type_manager_->get_type_support(),
-            static_cast<DDSDataWriterListener *>(NULL),
+            static_cast<DDSDataWriterListener *>(params.listener()),
             params.listener_statusmask(),
             params.dynamicdata_type_property(),
             "DynamicDataWriter");

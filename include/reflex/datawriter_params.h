@@ -15,8 +15,6 @@
 namespace reflex { 
   namespace pub {
 
-class DataWriterListenerBase;
-
 template <class T>
 class DataWriterListener;
 
@@ -28,7 +26,7 @@ class REFLEX_DLL_EXPORT DataWriterParams
 public:
     explicit DataWriterParams (DDSDomainParticipant *);
 
-    DataWriterParams & listener(DataWriterListenerBase *listener);
+    DataWriterParams & listener(DDSDataWriterListener *listener);
     DataWriterParams & publisher(DDSPublisher * publisher);
     DataWriterParams & datawriter_qos(const DDS_DataWriterQos & qos);
     DataWriterParams & topic_name (const std::string &name);
@@ -40,7 +38,7 @@ public:
     DDSDomainParticipant* domain_participant() const;
     DDSPublisher* publisher() const;
     const DDS_DataWriterQos & datawriter_qos() const;
-    DataWriterListenerBase * listener() const;
+    DDSDataWriterListener * listener() const;
     DDSTopic * topic() const;
     std::string topic_name() const;
     std::string type_name() const;
@@ -51,7 +49,7 @@ private:
     DDSDomainParticipant * participant_;
     DDSPublisher * publisher_;
     DDSTopic * topic_;
-    DataWriterListenerBase * listener_;
+    DDSDataWriterListener * listener_;
     DDS_DataWriterQos qos_;
     std::string topic_name_;
     std::string type_name_;

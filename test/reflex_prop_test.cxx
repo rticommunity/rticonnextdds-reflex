@@ -202,7 +202,7 @@ int main(void)
 {
   test_generators();
   
-  //test_roundtrip_property<typegen::RandomTuple<RANDOM_SEED>::type>();
+  test_roundtrip_property<typegen::RandomTuple<RANDOM_SEED>::type>();
   
   //getchar();
 }

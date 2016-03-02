@@ -177,6 +177,8 @@ namespace reflex {
 
     public:
 
+      DataReader() {}
+
       DataReader(const DataReaderParams & params)
       {
         if(!params.domain_participant())

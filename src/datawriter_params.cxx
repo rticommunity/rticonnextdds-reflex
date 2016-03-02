@@ -15,7 +15,7 @@ namespace reflex {
     {}
 
     REFLEX_INLINE
-    DataWriterParams & DataWriterParams::listener(DataWriterListenerBase *listener)
+    DataWriterParams & DataWriterParams::listener(DDSDataWriterListener *listener)
     {
       listener_ = listener;
       return *this;
@@ -89,7 +89,7 @@ namespace reflex {
     }
 
     REFLEX_INLINE
-    DataWriterListenerBase * DataWriterParams::listener() const
+    DDSDataWriterListener * DataWriterParams::listener() const
     {
       return listener_;
     }
