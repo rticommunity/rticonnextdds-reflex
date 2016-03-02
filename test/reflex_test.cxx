@@ -18,7 +18,7 @@ damages arising out of the use or inability to use the software.
 #include "reflex.h"
 #include "large_type.h"
 
-#define DOMAIN_ID           65
+#define DOMAIN_ID           21
 
 void delete_entities(DDSDomainParticipant * participant);
 
@@ -35,10 +35,14 @@ void write_shape_type_extended(int domain_id);
 void write_darkart_type(unsigned domain_id);
 void write_pi_type(int domainid);
 void write_many_members(int domainid);
+void write_many_members(int domainid);
+void write_one_member(int domainid);
 void write_one_member(int domainid);
 void read_shape_type(int domain_id);
 void test_all_types(int domain_id);
 
+void write_single_member(int domainid);
+void read_single_member(int domainid);
 int main(int argc, const char **argv) 
 {
   try {
@@ -70,6 +74,21 @@ int main(int argc, const char **argv)
         read_shape_type(DOMAIN_ID);
       else
         std::cout << "Please specify pub/sub/pubex\n";
+    }
+if (std::string(argv[1]) == "leo")
+    {   
+      if (argc <= 2)
+      {   
+        std::cout << "Please specify pub/sub/pubex\n";
+        return 0;
+      }   
+
+      if (std::string(argv[2]) == "pub")
+        write_single_member(DOMAIN_ID);
+      else if (std::string(argv[2]) == "sub")
+        read_single_member(DOMAIN_ID);
+      else
+        std::cout << "Please specify pub/sub\n";
     }
     else if (std::string(argv[1]) == "large")
       write_large_type(DOMAIN_ID);

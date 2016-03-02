@@ -122,7 +122,7 @@ namespace reflex {
         }
 
         topic_desc = participant->lookup_topicdescription(topic_name.c_str());
-        
+        if( topic_desc) std::cout << "\n topic_desc is "<< topic_desc->get_name() << std::endl;
         if(!topic_desc)
         {
           DDSTopic * new_topic = participant->create_topic(topic_name.c_str(),
