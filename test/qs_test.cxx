@@ -41,21 +41,26 @@ void generatedReaderGuidExpr(char * readerGuidExpr)
 void read_single_member(int domain_id)
 {
   char topicName[255],readerGuidExpr[255];
-  //DDSContentFilteredTopic * cftTopic = NULL;
   DDS_DataReaderQos readerQos;
   DDS_StringSeq cftParams;
   DDSTopic *topic = NULL;
 
   DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
 
-  DDSDomainParticipant * participant =
+  /*DDSDomainParticipant * participant =
     DDSDomainParticipantFactory::get_instance()->
       create_participant_with_profile(domain_id,
                          "DefaultLibrary",
 			 "Reliable",
                          NULL,   // Listener
                          DDS_STATUS_MASK_NONE);
+*/
 
+
+DDSDomainParticipant * participant = DDSDomainParticipantFactory::get_instance()->
+	    create_participant_with_profile(
+             domain_id, "ReflexQs_Library","ReflexQs_Profile",
+             NULL /* listener */, DDS_STATUS_MASK_NONE);
   if (participant == NULL) {
     throw std::runtime_error("Unable to create participant");
   }
@@ -110,17 +115,6 @@ if ( cftTopic == NULL)
     return;
 }
 
-   std::cout << "\n In leo_test.cxx topic is  "<< \
-   (DDSContentFilteredTopic *)cftTopic <<"\nBefore reader is created" << std::endl;
- 
-/* reflex::sub::DataReader<single_member>
-    datareader(reflex::sub::DataReaderParams(participant)
-                .topic( (DDSTopic *) cftTopic)
-                .listener(&leo_listener));
-*/
-
-
-
   reflex::sub::DataReader<single_member>
     datareader(reflex::sub::DataReaderParams(participant)
                 .topic_name(topicName)
@@ -150,43 +144,25 @@ void write_single_member(int domain_id)
 
   reflex::detail::print_IDL(stc.get(), 0); //get() return a DDSTypeCode
 
-  participant = DDSDomainParticipantFactory::get_instance()->
+/*  participant = DDSDomainParticipantFactory::get_instance()->
     create_participant_with_profile(domain_id,
 		       "DefaultLibrary",
 		       "Reliable",	
                        NULL,   // Listener
                        DDS_STATUS_MASK_NONE);
+*/
 
-  if (participant == NULL) {
+participant = DDSDomainParticipantFactory::get_instance()->
+	    create_participant_with_profile(
+             domain_id, "ReflexQs_Library","ReflexQs_Profile",
+             NULL /* listener */, DDS_STATUS_MASK_NONE);
+  
+if (participant == NULL) {
     std::cerr << "! Unable to create DDS domain participant" << std::endl;
     return;
   }
 
-//register the type
-/*DDSDynamicDataTypeSupport obj(stc.get(),DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-if(obj.register_type(participant,"single_member") != DDS_RETCODE_OK)
-{
-    std::cout <<"\n register_type error \n";
-    return;
-}
-topic = participant->create_topic(
-            topic_name,
-            "single_member", DDS_TOPIC_QOS_DEFAULT, NULL ,
-            DDS_STATUS_MASK_NONE);
-if (topic == NULL)
-{
-    std::cout <<"\n topic error! \n";
-   return;
-}
-
-  DDS_DataWriterQos datawriter_qos;
-  rc = participant->get_default_datawriter_qos(datawriter_qos);
-  if (rc != DDS_RETCODE_OK) {
-     std::cerr << "Could not get DW QoS" << std::endl;
-     return;
-  }
-*/
-  reflex::pub::DataWriter<single_member>
+ reflex::pub::DataWriter<single_member>
     writer(reflex::pub::DataWriterParams(participant)
              .topic_name(topic_name)
              .type_name("single_member"));
@@ -194,7 +170,7 @@ if (topic == NULL)
     int i = 1;
 for(;;){
 
-    single_member obj; //question- can we use stc instead of single_member ?
+    single_member obj; 
     obj.m1 = i++;
     rc = writer.write(obj);
 if (rc != DDS_RETCODE_OK) {
@@ -205,17 +181,6 @@ if (rc != DDS_RETCODE_OK) {
 
 
 NDDSUtility::sleep(period);
-}
-/*
-rc = writer.write(*d1.get(), DDS_HANDLE_NIL);
-    if (rc != DDS_RETCODE_OK) {
-      std::cerr << "Write error = "
-                << reflex::detail::get_readable_retcode(rc)
-                << std::endl;
-      //break;
-    }
-    else
-        std::cout <<"\n wrote obj to subscriber\n";
- //delete_entities(participant);
-*/  }
+   }
+ }
 
