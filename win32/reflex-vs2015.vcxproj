@@ -170,6 +170,7 @@
     <ClInclude Include="..\include\reflex\reflex_fwd.h" />
     <ClInclude Include="..\include\reflex\safe_typecode.h" />
     <ClInclude Include="..\include\reflex\sample.h" />
+    <ClInclude Include="..\include\reflex\traits\xsd_traits.h" />
     <ClInclude Include="..\include\reflex\tuple_iterator.h" />
     <ClInclude Include="..\include\reflex\typecode_manip.h" />
   </ItemGroup>

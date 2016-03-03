@@ -99,6 +99,9 @@
     <ClInclude Include="..\include\reflex\memberwise.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\reflex\traits\xsd_traits.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="headers">
