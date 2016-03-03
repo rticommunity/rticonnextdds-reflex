@@ -122,7 +122,6 @@ namespace reflex {
         }
 
         topic_desc = participant->lookup_topicdescription(topic_name.c_str());
-        if( topic_desc) std::cout << "\n topic_desc is "<< topic_desc->get_name() << std::endl;
         if(!topic_desc)
         {
           DDSTopic * new_topic = participant->create_topic(topic_name.c_str(),
@@ -130,7 +129,7 @@ namespace reflex {
                                                            DDS_TOPIC_QOS_DEFAULT,
                                                            NULL, /* listener */
                                                            DDS_STATUS_MASK_NONE);
-          if (topic)
+          if (new_topic)
           {
             auto_topic.reset(new_topic);
           }

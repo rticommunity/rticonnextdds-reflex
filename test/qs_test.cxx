@@ -3,7 +3,7 @@
 *
 */
 
-#include "leo_test.h"
+#include "qs_test.h"
 class LeoListener : public reflex::sub::DataReaderListener<single_member>
 {
 public:
@@ -71,22 +71,14 @@ retcode = DDSPropertyQosPolicyHelper::assert_property(
         return ;
 
 }
-/*DDSSubscriber *subscriber = participant->create_subscriber(
-	DDS_SUBSCRIBER_QOS_DEFAULT, NULL, DDS_STATUS_MASK_NONE);
-    if (subscriber == NULL) {
-        printf("create_subscriber error\n");
-        return ;
-    }
-*/
-
   LeoListener leo_listener;
 
-  std::cout << "Subscribed to Single\n";
  
 reflex::SafeTypeCode<single_member>
     stc(reflex::make_typecode<single_member>()); 
-DDSDynamicDataTypeSupport obj(stc.get(),DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
+
 //register the type
+DDSDynamicDataTypeSupport obj(stc.get(),DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
 if(obj.register_type(participant,"single_member") != DDS_RETCODE_OK)
 {
     std::cout <<"\n register_type error \n";
@@ -150,7 +142,7 @@ void write_single_member(int domain_id)
   DDSDomainParticipant *   participant = NULL;
   DDS_DynamicDataTypeProperty_t props;
   DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
-
+  DDSTopic *topic = NULL;
   const char *topic_name = "Single";
 
   reflex::SafeTypeCode<single_member>
@@ -170,18 +162,35 @@ void write_single_member(int domain_id)
     return;
   }
 
+//register the type
+/*DDSDynamicDataTypeSupport obj(stc.get(),DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
+if(obj.register_type(participant,"single_member") != DDS_RETCODE_OK)
+{
+    std::cout <<"\n register_type error \n";
+    return;
+}
+topic = participant->create_topic(
+            topic_name,
+            "single_member", DDS_TOPIC_QOS_DEFAULT, NULL ,
+            DDS_STATUS_MASK_NONE);
+if (topic == NULL)
+{
+    std::cout <<"\n topic error! \n";
+   return;
+}
+
   DDS_DataWriterQos datawriter_qos;
   rc = participant->get_default_datawriter_qos(datawriter_qos);
   if (rc != DDS_RETCODE_OK) {
      std::cerr << "Could not get DW QoS" << std::endl;
      return;
   }
-
+*/
   reflex::pub::DataWriter<single_member>
     writer(reflex::pub::DataWriterParams(participant)
              .topic_name(topic_name)
-             .type_name("single_member")
-             .datawriter_qos(datawriter_qos));
+             .type_name("single_member"));
+  //           .datawriter_qos(datawriter_qos));
     int i = 1;
 for(;;){
 
