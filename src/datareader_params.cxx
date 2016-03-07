@@ -9,10 +9,11 @@ namespace reflex {
         subscriber_(0),
         topic_(0),
         listener_(0),
-        qos_(DDS_DATAREADER_QOS_DEFAULT),
         mask_(DDS_DATA_AVAILABLE_STATUS),
         property_(DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-    {}
+    {
+      participant_->get_default_datareader_qos(qos_);
+    }
 
     REFLEX_INLINE
     DataReaderParams & DataReaderParams::listener(DataReaderListenerBase *listener)

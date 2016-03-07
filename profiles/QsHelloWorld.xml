@@ -16,7 +16,7 @@
 
     <queuing_service name="HelloWorldQS">
         <domain_participant name="DomainParticipant">
-            <domain_id>21</domain_id>
+            <domain_id>65</domain_id>
             <participant_qos
                 base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
 
@@ -27,8 +27,8 @@
 
                 <shared_reader_queue session="Session"
                     name="SharedReaderQueue">
-                    <topic_name>Single</topic_name>
-                    <type_name>single_member</type_name>
+                    <topic_name>HelloWorldTopic</topic_name>
+                    <type_name>HelloWorld</type_name>
 
                     <datawriter_qos
                         base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
@@ -71,4 +71,276 @@
         </domain_participant>
     </queuing_service>
 
-    </dds>
+    <queuing_service name="HelloWorldQSPersistence">
+        <persistence_settings>
+            <filesystem>
+                <journal_mode>WAL</journal_mode>
+                <synchronization>OFF</synchronization>
+                <vacuum>FULL</vacuum>
+            </filesystem>
+        </persistence_settings>
+
+        <domain_participant name="DomainParticipant">
+            <domain_id>0</domain_id>
+            <participant_qos
+                base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+
+            <shared_subscriber name="SharedSubscriber">
+                <session_settings>
+                    <session name="Session" />
+                </session_settings>
+
+                <shared_reader_queue session="Session"
+                    name="SharedReaderQueue">
+                    <topic_name>HelloWorldTopic</topic_name>
+                    <type_name>HelloWorld</type_name>
+
+                    <datawriter_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+                    <datareader_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+                    <queue_qos>
+                        <persistence>
+                            <kind>PERSISTENT</kind>
+                        </persistence>
+                        <resource_limits>
+                            <queue_allocation_settings>
+                                <max_count>10000</max_count>
+                            </queue_allocation_settings>
+                        </resource_limits>
+                        <distribution>
+                            <kind>ROUND_ROBIN</kind>
+                            <property>
+                                <value>
+                                    <element>
+                                        <name>UNACKED_THRESHOLD</name>
+                                        <value>5</value>
+                                    </element>
+                                </value>
+                            </property>
+                        </distribution>
+                        <reliability>
+                            <app_ack_sample_to_producer>1
+                            </app_ack_sample_to_producer>
+                        </reliability>
+                        <redelivery>
+                            <max_delivery_retries>6
+                            </max_delivery_retries>
+                            <response_timeout>
+                                <duration>
+                                    <sec>30</sec>
+                                    <nanosec>0</nanosec>
+                                </duration>
+                            </response_timeout>
+                        </redelivery>
+                    </queue_qos>
+                </shared_reader_queue>
+            </shared_subscriber>
+        </domain_participant>
+    </queuing_service>
+
+    <queuing_service name="HelloWorldQSReplication">
+        <replication_settings>
+            <queue_instances>2</queue_instances>
+            <synchronize_consumer_assignment>false
+            </synchronize_consumer_assignment>
+            <master_timeout>
+                <sec>3</sec>
+                <nanosec>0</nanosec>
+            </master_timeout>
+        </replication_settings>
+
+        <service_qos>
+            <shared_reader_queue_replication>
+                <enabled>true</enabled>
+            </shared_reader_queue_replication>
+        </service_qos>
+
+        <domain_participant name="DomainParticipant">
+            <domain_id>0</domain_id>
+            <participant_qos
+                base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+
+            <shared_subscriber name="SharedSubscriber">
+                <session_settings>
+                    <session name="Session" />
+                </session_settings>
+
+                <shared_reader_queue session="Session"
+                    name="SharedReaderQueue">
+                    <topic_name>HelloWorldTopic</topic_name>
+                    <type_name>HelloWorld</type_name>
+
+                    <datawriter_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+                    <datareader_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+                    <update_datawriter_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile">
+                        <resource_limits>
+                            <max_samples>50</max_samples>
+                            <initial_samples>50</initial_samples>
+                        </resource_limits>
+                    </update_datawriter_qos>
+                    <update_datareader_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+                    <redistribution_datawriter_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+
+                    <queue_qos>
+                        <resource_limits>
+                            <queue_allocation_settings>
+                                <max_count>10000</max_count>
+                            </queue_allocation_settings>
+                        </resource_limits>
+                        <distribution>
+                            <kind>ROUND_ROBIN</kind>
+                            <property>
+                                <value>
+                                    <element>
+                                        <name>UNACKED_THRESHOLD</name>
+                                        <value>5</value>
+                                    </element>
+                                </value>
+                            </property>
+                        </distribution>
+                        <reliability>
+                            <app_ack_sample_to_producer>1
+                            </app_ack_sample_to_producer>
+                        </reliability>
+                        <redelivery>
+                            <max_delivery_retries>6
+                            </max_delivery_retries>
+                            <response_timeout>
+                                <duration>
+                                    <sec>30</sec>
+                                    <nanosec>0</nanosec>
+                                </duration>
+                            </response_timeout>
+                        </redelivery>
+                    </queue_qos>
+                </shared_reader_queue>
+            </shared_subscriber>
+        </domain_participant>
+    </queuing_service>
+
+    <queuing_service name="HelloWorldQSPersistenceReplication">
+        <persistence_settings>
+            <filesystem>
+                <journal_mode>WAL</journal_mode>
+                <synchronization>OFF</synchronization>
+                <vacuum>FULL</vacuum>
+            </filesystem>
+        </persistence_settings>
+
+        <replication_settings>
+            <queue_instances>2</queue_instances>
+            <synchronize_consumer_assignment>false
+            </synchronize_consumer_assignment>
+            <master_timeout>
+                <sec>3</sec>
+                <nanosec>0</nanosec>
+            </master_timeout>
+        </replication_settings>
+
+        <service_qos>
+            <shared_reader_queue_replication>
+                <enabled>true</enabled>
+            </shared_reader_queue_replication>
+        </service_qos>
+
+        <domain_participant name="DomainParticipant">
+            <domain_id>0</domain_id>
+            <participant_qos
+                base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+
+            <shared_subscriber name="SharedSubscriber">
+                <session_settings>
+                    <session name="Session" />
+                </session_settings>
+
+                <shared_reader_queue session="Session"
+                    name="SharedReaderQueue">
+                    <topic_name>HelloWorldTopic</topic_name>
+                    <type_name>HelloWorld</type_name>
+
+                    <datawriter_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+                    <datareader_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+                    <update_datawriter_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile">
+                        <resource_limits>
+                            <max_samples>50</max_samples>
+                            <initial_samples>50</initial_samples>
+                        </resource_limits>
+                    </update_datawriter_qos>
+                    <update_datareader_qos
+                        base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+
+                    <queue_qos>
+                        <persistence>
+                            <kind>PERSISTENT</kind>
+                        </persistence>
+                        <resource_limits>
+                            <queue_allocation_settings>
+                                <max_count>10000</max_count>
+                            </queue_allocation_settings>
+                        </resource_limits>
+                        <distribution>
+                            <kind>ROUND_ROBIN</kind>
+                            <property>
+                                <value>
+                                    <element>
+                                        <name>UNACKED_THRESHOLD</name>
+                                        <value>5</value>
+                                    </element>
+                                </value>
+                            </property>
+                        </distribution>
+                        <reliability>
+                            <app_ack_sample_to_producer>1
+                            </app_ack_sample_to_producer>
+                        </reliability>
+                        <redelivery>
+                            <max_delivery_retries>6
+                            </max_delivery_retries>
+                            <response_timeout>
+                                <duration>
+                                    <sec>30</sec>
+                                    <nanosec>0</nanosec>
+                                </duration>
+                            </response_timeout>
+                        </redelivery>
+                    </queue_qos>
+                </shared_reader_queue>
+            </shared_subscriber>
+        </domain_participant>
+    </queuing_service>
+
+    <!-- Example that shows how to enable remote administration. This Queing 
+        Service contains only one shared subscriber that is empty. Through remote 
+        commands, new queues can be added to the existing shared subscriber. -->
+    <queuing_service name="RemoteConfigQS">
+        <administration>
+            <domain_id>1</domain_id>
+            <participant_qos
+                base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+        </administration>
+
+        <domain_participant name="DomainParticipant">
+            <domain_id>0</domain_id>
+            <participant_qos
+                base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
+
+            <!-- Empty shared subscriber with only one session. -->
+            <shared_subscriber name="SharedSubscriber">
+                <session_settings>
+                    <session name="Session" />
+                </session_settings>
+            </shared_subscriber>
+
+        </domain_participant>
+    </queuing_service>
+
+</dds>

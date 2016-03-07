@@ -1,77 +1,77 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!-- 
-Description
-An RTI Connext QoS Profile that provides high throughput
-for streaming reliable data.
-
-This profile depends primarily on:
-
-Data writer:
-  - batch:    combining multiple samples into a single network packet to
-              increase throughput
-  - protocol: send heartbeats to readers more frequently to cache levels low
-
-Data reader:
-  - protocol: respond more aggressively to heartbeats with positive or
-              negative acknowledgements to speed up repairs of lost packets
-
-Domain participant:
-  - Increased transport buffer sizes to efficiently send and receive many
-    large packets
-
--->
-
-<!-- ================================================================= -->
-<!-- Throughput QoS Profile                                            -->
-<!-- ================================================================= -->
-
+<?xml version="1.0"?>
 <!--
-Your XML editor may be able to provide validation and auto-completion services
-as you type. To enable these services, replace the opening tag of this
-document with the following, and update the absolute path as appropriate for
-your installation:
-  -->
-<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/5.2.0/rti_dds_qos_profiles.xsd">
+Description
+XML QoS Profile for HelloWorldQueue
 
-    <qos_library name="DefaultLibrary" >
-        <!--
-        The HighThroughput profile is an extension of the Reliable profile.
-        RTI Connext provides APIs for loading multiple QoS
-        profile files at once, and referring from one to the other, but for
-        the sake of simplicity, we duplicate the Reliable profile here. For
-        more information about how it works, see the file reliable.xml.
+For more information about XML QoS Profiles see Chapter 15 in the
+RTI Connext user manual.
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/5.2.0/rti_dds_qos_profiles.xsd"
+     version="5.2.0">
+  <!-- QoS Library containing the QoS profile used in the generated example.
+
+        A QoS library is a named set of QoS profiles.
+    -->
+  <qos_library name="ReflexQs_Library">
+
+    <!-- QoS profile used to configure reliable communication between the DataWriter
+             and DataReader created in the example code.
+
+             A QoS profile groups a set of related QoS.
         -->
-        <qos_profile name="Reliable"  is_default_qos="true" is_default_participant_factory_profile="true">
-        	<participant_qos>
-        		<participant_name> 
-        			<name>Reflex Participant</name>
-        		</participant_name>
-        	</participant_qos>
-            <datareader_qos>
-                <reliability>
-                    <kind>RELIABLE_RELIABILITY_QOS</kind>
-                </reliability>
-                <history>
-                    <kind>KEEP_ALL_HISTORY_QOS</kind>
-                </history>         
-            </datareader_qos>
-            
-            <datawriter_qos>      
-                <reliability>
-                    <kind>RELIABLE_RELIABILITY_QOS</kind>
-                    <acknowledgment_kind>APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE</acknowledgment_kind>
-                    <max_blocking_time>
-                        <sec>5</sec>
-                        <nanosec>0</nanosec>
-                    </max_blocking_time>
-                </reliability>
-                <history>
-                    <kind>KEEP_ALL_HISTORY_QOS</kind>
-                </history>
-                
-            </datawriter_qos>
-        </qos_profile>
-    </qos_library>
-</dds>
+    <qos_profile name="ReflexQs_Profile"
+        base_name="BuiltinQosLibExp::Generic.StrictReliable"
+        is_default_qos="true">
+      <!-- uncomment the following for debugging purpose -->
+      <!--
+      <participant_factory_qos>
+        <logging>
+          <verbosity>WARNING</verbosity>
+        </logging>
+      </participant_factory_qos>-->
+
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+        </transport_builtin>
+      </participant_qos>
+
+      <datawriter_qos>
+        <reliability>
+          <acknowledgment_kind>
+              APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE
+          </acknowledgment_kind>
+        </reliability>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>4096</value>
+            </element>
+          </value>
+        </property>
+      </datawriter_qos>
+
+      <datareader_qos>
+        <reliability>
+          <acknowledgment_kind>
+              APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE
+          </acknowledgment_kind>
+        </reliability>
+        <reader_resource_limits>
+          <max_app_ack_response_length>1</max_app_ack_response_length>
+        </reader_resource_limits>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>4096</value>
+            </element>
+          </value>
+        </property>
+      </datareader_qos>
+
+    </qos_profile>
+  </qos_library>
+</dds>  

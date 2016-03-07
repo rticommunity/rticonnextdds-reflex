@@ -9,10 +9,11 @@ namespace reflex {
         publisher_(0),
         topic_(0),
         listener_(0),
-        qos_(DDS_DATAWRITER_QOS_DEFAULT),
         mask_(DDS_STATUS_MASK_NONE),
         property_(DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-    {}
+    {
+      participant_->get_default_datawriter_qos(qos_);
+    }
 
     REFLEX_INLINE
     DataWriterParams & DataWriterParams::listener(DDSDataWriterListener *listener)

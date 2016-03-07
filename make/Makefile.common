@@ -153,7 +153,7 @@ TESTSRCS = test/reflex_test.cxx  \
            test/darkart.cxx      \
            test/pointers.cxx     \
            test/large_type.cxx   \
-	   test/qs_test.cxx 
+	   test/qs_hello_test.cxx 
 
 TESTHEADERS = test/shape_type.h   \
               test/one_member.h   \
@@ -162,7 +162,7 @@ TESTHEADERS = test/shape_type.h   \
               test/darkart.h      \
               test/pointers.h     \
               test/large_type.h	  \
-	      test/qs_test.h
+	      test/qs_hello_test.h
 
 PERFSRCS = test/reflex_perf.cxx \
            test/complex.cxx \
