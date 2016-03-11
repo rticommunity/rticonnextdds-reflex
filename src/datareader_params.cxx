@@ -9,14 +9,14 @@ namespace reflex {
         subscriber_(0),
         topic_(0),
         listener_(0),
-        mask_(DDS_DATA_AVAILABLE_STATUS),
+        mask_(DDS_STATUS_MASK_ALL),
         property_(DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
     {
       participant_->get_default_datareader_qos(qos_);
     }
 
     REFLEX_INLINE
-    DataReaderParams & DataReaderParams::listener(DataReaderListenerBase *listener)
+    DataReaderParams & DataReaderParams::listener(DDSDataReaderListener *listener)
     {
       listener_ = listener;
       return *this;
@@ -90,7 +90,7 @@ namespace reflex {
     }
 
     REFLEX_INLINE
-    DataReaderListenerBase * DataReaderParams::listener() const
+    DDSDataReaderListener * DataReaderParams::listener() const
     {
       return listener_;
     }

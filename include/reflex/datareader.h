@@ -31,16 +31,6 @@ namespace reflex {
     template <class T>
     class DataReader;
 
-    template <class T>
-    class DataReaderListener;
-
-    class DataReaderListenerBase
-    {
-      public:
-        DataReaderListenerBase() {}
-        virtual ~DataReaderListenerBase() {}
-    };
-
   } // namespace sub
 
   namespace detail {
@@ -99,45 +89,6 @@ namespace reflex {
       return rc;
     }
 
-    template <class T>
-    class DataReaderListenerAdapter : public DDSDataReaderListener
-    {
-      reflex::sub::DataReaderListener<T> * dr_listener_;
-      reflex::sub::DataReader<T> * data_reader_;
-
-    public:
-
-      typedef reflex::sub::DataReader<T> DataReaderType;
-
-      explicit DataReaderListenerAdapter(
-          reflex::sub::DataReaderListener<T> * listener,
-          reflex::sub::DataReader<T> * dr)
-        : dr_listener_(listener),
-          data_reader_(dr)
-      {
-        if (!listener)
-        {
-          throw std::runtime_error("DataReaderListenerAdapter: NULL listener");
-        }
-        if (!dr)
-        {
-          throw std::runtime_error("DataReaderListenerAdapter: NULL DataReader");
-        }
-      }
-
-      virtual void on_data_available(DDSDataReader *reader)
-      {
-#ifdef _DEBUG
-        DDSDynamicDataReader *dd_reader = DDSDynamicDataReader::narrow(reader);
-        if (!dd_reader) {
-          std::cerr << "Not a DynamicDataReader!!!\n";
-        }
-#endif
-        dr_listener_->on_data_available(*data_reader_);
-      }
-    };
-
-
   } // namespace detail
 
   /**
@@ -146,33 +97,12 @@ namespace reflex {
   namespace sub {
 
     /**
-     * @brief Asynchronous data listener for DataReader
-     */
-    template <class T>
-    class DataReaderListener : public DataReaderListenerBase
-    {
-    public:
-      /**
-       * @brief Callback invoked when new data is available to read from
-       *        DataReader
-       */
-      virtual void on_data_available(DataReader<T> & dr) = 0;
-
-      virtual ~DataReaderListener() { }
-    };
-
-    /**
     * @brief A datareader for adapted aggregate types
     */
     template <class T>
     class DataReader
     {
-    public:
-      typedef DataReaderListener<T> ListenerType;
-
-    private:
       std::shared_ptr<reflex::TypeManager<T>> type_manager_;
-      std::shared_ptr<detail::DataReaderListenerAdapter<T>> safe_listener_adapter_;
       std::shared_ptr<DDSDynamicDataReader> safe_datareader_;
 
     public:
@@ -187,21 +117,6 @@ namespace reflex {
         if(params.topic() && !params.topic_name().empty())
           throw std::logic_error("DataReaderParams: Ambiguous parameters. Both topic_name and topic provided");
 
-        if(params.listener())
-        {
-          reflex::sub::DataReaderListener<T> * derived_listener = 
-            dynamic_cast<reflex::sub::DataReaderListener<T> *>(params.listener());
-          
-          if(!derived_listener)
-          {
-            throw std::logic_error("Listener downcasting error");
-          }
-          
-          safe_listener_adapter_ = 
-              std::make_shared<detail::DataReaderListenerAdapter<T>>(
-                  derived_listener, this);
-        }
-        
         type_manager_ = 
           std::make_shared<reflex::TypeManager<T>>(params.dynamicdata_type_property());
         
@@ -213,62 +128,12 @@ namespace reflex {
             params.topic_name(),
             params.type_name(),
             type_manager_->get_type_support(),
-            static_cast<DDSDataReaderListener *>(safe_listener_adapter_.get()),
+            params.listener(),
             params.listener_statusmask(),
             params.dynamicdata_type_property(),
             "DynamicDataReader");
       }
-/*
-        DataReader(
-          DDSDomainParticipant *participant,
-          const char * topic_name,
-          ListenerType * listener,
-          const char * type_name = 0,
-          DDS_DynamicDataTypeProperty_t props =
-            DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
 
-          : type_manager_(std::make_shared<reflex::TypeManager<T>>(props)),
-            safe_datareader_(detail::initialize_reader(
-                                 participant,
-                                 DDS_DATAREADER_QOS_DEFAULT,
-                                 topic_name,
-                                 type_name,
-                                 type_manager_->get_type_support(),
-                                 safe_listener_adapter_.get(),
-                                 props))
-      {
-          if (listener)
-          {
-            safe_listener_adapter_ = 
-              std::make_shared<detail::DataReaderListenerAdapter<T>>(listener);
-            safe_listener_adapter_->set_datareader(this);
-          }
-      }
-
-      DataReader(
-        DDSDomainParticipant *participant,
-        const DDS_DataReaderQos & drqos,
-        const char * topic_name,
-        ListenerType * listener,
-        const char * type_name = 0,
-        DDS_DynamicDataTypeProperty_t props =
-          DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT)
-
-          : type_manager_(std::make_shared<reflex::TypeManager<T>>(props)),
-            safe_listener_adapter_(listener ? new detail::DataReaderListenerAdapter<T>(listener) : 0),
-            safe_datareader_(detail::initialize_reader(
-                                participant,
-                                drqos,
-                                topic_name,
-                                type_name,
-                                type_manager_->get_type_support(),
-                                safe_listener_adapter_.get(),
-                                props))
-      {
-          if (safe_listener_adapter_)
-            safe_listener_adapter_->set_datareader(this);
-      }
-*/
       DDS_ReturnCode_t take(
         std::vector<Sample<T>> & data,
         int max_samples = DDS_LENGTH_UNLIMITED,
@@ -350,6 +215,10 @@ namespace reflex {
         return type_manager_->get_type_support();
       }
 
+      ~DataReader() {
+        if(safe_datareader_)
+          safe_datareader_->set_listener(0, DDS_STATUS_MASK_NONE);
+      }
     };
 
   } // namespace sub
