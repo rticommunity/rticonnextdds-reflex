@@ -5,15 +5,6 @@ class HelloWorldPubListener : public DDS::DataWriterListener {
   public:
     bool foundQS;
     
-    virtual void on_offered_deadline_missed(
-            DDSDataWriter *writer, const DDS::OfferedDeadlineMissedStatus &status) {};
-     
-    virtual void on_liveliness_lost(
-            DDSDataWriter *writer, const DDS::LivelinessLostStatus &status) {};
-     
-    virtual void on_offered_incompatible_qos(
-            DDSDataWriter *writer, const DDS::OfferedIncompatibleQosStatus &status) {}
-     
     virtual void on_publication_matched(
             DDSDataWriter *writer, const DDS::PublicationMatchedStatus &status) 
     {
@@ -33,15 +24,6 @@ class HelloWorldPubListener : public DDS::DataWriterListener {
         }
     }
      
-    virtual void on_reliable_writer_cache_changed(
-            DDSDataWriter *writer, const DDS::ReliableWriterCacheChangedStatus &status) {};
-     
-    virtual void on_reliable_reader_activity_changed(
-            DDSDataWriter *writer, const DDS::ReliableReaderActivityChangedStatus &status) {};
-     
-    virtual void on_instance_replaced(
-            DDSDataWriter *writer, const DDS::InstanceHandle_t &handle) {};
-    
     virtual void on_application_acknowledgment(DDSDataWriter *writer, const DDS::AcknowledgmentInfo &info)
     {
         const char * response;
@@ -63,6 +45,59 @@ class HelloWorldPubListener : public DDS::DataWriterListener {
         foundQS = false;
     }
 };
+class LeoListener : public reflex::sub::DataReaderListener<HelloWorld>
+{
+  public:
+  bool foundQS;
+
+  void on_data_available(reflex::sub::DataReader<HelloWorld> & dr) override
+  {
+    std::cout <<"\n IN on_data_available \n";
+    DDS_AckResponseData_t responseData;
+    std::vector<reflex::sub::Sample<HelloWorld>> samples;
+    dr.take(samples);
+    responseData.value.ensure_length(1,1);
+    responseData.value[0] = 1;
+
+    for (auto &ss : samples)
+    {
+      if (ss.info().valid_data)
+      {std::cout << "\nmessageId = " << ss->messageId;
+     // std::cout << "\n message payload= " << ss->payload <<std::endl;
+      }
+      if (dr.underlying()->acknowledge_all(responseData) != DDS_RETCODE_OK)
+      
+        std::cout<<"acknowledge_all error"<<std::endl;
+      else
+        std::cout<<"\nacknowledged all!!\n"<<std::endl;
+      std::cout<<"--------------------------------------\n";
+    }
+  }
+
+  void on_subscription_matched(reflex::sub::DataReader<HelloWorld> & dr, 
+      const DDS_SubscriptionMatchedStatus& status)
+  {
+    DDS_PublicationBuiltinTopicData publicationData;
+    DDS_ReturnCode_t retcode;
+
+    if (status.current_count_change > 0) {
+      retcode = dr->get_matched_publication_data (
+          publicationData,
+          status.last_publication_handle);
+
+      if (retcode == DDS_RETCODE_OK) {
+        if (publicationData.service.kind == DDS_QUEUING_SERVICE_QOS ) { 
+          foundQS = true;
+        }   
+      }   
+    }   
+  } 
+  LeoListener()
+  {
+    foundQS= false;
+  }
+};
+
 
 void generatedReaderGuidExpr(char * readerGuidExpr)
 {
@@ -77,23 +112,13 @@ void generatedReaderGuidExpr(char * readerGuidExpr)
 
 void hello_qs_subscriber(int domain_id)
 {
-  /*
+  
   char topicName[255],readerGuidExpr[255];
   DDS_DataReaderQos readerQos;
   DDS_StringSeq cftParams;
   DDSTopic *topic = NULL;
 
   DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
-
-  DDSDomainParticipant * participant = DDSDomainParticipantFactory::get_instance()->
-	    create_participant_with_profile(
-             domain_id, "ReflexQs_Library","ReflexQs_Profile",
-             NULL , DDS_STATUS_MASK_NONE);
-  if (participant == NULL) {
-    throw std::runtime_error("Unable to create participant");
-  }
-
-
   DDSDomainParticipant * participant = DDSDomainParticipantFactory::get_instance()->
 	    create_participant(
              domain_id, DDS_PARTICIPANT_QOS_DEFAULT,
@@ -101,97 +126,77 @@ void hello_qs_subscriber(int domain_id)
   if (participant == NULL) {
     throw std::runtime_error("Unable to create participant");
   }
-	//LeoListener leo_listener;
-	LeoListener *leo_listener = new LeoListener();
-
- 
-	reflex::SafeTypeCode<single_member>
-    stc(reflex::make_typecode<single_member>()); 
-
-//register the type
-	DDSDynamicDataTypeSupport obj(stc.get(),DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-	if(obj.register_type(participant,"single_member") != DDS_RETCODE_OK)
-	{
-		std::cout <<"\n register_type error \n";
-		return;
-	}
-
-	sprintf(topicName,"%s@%s", "Single", "SharedSubscriber");
-
-	topic = participant->create_topic(
-			topicName,
-			"single_member", DDS_TOPIC_QOS_DEFAULT, NULL ,
-			DDS_STATUS_MASK_NONE);
-	if (topic == NULL)
-	{	
-		std::cout <<"\n topic error! \n";
-		return;
-	} 
-	generatedReaderGuidExpr(readerGuidExpr);
-
-
-DDSContentFilteredTopic * cftTopic = participant->create_contentfilteredtopic(
-		topicName,
-		topic,
-		readerGuidExpr,
-		cftParams);
-if ( cftTopic == NULL)
-{
-	std::cout <<"\n cft error\n";
-	return;
-}
-// reflex reader
-	reflex::sub::DataReader<single_member>
-	datareader(reflex::sub::DataReaderParams(participant)
-			.topic_name(topicName)
-			.listener(&leo_listener));
-
-
-//non-Reflex reader
-DDSSubscriber *subscriber = participant->create_subscriber(
-          DDS_SUBSCRIBER_QOS_DEFAULT, NULL, DDS_STATUS_MASK_NONE);
-if (subscriber == NULL) {
-        printf("create_subscriber error\n");
-        return ; 
-    }  
-subscriber->get_default_datareader_qos(readerQos);
-
-retcode = DDSPropertyQosPolicyHelper::assert_property(
+  participant->get_default_datareader_qos(readerQos);
+  retcode = DDSPropertyQosPolicyHelper::assert_property(
         readerQos.property,
         "dds.data_reader.shared_subscriber_name",
         "SharedSubscriber",
         DDS_BOOLEAN_TRUE);
     if (retcode != DDS_RETCODE_OK) {
         printf("assert_property error %d\n", retcode);
-        //subscriber_shutdown(participant);
         return ;
 
 }
+LeoListener leo_listener;
+reflex::SafeTypeCode<HelloWorld>
+stc(reflex::make_typecode<HelloWorld>()); 
 
-    DDSDataReader *reader = subscriber->create_datareader(
-        cftTopic, readerQos, leo_listener,
-        DDS_STATUS_MASK_ALL);
-    if (reader == NULL) {
-        printf("create_datareader error\n");
-//        subscriber_shutdown(participant);
-        return ;
-    }
-	std::cout << "\nReader created" << std::endl;
-    // Wait for Queuing Service discovery 
+//register the type
+DDSDynamicDataTypeSupport obj(stc.get(),DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
+if(obj.register_type(participant,"HelloWorld") != DDS_RETCODE_OK)
+{
+  std::cout <<"\n register_type error \n";
+  return;
+}
+
+sprintf(topicName,"%s@%s", "HelloWorldTopic", "SharedSubscriber");
+
+topic = participant->create_topic(
+    topicName,
+    "HelloWorld", DDS_TOPIC_QOS_DEFAULT, NULL ,
+    DDS_STATUS_MASK_NONE);
+if (topic == NULL)
+{	
+  std::cout <<"\n topic error! \n";
+  return;
+} 
+generatedReaderGuidExpr(readerGuidExpr);
+
+
+DDSContentFilteredTopic * cftTopic = participant->create_contentfilteredtopic(
+    topicName,
+    topic,
+    readerGuidExpr,
+    cftParams);
+if ( cftTopic == NULL)
+{
+  std::cout <<"\n cft error\n";
+  return;
+}
+  reflex::sub::DataReader<HelloWorld>
+  datareader(reflex::sub::DataReaderParams(participant)
+      .topic_name(topicName)
+      .listener_statusmask(DDS_STATUS_MASK_ALL)
+      .datareader_qos(readerQos)
+      .listener(&leo_listener));
+
+
+  std::cout << "\nReader created" << std::endl;
+  // Wait for Queuing Service discovery 
     printf("Waiting to discover SharedReaderQueue ...\n");
 
-  DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
-    while (!leo_listener->foundQS) {
+  /*DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
+    while (!leo_listener.foundQS) {
         NDDSUtility::sleep(period);
     }
 std::cout <<"\n found QS! ";
-	for (;;)
-{
+*/	for (;;)
+    {       
 	std::cout << "Polling\n";
 	DDS_Duration_t poll_period = { 4, 0 };
 	NDDSUtility::sleep(poll_period);
-}
-*/
+    }
+
 }
 
 void hello_qs_publisher(int domain_id)
@@ -219,7 +224,17 @@ void hello_qs_publisher(int domain_id)
   reflex::pub::DataWriter<HelloWorld>
      writer(reflex::pub::DataWriterParams(participant)
              .topic_name(topic_name)
+             .listener_statusmask(DDS_STATUS_MASK_ALL)
              .listener(&listener));
+
+   /* Wait for Queuing Service discovery */
+      std::cout <<"\nWaiting to discover SharedReaderQueue ...\n";
+
+         while (!listener.foundQS) {
+                 NDDSUtility::sleep(period);
+                     }
+     
+          std::cout<<"\nSharedReaderQueue discovered...\n";
 
   int i = 1;
   while(1)
@@ -227,7 +242,7 @@ void hello_qs_publisher(int domain_id)
     HelloWorld obj;
     obj.messageId = i++;
     rc = writer.write(obj);
-
+    std::cout <<"\n wrote "<<i;
     if (rc != DDS_RETCODE_OK) {
          std::cerr << "Write error = "
                    << reflex::detail::get_readable_retcode(rc)
