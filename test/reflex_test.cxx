@@ -18,7 +18,7 @@ damages arising out of the use or inability to use the software.
 #include "reflex.h"
 #include "large_type.h"
 
-#define DOMAIN_ID         65 
+#define DOMAIN_ID         21 
 
 void delete_entities(DDSDomainParticipant * participant);
 
