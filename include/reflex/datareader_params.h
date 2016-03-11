@@ -15,11 +15,6 @@
 namespace reflex { 
   namespace sub {
 
-class DataReaderListenerBase;
-
-template <class T>
-class DataReaderListener;
-
 /**
  * @brief A valuetype to contain multiple DataReader parameters.
  */
@@ -28,7 +23,7 @@ class REFLEX_DLL_EXPORT DataReaderParams
 public:
     explicit DataReaderParams (DDSDomainParticipant *);
 
-    DataReaderParams & listener(DataReaderListenerBase *listener);
+    DataReaderParams & listener(DDSDataReaderListener *listener);
     DataReaderParams & subscriber(DDSSubscriber * subscriber);
     DataReaderParams & datareader_qos(const DDS_DataReaderQos & qos);
     DataReaderParams & topic_name (const std::string &name);
@@ -40,7 +35,7 @@ public:
     DDSDomainParticipant* domain_participant() const;
     DDSSubscriber* subscriber() const;
     const DDS_DataReaderQos & datareader_qos() const;
-    DataReaderListenerBase * listener() const;
+    DDSDataReaderListener * listener() const;
     DDSTopicDescription * topic() const;
     std::string topic_name() const;
     std::string type_name() const;
@@ -51,7 +46,7 @@ private:
     DDSDomainParticipant * participant_;
     DDSSubscriber * subscriber_;
     DDSTopicDescription * topic_;
-    DataReaderListenerBase * listener_;
+    DDSDataReaderListener * listener_;
     DDS_DataReaderQos qos_;
     std::string topic_name_;
     std::string type_name_;

@@ -1,5 +1,6 @@
 #include "qs_hello_test.h"
 #include "ndds_namespace_cpp.h"
+#include <cstdio>
 
 class HelloWorldPubListener : public DDS::DataWriterListener {
   public:
@@ -103,16 +104,11 @@ void generatedReaderGuidExpr(char * readerGuidExpr)
 {
     char * ptr = readerGuidExpr;
  
-    strcpy(ptr, "@related_reader_guid.value = &hex(");
-    ptr+= strlen(ptr);
-    sprintf(ptr,"%032llx",(long long)readerGuidExpr);
-    ptr+= strlen(ptr);
-    strcpy(ptr,")");
+    snprintf(ptr, 255, "%s%032llx)", "@related_reader_guid.value = &hex(", (long long) readerGuidExpr);
 }
 
 void hello_qs_subscriber(int domain_id)
 {
-  
   char topicName[255],readerGuidExpr[255];
   DDS_DataReaderQos readerQos;
   DDS_StringSeq cftParams;
@@ -185,12 +181,12 @@ if ( cftTopic == NULL)
   // Wait for Queuing Service discovery 
     printf("Waiting to discover SharedReaderQueue ...\n");
 
-  /*DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
+  DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
     while (!leo_listener.foundQS) {
         NDDSUtility::sleep(period);
     }
 std::cout <<"\n found QS! ";
-*/	for (;;)
+	for (;;)
     {       
 	std::cout << "Polling\n";
 	DDS_Duration_t poll_period = { 4, 0 };

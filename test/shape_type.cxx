@@ -33,24 +33,34 @@ namespace reflex {
   } 
 }
 
-class MyShapesListener : public reflex::sub::DataReaderListener<ShapeType>
+class MyShapesListener : public DDSDataReaderListener
 {
+  reflex::sub::DataReader<ShapeType> dr_;
+
 public:
-  void on_data_available(reflex::sub::DataReader<ShapeType> & dr) override
+  void on_data_available(DDSDataReader *reader) override
   {
-    std::vector<reflex::sub::Sample<ShapeType>> samples;
-    dr.take(samples);
-    for (auto &ss : samples)
+    if (dr_.underlying())
     {
-      if (ss.info().valid_data)
+      std::vector<reflex::sub::Sample<ShapeType>> samples;
+      dr_.take(samples);
+      for (auto &ss : samples)
       {
-        std::cout << "Color = "     << ss->color()     << std::endl
-                  << "x = "         << ss->x()         << std::endl
-                  << "y = "         << ss->y()         << std::endl
-                  << "shapesize = " << ss->shapesize() << std::endl
-                  << std::endl;
+        if (ss.info().valid_data)
+        {
+          std::cout << "Color = " << ss->color() << std::endl
+            << "x = " << ss->x() << std::endl
+            << "y = " << ss->y() << std::endl
+            << "shapesize = " << ss->shapesize() << std::endl
+            << std::endl;
+        }
       }
     }
+  }
+
+  void set_reflex_datareader(reflex::sub::DataReader<ShapeType> dr)
+  {
+    dr_ = dr;
   }
 };
 
@@ -72,6 +82,8 @@ void read_shape_type(int domain_id)
     shapes_dr(reflex::sub::DataReaderParams(participant)
                 .topic_name("Square")
                 .listener(&shapes_listener));
+
+  shapes_listener.set_reflex_datareader(shapes_dr);
 
   std::cout << "Subscribed to Square\n";
   for (;;)

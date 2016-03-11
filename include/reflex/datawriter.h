@@ -142,6 +142,11 @@ namespace reflex {
         return type_manager_->get_type_support();
       }
       
+      ~DataWriter() {
+        if (safe_datawriter_)
+          safe_datawriter_->set_listener(0, DDS_STATUS_MASK_NONE);
+      }
+
     };
 
   } // namespace pub

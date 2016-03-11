@@ -135,6 +135,7 @@
     <ClInclude Include="..\..\test\many_members.h" />
     <ClInclude Include="..\..\test\one_member.h" />
     <ClInclude Include="..\..\test\pointers.h" />
+    <ClInclude Include="..\..\test\qs_hello_test.h" />
     <ClInclude Include="..\..\test\shape_type.h" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +145,7 @@
     <ClCompile Include="..\..\test\many_members.cxx" />
     <ClCompile Include="..\..\test\one_member.cxx" />
     <ClCompile Include="..\..\test\pointers.cxx" />
+    <ClCompile Include="..\..\test\qs_hello_test.cxx" />
     <ClCompile Include="..\..\test\reflex_test.cxx" />
     <ClCompile Include="..\..\test\shape_type.cxx" />
   </ItemGroup>
