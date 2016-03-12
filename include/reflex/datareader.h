@@ -53,14 +53,14 @@ namespace reflex {
         rc = dr->take_w_condition(data_seq, info_seq, max_samples, cond);
       else
         rc = dr->take(data_seq, info_seq, max_samples,
-        sample_states, view_states, instance_states);
+                      sample_states, view_states, instance_states);
 
       if (rc == DDS_RETCODE_NO_DATA) {
         return rc;
       }
       else if (rc != DDS_RETCODE_OK) {
         std::cerr << "! Unable to take data from data reader, error "
-          << rc << std::endl;
+                  << rc << std::endl;
         return rc;
       }
 
@@ -215,8 +215,9 @@ namespace reflex {
         return type_manager_->get_type_support();
       }
 
-      ~DataReader() {
-        if(safe_datareader_)
+      ~DataReader() 
+      {
+        if(safe_datareader_.use_count() == 1)
           safe_datareader_->set_listener(0, DDS_STATUS_MASK_NONE);
       }
     };

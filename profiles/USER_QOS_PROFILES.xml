@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:noNamespaceSchemaLocation="NDDSHOME/resource/schema/rti_dds_qos_profiles.xsd"
-     version="5.0.0">
+     version="5.2.0">
     <qos_library name="reflex_Library">
         <qos_profile name="reflex_Profile" is_default_qos="true">
             <datawriter_qos>
@@ -36,11 +36,11 @@
 
             <participant_qos>
                 <participant_name>
-                    <name>Declarative Dynamic Data Tester</name>
+                    <name>RefleX DynamicData Tester</name>
                 </participant_name>
-                <transport_builtin>
+                <!--transport_builtin>
                     <mask>SHMEM</mask>
-                </transport_builtin>
+                </transport_builtin-->
                   <resource_limits>
                      <type_code_max_serialized_length>4096</type_code_max_serialized_length>
                      <type_object_max_serialized_length>4096</type_object_max_serialized_length> 

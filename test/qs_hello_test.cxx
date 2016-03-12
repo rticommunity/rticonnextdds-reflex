@@ -54,10 +54,9 @@ class ReaderListener : public DDSDataReaderListener
 
   void on_data_available(DDSDataReader * reader) override
   {
-    std::cout<<"\n in on_data_available\n";
     DDS_AckResponseData_t responseData;
-    //if(dr.underlying())
-    //{
+    if(dr.underlying())
+    {
       std::vector<reflex::sub::Sample<HelloWorld>> samples;
       dr.take(samples);
       responseData.value.ensure_length(1,1);
@@ -65,12 +64,13 @@ class ReaderListener : public DDSDataReaderListener
       for (auto &ss : samples)
       {
         if (ss.info().valid_data)
-        {std::cout << "\nmessageId = " << ss->messageId;
+        {
+          std::cout << "\nmessageId = " << ss->messageId;
         }
         if (dr.underlying()->acknowledge_all(responseData) != DDS_RETCODE_OK)
           std::cout<<"acknowledge_all error"<<std::endl;
       }
-    //}
+    }
   }
 
   void on_subscription_matched(DDSDataReader* reader, 
@@ -106,6 +106,11 @@ void generatedReaderGuidExpr(char * readerGuidExpr)
     char * ptr = readerGuidExpr;
  
     snprintf(ptr, 255, "%s%032llx)", "@related_reader_guid.value = &hex(", (long long) readerGuidExpr);
+    /*strcpy(ptr, "@related_reader_guid.value = &hex(");
+    ptr+= strlen(ptr);
+    sprintf(ptr,"%032llx",(long long)readerGuidExpr);
+    ptr+= strlen(ptr);
+    strcpy(ptr,")");*/
 }
 
 void hello_qs_subscriber(int domain_id)
@@ -186,7 +191,7 @@ void hello_qs_subscriber(int domain_id)
     while (!reader_listener.foundQS) {
       NDDSUtility::sleep(period);
     }
-    std::cout <<"\n found SharedReaderQueue! ";
+    std::cout <<"Found SharedReaderQueue!\n";
     for (;;)
     {       
       std::cout << "Polling\n";

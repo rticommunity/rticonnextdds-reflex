@@ -18,7 +18,7 @@ damages arising out of the use or inability to use the software.
 #include "reflex.h"
 #include "large_type.h"
 
-#define DOMAIN_ID         21 
+#define DOMAIN_ID         65 
 
 void delete_entities(DDSDomainParticipant * participant);
 
@@ -26,7 +26,8 @@ std::tuple<DDSDynamicDataWriter *,
            DDSDomainParticipant *> 
 create_ddwriter(const char *type_name, 
                 const char *topic_name,
-                DDSDynamicDataTypeSupport *type_support);
+                DDSDynamicDataTypeSupport *type_support,
+                int domain_id);
 
 void write_pointers(int);
 void write_large_type(int domain_id);
@@ -41,6 +42,14 @@ void test_all_types(int domain_id);
 void hello_qs_publisher(int domainid);
 void hello_qs_subscriber(int domainid);
 
+void usage()
+{
+  std::cout << "Please specify one of the following.\n"
+            << "domainId shapes [pub|sub|pubex]\n"
+            << "domainId qs [pub|sub]\n"
+            << "domainId large, darkart, many, one, all, pointers\n";
+}
+
 int main(int argc, const char **argv) 
 {
   try {
@@ -51,60 +60,61 @@ int main(int argc, const char **argv)
                                 NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
     */
 
+    int domain_id = DOMAIN_ID;
+
     if (argc <= 1) {
-      std::cout << "Please specify one of the following.\n"
-                << "shapes [pub|sub|pubex]\n"
-                << "qs [pub|sub]\n"
-                << "large, darkart, many, one, all, pointers\n";
+      usage();
       return 0;
     }
 
-    if (std::string(argv[1]) == "shapes")
+    domain_id = atoi(argv[1]);
+
+    if (std::string(argv[2]) == "shapes")
     {
-      if (argc <= 2)
+      if (argc <= 3)
       {
-        std::cout << "Please specify pub|sub|pubex\n";
+        usage();
         return 0;
       }
 
-      if (std::string(argv[2]) == "pub")
-        write_shape_type(DOMAIN_ID);
-      else if (std::string(argv[2]) == "pubex")
-        write_shape_type_extended(DOMAIN_ID);
-      else if (std::string(argv[2]) == "sub")
-        read_shape_type(DOMAIN_ID);
+      if (std::string(argv[3]) == "pub")
+        write_shape_type(domain_id);
+      else if (std::string(argv[3]) == "pubex")
+        write_shape_type_extended(domain_id);
+      else if (std::string(argv[3]) == "sub")
+        read_shape_type(domain_id);
       else
-        std::cout << "Please specify pub|sub|pubex\n";
+        usage();
     }
-    if (std::string(argv[1]) == "qs")
+    if (std::string(argv[2]) == "qs")
     {   
-      if (argc <= 2)
+      if (argc <= 3)
       {   
-        std::cout << "Please specify pub|sub\n";
+        usage();
         return 0;
       }   
 
-      if (std::string(argv[2]) == "pub")
-        hello_qs_publisher(DOMAIN_ID);
-      else if (std::string(argv[2]) == "sub")
-        hello_qs_subscriber(DOMAIN_ID);
+      if (std::string(argv[3]) == "pub")
+        hello_qs_publisher(domain_id);
+      else if (std::string(argv[3]) == "sub")
+        hello_qs_subscriber(domain_id);
       else
-        std::cout << "Please specify pub|sub\n";
+        usage();
     }
-    else if (std::string(argv[1]) == "large")
-      write_large_type(DOMAIN_ID);
-    else if (std::string(argv[1]) == "darkart")
-      write_darkart_type(DOMAIN_ID);
-    else if (std::string(argv[1]) == "many")
-      write_many_members(DOMAIN_ID);
-    else if (std::string(argv[1]) == "pointers")
-      write_pointers(DOMAIN_ID);
-    else if (std::string(argv[1]) == "one")
-      write_one_member(DOMAIN_ID);
-    else if (std::string(argv[1]) == "all")
-      test_all_types(DOMAIN_ID);
+    else if (std::string(argv[2]) == "large")
+      write_large_type(domain_id);
+    else if (std::string(argv[2]) == "darkart")
+      write_darkart_type(domain_id);
+    else if (std::string(argv[2]) == "many")
+      write_many_members(domain_id);
+    else if (std::string(argv[2]) == "pointers")
+      write_pointers(domain_id);
+    else if (std::string(argv[2]) == "one")
+      write_one_member(domain_id);
+    else if (std::string(argv[2]) == "all")
+      test_all_types(domain_id);
     else
-      std::cout << "Please specify either shapes, large, darkart, many, one, all, pointers\n";
+      usage();
 
     return 0;
   }
@@ -137,7 +147,9 @@ std::tuple<DDSDynamicDataWriter *,
            DDSDomainParticipant *> 
 create_ddwriter(const char * type_name,
                 const char * topic_name,
-                DDSDynamicDataTypeSupport * type_support)
+                DDSDynamicDataTypeSupport * type_support,
+                int domain_id)
+
 {
     DDS_ReturnCode_t         rc;
     DDSDomainParticipant *   participant = NULL;
@@ -147,7 +159,7 @@ create_ddwriter(const char * type_name,
 
     participant = DDSDomainParticipantFactory::get_instance()->
                         create_participant(
-                        DOMAIN_ID,
+                        domain_id,
                         DDS_PARTICIPANT_QOS_DEFAULT,
                         NULL,   // Listener
                         DDS_STATUS_MASK_NONE);

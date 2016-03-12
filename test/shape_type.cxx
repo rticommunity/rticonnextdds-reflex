@@ -18,7 +18,8 @@ std::tuple<DDSDynamicDataWriter *,
            DDSDomainParticipant *> 
 create_ddwriter(const char *type_name, 
                 const char *topic_name,
-                DDSDynamicDataTypeSupport *type_support);
+                DDSDynamicDataTypeSupport *type_support,
+                int domain_id);
 
 namespace reflex {
   namespace type_traits {
@@ -48,14 +49,19 @@ public:
       {
         if (ss.info().valid_data)
         {
-          std::cout << "Color = " << ss->color() << std::endl
-            << "x = " << ss->x() << std::endl
-            << "y = " << ss->y() << std::endl
-            << "shapesize = " << ss->shapesize() << std::endl
-            << std::endl;
+          std::cout << "color = "     << ss->color()     << "\n"
+                    << "x = "         << ss->x()         << "\n"
+                    << "y = "         << ss->y()         << "\n"
+                    << "shapesize = " << ss->shapesize() << "\n"
+                    << std::endl;
         }
       }
     }
+  }
+  
+  void on_subscription_matched (DDSDataReader *, const DDS_SubscriptionMatchedStatus &) override
+  {
+    printf("on_subscription_matched\n");
   }
 
   void set_reflex_datareader(reflex::sub::DataReader<ShapeType> dr)
@@ -66,6 +72,8 @@ public:
 
 void read_shape_type(int domain_id)
 {
+  const char * topic_name = "Square";
+
   DDSDomainParticipant * participant =
     DDSDomainParticipantFactory::get_instance()->
       create_participant(domain_id,
@@ -78,14 +86,17 @@ void read_shape_type(int domain_id)
   }
 
   MyShapesListener shapes_listener;
-  reflex::sub::DataReader<ShapeType>
-    shapes_dr(reflex::sub::DataReaderParams(participant)
-                .topic_name("Square")
-                .listener(&shapes_listener));
+
+  reflex::sub::DataReaderParams params(participant);
+  params.topic_name(topic_name)
+        .listener(&shapes_listener);
+
+  reflex::sub::DataReader<ShapeType> shapes_dr(params);
 
   shapes_listener.set_reflex_datareader(shapes_dr);
 
-  std::cout << "Subscribed to Square\n";
+  printf("Subscribed to topic \"%s\" in domain %d\n", topic_name, domain_id);
+
   for (;;)
   {
     std::cout << "Polling\n";
@@ -225,7 +236,8 @@ void write_shape_type(int domain_id)
     create_ddwriter(
       reflex::codegen::StructName<Tuple>::get().c_str(), 
       topic_name, 
-      safe_typeSupport.get());
+      safe_typeSupport.get(),
+      domain_id);
 
   if(ddWriter == NULL)
     return;

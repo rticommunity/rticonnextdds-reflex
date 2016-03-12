@@ -64,7 +64,7 @@ namespace reflex {
             params.topic_name(),
             params.type_name(),
             type_manager_->get_type_support(),
-            static_cast<DDSDataWriterListener *>(params.listener()),
+            params.listener(),
             params.listener_statusmask(),
             params.dynamicdata_type_property(),
             "DynamicDataWriter");
@@ -142,8 +142,9 @@ namespace reflex {
         return type_manager_->get_type_support();
       }
       
-      ~DataWriter() {
-        if (safe_datawriter_)
+      ~DataWriter()
+      {
+        if (safe_datawriter_.use_count() == 1)
           safe_datawriter_->set_listener(0, DDS_STATUS_MASK_NONE);
       }
 

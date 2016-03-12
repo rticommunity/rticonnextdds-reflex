@@ -31,7 +31,8 @@ std::tuple<DDSDynamicDataWriter *,
            DDSDomainParticipant *> 
 create_ddwriter(const char *type_name, 
                 const char *topic_name,
-                DDSDynamicDataTypeSupport *type_support);
+                DDSDynamicDataTypeSupport *type_support,
+                int domain_id);
 
 namespace reflex {
   namespace type_traits {
@@ -300,7 +301,7 @@ void write_large_type(int domain_id)
     assert(ddi1.get()->equal(*ddi2.get()));
 
     std::tie(ddWriter, participant) = 
-      create_ddwriter(stc.get()->name(ex), "N-Tuple", safe_typeSupport.get());
+      create_ddwriter(stc.get()->name(ex), "N-Tuple", safe_typeSupport.get(), domain_id);
 
     if(ddWriter != NULL)
     {

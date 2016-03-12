@@ -16,7 +16,7 @@
 
     <queuing_service name="HelloWorldQS">
         <domain_participant name="DomainParticipant">
-            <domain_id>21</domain_id>
+            <domain_id>65</domain_id>
             <participant_qos
                 base_name="HelloWorldQS_Library::HelloWorldQS_Profile" />
 
