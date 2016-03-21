@@ -1,8 +1,13 @@
-#include "qs_hello_test.h"
+#include "qs_perf_test.h"
 #include "ndds_namespace_cpp.h"
 #include <cstdio>
 
-class HelloWorldPubListener : public DDS::DataWriterListener {
+#define MOD 10000
+
+class PerfHelloWorldPubListener : public DDS::DataWriterListener {
+    int accept_count;
+    int reject_count;
+    int count;
   public:
     bool foundQS;
     
@@ -27,28 +32,34 @@ class HelloWorldPubListener : public DDS::DataWriterListener {
      
     virtual void on_application_acknowledgment(DDSDataWriter *writer, const DDS::AcknowledgmentInfo &info)
     {
-        const char * response;
-        
-        if (info.valid_response_data) {
+        if (info.valid_response_data) 
+        {
+            count++;
             if (info.response_data.value[0] == 1) {
-                response = "Accepted";
+                accept_count++;
             } else {
-                response = "Rejected";
+                reject_count++;
             }
             
-            printf("Received ACK from QS for sample with sequence number: %d Process result: %s\n",
-                    info.sample_identity.sequence_number.low, 
-                    response);
+            if(count % MOD == 0)
+            {
+              printf("Accepted %d and rejected %d.\n", accept_count, reject_count);
+            }
         }
     }
     
-    HelloWorldPubListener() {
+    PerfHelloWorldPubListener() {
         foundQS = false;
+        count = 0;
+        accept_count = 0;
+        reject_count = 0;
     }
 };
-class ReaderListener : public DDSDataReaderListener
+class PerfReaderListener : public DDSDataReaderListener
 {
-  reflex::sub::DataReader<HelloWorld> dr;
+  reflex::sub::DataReader<PerfHelloWorld> dr;
+  int count;
+
   public:
   bool foundQS;
 
@@ -57,7 +68,7 @@ class ReaderListener : public DDSDataReaderListener
     DDS_AckResponseData_t responseData;
     if(dr.underlying())
     {
-      std::vector<reflex::sub::Sample<HelloWorld>> samples;
+      std::vector<reflex::sub::Sample<PerfHelloWorld>> samples;
       dr.take(samples);
       responseData.value.ensure_length(1,1);
       responseData.value[0] = 1;
@@ -65,7 +76,9 @@ class ReaderListener : public DDSDataReaderListener
       {
         if (ss.info().valid_data)
         {
-          std::cout << "\nmessageId = " << ss->messageId;
+          count++;
+          if((count % MOD) == 0)
+            std::cout << "\nmessageId = " << ss->messageId;
         }
         if (dr.underlying()->acknowledge_all(responseData) != DDS_RETCODE_OK)
           std::cout<<"acknowledge_all error"<<std::endl;
@@ -90,30 +103,26 @@ class ReaderListener : public DDSDataReaderListener
       }   
     }   
   }
-  void set_reflex_datareader(reflex::sub::DataReader<HelloWorld> reader)
+  void set_reflex_datareader(reflex::sub::DataReader<PerfHelloWorld> reader)
   {
     dr = reader;
   }
-  ReaderListener()
+  PerfReaderListener()
   {
     foundQS= false;
+    count = 0;
   }
 };
 
 
-void generatedReaderGuidExpr(char * readerGuidExpr)
+void getReaderGuidExpr(char * readerGuidExpr)
 {
     char * ptr = readerGuidExpr;
  
     snprintf(ptr, 255, "%s%032llx)", "@related_reader_guid.value = &hex(", (long long) readerGuidExpr);
-    /*strcpy(ptr, "@related_reader_guid.value = &hex(");
-    ptr+= strlen(ptr);
-    sprintf(ptr,"%032llx",(long long)readerGuidExpr);
-    ptr+= strlen(ptr);
-    strcpy(ptr,")");*/
 }
 
-void hello_qs_subscriber(int domain_id)
+void qs_perf_subscriber(int domain_id)
 {
   char topicName[255],readerGuidExpr[255];
   DDS_DataReaderQos readerQos;
@@ -140,31 +149,31 @@ void hello_qs_subscriber(int domain_id)
       return ;
 
     }
-    ReaderListener reader_listener;
+    PerfReaderListener reader_listener;
 
-    reflex::SafeTypeCode<HelloWorld>
-      stc(reflex::make_typecode<HelloWorld>()); 
+    reflex::SafeTypeCode<PerfHelloWorld>
+      stc(reflex::make_typecode<PerfHelloWorld>()); 
 
     //register the type
     DDSDynamicDataTypeSupport obj(stc.get(),DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-    if(obj.register_type(participant,"HelloWorld") != DDS_RETCODE_OK)
+    if(obj.register_type(participant,"PerfHelloWorld") != DDS_RETCODE_OK)
     {
       std::cout <<"\n register_type error \n";
       return;
     }
 
-    sprintf(topicName,"%s@%s", "HelloWorldTopic", "SharedSubscriber");
+    sprintf(topicName,"%s@%s", "PerfHelloWorldTopic", "SharedSubscriber");
 
     topic = participant->create_topic(
         topicName,
-        "HelloWorld", DDS_TOPIC_QOS_DEFAULT, NULL ,
+        "PerfHelloWorld", DDS_TOPIC_QOS_DEFAULT, NULL ,
         DDS_STATUS_MASK_NONE);
     if (topic == NULL)
     {	
       std::cout <<"\n topic error! \n";
       return;
     } 
-    generatedReaderGuidExpr(readerGuidExpr);
+    getReaderGuidExpr(readerGuidExpr);
 
     DDSContentFilteredTopic * cftTopic = participant->create_contentfilteredtopic(
         topicName,
@@ -176,7 +185,7 @@ void hello_qs_subscriber(int domain_id)
       std::cout <<"\n cft error\n";
       return;
     }
-    reflex::sub::DataReader<HelloWorld>
+    reflex::sub::DataReader<PerfHelloWorld>
       datareader(reflex::sub::DataReaderParams(participant)
           .topic_name(topicName)
           .listener(&reader_listener)
@@ -193,22 +202,22 @@ void hello_qs_subscriber(int domain_id)
     std::cout <<"Found SharedReaderQueue!\n";
     for (;;)
     {       
-      std::cout << "Polling\n";
+      //std::cout << "Polling\n";
       DDS_Duration_t poll_period = { 4, 0 };
       NDDSUtility::sleep(poll_period);
     }
 
 }
 
-void hello_qs_publisher(int domain_id)
+void qs_perf_publisher(int domain_id)
 {
   DDS_ReturnCode_t         rc = DDS_RETCODE_OK;
   DDSDomainParticipant *   participant = NULL;
   DDS_DynamicDataTypeProperty_t props;
-  DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
-  const char *topic_name = "HelloWorldTopic";
+  DDS_Duration_t period{ 0, 1 * 1000 * 1000 };
+  const char *topic_name = "PerfHelloWorldTopic";
 
-  HelloWorldPubListener writerListener;
+  PerfHelloWorldPubListener writerListener;
   participant = DDSDomainParticipantFactory::get_instance()->
   	    create_participant(
                domain_id,DDS_PARTICIPANT_QOS_DEFAULT,
@@ -220,36 +229,38 @@ void hello_qs_publisher(int domain_id)
     return;
   } 
 
-  HelloWorldPubListener listener;
+  PerfHelloWorldPubListener listener;
 
-  reflex::pub::DataWriter<HelloWorld>
+  reflex::pub::DataWriter<PerfHelloWorld>
      writer(reflex::pub::DataWriterParams(participant)
              .topic_name(topic_name)
              .listener_statusmask(DDS_STATUS_MASK_ALL)
              .listener(&listener));
 
-   /* Wait for Queuing Service discovery */
-      std::cout <<"\nWaiting to discover SharedReaderQueue ...\n";
+  /* Wait for Queuing Service discovery */
+     std::cout <<"\nWaiting to discover SharedReaderQueue ...\n";
 
-         while (!listener.foundQS) {
-                 NDDSUtility::sleep(period);
-                     }
+  while (!listener.foundQS) {
+    NDDSUtility::sleep(period);
+  }
      
-          std::cout<<"\nSharedReaderQueue discovered...\n";
+  std::cout<<"\nSharedReaderQueue discovered...\n";
 
   int i = 1;
   while(1)
   {
-    HelloWorld obj;
+    PerfHelloWorld obj;
     obj.messageId = i++;
     rc = writer.write(obj);
-    std::cout <<"\n wrote "<<i;
-    if (rc != DDS_RETCODE_OK) {
-         std::cerr << "Write error = "
-                   << reflex::detail::get_readable_retcode(rc)
-                   << std::endl;
+    if((i % MOD) == 0)
+    {
+      std::cout <<"Wrote "<< i << "\n";
+      if (rc != DDS_RETCODE_OK) {
+           std::cerr << "Write error = "
+                     << reflex::detail::get_readable_retcode(rc)
+                     << std::endl;
+      }
     }
-
     NDDSUtility::sleep(period);
   }
 }

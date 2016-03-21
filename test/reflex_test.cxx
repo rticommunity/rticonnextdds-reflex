@@ -41,12 +41,15 @@ void read_shape_type(int domain_id);
 void test_all_types(int domain_id);
 void hello_qs_publisher(int domainid);
 void hello_qs_subscriber(int domainid);
+void qs_perf_publisher(int domainid);
+void qs_perf_subscriber(int domainid);
 
 void usage()
 {
   std::cout << "Please specify one of the following.\n"
             << "domainId shapes [pub|sub|pubex]\n"
-            << "domainId qs [pub|sub]\n"
+            << "domainId qs     [pub|sub]\n"
+            << "domainId qsperf [pub|sub]\n"
             << "domainId large, darkart, many, one, all, pointers\n";
 }
 
@@ -98,6 +101,21 @@ int main(int argc, const char **argv)
         hello_qs_publisher(domain_id);
       else if (std::string(argv[3]) == "sub")
         hello_qs_subscriber(domain_id);
+      else
+        usage();
+    }
+    if (std::string(argv[2]) == "qsperf")
+    {   
+      if (argc <= 3)
+      {   
+        usage();
+        return 0;
+      }   
+
+      if (std::string(argv[3]) == "pub")
+        qs_perf_publisher(domain_id);
+      else if (std::string(argv[3]) == "sub")
+        qs_perf_subscriber(domain_id);
       else
         usage();
     }
