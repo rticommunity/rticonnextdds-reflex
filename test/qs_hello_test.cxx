@@ -106,11 +106,7 @@ void generatedReaderGuidExpr(char * readerGuidExpr)
     char * ptr = readerGuidExpr;
  
     snprintf(ptr, 255, "%s%032llx)", "@related_reader_guid.value = &hex(", (long long) readerGuidExpr);
-    /*strcpy(ptr, "@related_reader_guid.value = &hex(");
-    ptr+= strlen(ptr);
-    sprintf(ptr,"%032llx",(long long)readerGuidExpr);
-    ptr+= strlen(ptr);
-    strcpy(ptr,")");*/
+    
 }
 
 void hello_qs_subscriber(int domain_id)
@@ -243,7 +239,6 @@ void hello_qs_publisher(int domain_id)
     HelloWorld obj;
     obj.messageId = i++;
     rc = writer.write(obj);
-    std::cout <<"\n wrote "<<i;
     if (rc != DDS_RETCODE_OK) {
          std::cerr << "Write error = "
                    << reflex::detail::get_readable_retcode(rc)
