@@ -267,14 +267,13 @@ void qs_perf_publisher(int domain_id,int samples, int no_readers, int hertz)
   DDS_DynamicDataTypeProperty_t props;
  // int hertz = 100000;
   double sleep_for = sleep_period(hertz) * 1000 * 1000 *1000; //nanoseconds
-
-  
   DDS_Duration_t loop_period{ 0, (DDS_UnsignedLong)(10*sleep_for)};
   DDS_Duration_t end_wait{ 3,0  };
   const char *topic_name = "PerfHelloWorldTopic";
   SAMPLE = samples * no_readers;
   EXTRA = EXTRA * no_readers;
   long start_time=0 ,  end_time = 0;
+  Stats sleep_time(SAMPLE);
 
   PerfHelloWorldPubListener writerListener;
   participant = DDSDomainParticipantFactory::get_instance()->
@@ -336,10 +335,24 @@ void qs_perf_publisher(int domain_id,int samples, int no_readers, int hertz)
            << std::endl;
        }
        if( i % 10 == 0)
-       NDDSUtility::sleep(loop_period);
+       {
+         struct timeval start, end;
+         gettimeofday(&start, NULL);
+         NDDSUtility::sleep(loop_period);
+         gettimeofday(&end,NULL);
+         sleep_time.insert(end-start); // seconds
+       }
      }
 
-   NDDSUtility::sleep(end_wait);
-   std::cout << "Throughput is "<< ((SAMPLE/no_readers)*1000.0) / ( end_time - start_time);
+    NDDSUtility::sleep(end_wait);
+    std::cout << "Throughput is "<< ((SAMPLE/no_readers)*1000.0) / ( end_time - start_time);
+    std::cout<<"\n sleep histogram is as follows:"<< std::endl;
+    sleep_time.sort_keys();
+    std::cout << "expected sleep period in usec = " << (10*sleep_for)/( 1000)<< std::endl;
+    std::cout << "average = " << sleep_time.average() << std::endl;
+    std::cout << "90 percentile = " << sleep_time.percentile(0.90) << std::endl;
+    std::cout << "95 percentile = " << sleep_time.percentile(0.95) << std::endl;
+    std::cout << "99 percentile = " << sleep_time.percentile(0.99) << std::endl;
+
 }
 
