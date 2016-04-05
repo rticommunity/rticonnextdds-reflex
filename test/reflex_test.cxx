@@ -41,15 +41,15 @@ void read_shape_type(int domain_id);
 void test_all_types(int domain_id);
 void hello_qs_publisher(int domainid);
 void hello_qs_subscriber(int domainid);
-void qs_perf_publisher(int domainid);
-void qs_perf_subscriber(int domainid);
+void qs_perf_publisher(int domainid, int samples, int no_readers,int hertz);
+void qs_perf_subscriber(int domainid,int samples, int id);// id serves as no. of readers when script is used.
 
 void usage()
 {
   std::cout << "Please specify one of the following.\n"
             << "domainId shapes [pub|sub|pubex]\n"
             << "domainId qs     [pub|sub]\n"
-            << "domainId qsperf [pub|sub]\n"
+            << "domainId qsperf [pub|sub]. Enter sample size and unique ID after pub\n"
             << "domainId large, darkart, many, one, all, pointers\n";
 }
 
@@ -113,9 +113,20 @@ int main(int argc, const char **argv)
       }   
 
       if (std::string(argv[3]) == "pub")
-        qs_perf_publisher(domain_id);
+      {
+        if(atoi(argv[4]) >=1 && atoi(argv[5]) && atoi(argv[6]))
+          qs_perf_publisher(domain_id, atoi(argv[4]),atoi(argv[5]),atoi(argv[6]));
+        else
+          usage();
+
+      }
       else if (std::string(argv[3]) == "sub")
-        qs_perf_subscriber(domain_id);
+      {
+        if(atoi(argv[4]) >= 1 && atoi(argv[5]))
+          qs_perf_subscriber(domain_id, atoi(argv[4]), atoi(argv[5]));
+        else
+          usage();
+      }
       else
         usage();
     }
