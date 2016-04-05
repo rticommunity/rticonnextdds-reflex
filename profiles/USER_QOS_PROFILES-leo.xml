@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<!--
+Description
+XML QoS Profile for HelloWorldQueue
+
+For more information about XML QoS Profiles see Chapter 15 in the
+RTI Connext user manual.
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/5.2.0/rti_dds_qos_profiles.xsd"
+     version="5.2.0">
+  <!-- QoS Library containing the QoS profile used in the generated example.
+
+        A QoS library is a named set of QoS profiles.
+    -->
+  <qos_library name="ReflexQs_Library">
+
+    <!-- QoS profile used to configure reliable communication between the DataWriter
+             and DataReader created in the example code.
+
+             A QoS profile groups a set of related QoS.
+        -->
+        <!--
+    <qos_profile name="ReflexQs_Profile"
+        base_name="BuiltinQosLibExp::Generic.StrictReliable.HighThroughput"
+        is_default_qos="true">
+-->
+
+        <qos_profile name="ReflexQs_Profile" 
+                base_name="BuiltinQosLibExp::Generic.AutoTuning" 
+                        is_default_qos="true">
+
+      <!-- uncomment the following for debugging purpose -->
+      <!--<participant_factory_qos>
+        <logging>
+          <verbosity>ALL</verbosity>
+          <output_file>LoggerOutput1.txt</output_file>
+        </logging>
+      </participant_factory_qos> -->
+      <participant_qos>
+        <transport_builtin>
+          <mask>UDPv4</mask>
+        </transport_builtin>
+        <discovery_config>
+          <initial_participant_announcements>10000</initial_participant_announcements>
+           <min_initial_participant_announcement_period>
+             <sec>0</sec>
+             <nanosec>100000000</nanosec>
+           </min_initial_participant_announcement_period>
+        </discovery_config>
+      </participant_qos>
+
+      <datawriter_qos>
+       <reliability>
+          <acknowledgment_kind>
+              APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE
+          </acknowledgment_kind>
+        </reliability>
+        <protocol>
+          <rtps_reliable_writer>
+                <!--
+        	The number of times a reliable writer will send a heartbeat to
+        	a reader without receiving a response before it will consider the
+        	reader to be inactive and no longer await acknowledgements before
+        	discarding sent data.
+        	-->
+        	<max_heartbeat_retries>LENGTH_UNLIMITED</max_heartbeat_retries>
+        	<!--
+        	When a DataWriter receives a negative acknowledgement (NACK) from
+        	a DataReader for a particular data sample, it will send a repair
+        	packet to that reader.
+        	The amount of time the writer waits between receiving the NACK and
+        	sending the repair will be a random value between the minimum
+        	and maximum values specified here. Narrowing the range, and
+        	shifting it towards zero, will make the writer more reactive.
+        	However, by leaving some delay you increase the chance that the
+        	writer will learn of additional readers that missed the same data,
+        	in which case it will be able to send a single multicast repair
+        	instead of multiple unicast repairs, thereby using the available
+        	network bandwidth more efficiently. The higher the fanout in your
+        	system (i.e., the more readers per writer), and the greater the
+        	load on your network, the more you should consider specifying a
+        	non-zero delay here.
+        	-->
+        	<min_nack_response_delay>
+          	  <sec>DURATION_ZERO_SEC</sec>
+          	  <nanosec>DURATION_ZERO_NSEC</nanosec>
+        	</min_nack_response_delay>
+        	<max_nack_response_delay>
+          	  <sec>DURATION_ZERO_SEC</sec>
+          	  <nanosec>DURATION_ZERO_NSEC</nanosec>
+        	</max_nack_response_delay>
+            </rtps_reliable_writer>
+          </protocol>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>4096</value>
+            </element>
+          </value>
+        </property>
+      </datawriter_qos>
+
+      <datareader_qos>
+        <reliability>
+          <acknowledgment_kind>
+              APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE
+          </acknowledgment_kind>
+        </reliability>
+        <reader_resource_limits>
+          <max_app_ack_response_length>1</max_app_ack_response_length>
+        </reader_resource_limits>
+        <property>
+          <value>
+            <element>
+              <name>dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+              <value>4096</value>
+            </element>
+          </value>
+        </property>
+      </datareader_qos>
+
+    </qos_profile>
+  </qos_library>
+</dds>  
