@@ -75,13 +75,13 @@ ifeq ($(DEBUG),1)
   CXXFLAGS     += -g -pg -O0 -DREFLEX_DEBUG 
   CXXLDFLAGS   += -g -pg -O0 
   ifeq ($(STATICLIB),1)
-    NDDSLIBS    = -lnddscppzd -lnddsczd -lnddscorezd 
+    NDDSLIBS    = -lnddscppzd -lnddsczd -lnddscorezd -lrticonnextmsgcpp
     REFLEXLIB      = -l$(REFLEXLIBRARY)zd
     REFLEXLIBOUT   = lib$(REFLEXLIBRARY)zd.a
     EXT         = zd
     LIBEXT      = .a
   else
-    NDDSLIBS    = -lnddscppd -lnddscd -lnddscored  
+    NDDSLIBS    = -lnddscppd -lnddscd -lnddscored -lrticonnextmsgcpp 
     REFLEXLIB      = -l$(REFLEXLIBRARY)d
     LINKFLAGS  += -fpic -shared
     REFLEXLIBOUT   = lib$(REFLEXLIBRARY)d.so
@@ -91,13 +91,13 @@ ifeq ($(DEBUG),1)
 else
   CXXFLAGS     += -O3 -DBOOST_MPL_LIMIT_LIST_SIZE=20 
   ifeq ($(STATICLIB),1)
-    NDDSLIBS    = -lnddscppz -lnddscz -lnddscorez
+    NDDSLIBS    = -lnddscppz -lnddscz -lnddscorez -lrticonnextmsgcpp
     REFLEXLIB      = -l$(REFLEXLIBRARY)z
     REFLEXLIBOUT   = lib$(REFLEXLIBRARY)z.a
     EXT         = z
     LIBEXT      = .a
   else
-    NDDSLIBS    = -lnddscpp -lnddsc -lnddscore
+    NDDSLIBS    = -lnddscpp -lnddsc -lnddscore -lrticonnextmsgcpp
     REFLEXLIB      = -l$(REFLEXLIBRARY)
     LINKFLAGS  += -fpic -shared
     REFLEXLIBOUT   = lib$(REFLEXLIBRARY).so

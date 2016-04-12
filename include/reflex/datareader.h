@@ -11,6 +11,8 @@ damages arising out of the use or inability to use the software.
 #ifndef RTIREFLEX_DATAREADER_H
 #define RTIREFLEX_DATAREADER_H
 
+#include "ndds/connext_cpp/connext_cpp_infrastructure.h" 
+
 #include "reflex/safe_typecode.h"
 #include "reflex/auto_dd.h"
 #include "reflex/dd2tuple.h"
@@ -34,6 +36,37 @@ namespace reflex {
   } // namespace sub
 
   namespace detail {
+
+    template <class T>
+    connext::LoanedSamples<DDS_DynamicData> take_loan_impl(
+      std::shared_ptr<DDSDynamicDataReader> dr,
+      int max_samples,
+      DDS_SampleStateMask sample_states,
+      DDS_ViewStateMask view_states,
+      DDS_InstanceStateMask instance_states,
+      DDSReadCondition * cond = 0)
+    {
+      DDS_DynamicDataSeq data_seq;
+      DDS_SampleInfoSeq info_seq;
+      DDS_ReturnCode_t rc;
+
+      if (cond)
+        rc = dr->take_w_condition(data_seq, info_seq, max_samples, cond);
+      else
+        rc = dr->take(data_seq, info_seq, max_samples,
+                      sample_states, view_states, instance_states);
+
+      if (rc == DDS_RETCODE_NO_DATA) {
+        connext::LoanedSamples<DDS_DynamicData> empty;
+        return move(empty);
+      }
+
+      // throw if rc != DDS_RETCODE_OK 
+      detail::check_retcode("! Unable to take data from data reader, error ", rc);
+
+      return connext::LoanedSamples<DDS_DynamicData>::move_construct_from_loans(
+              dr.get(), data_seq, info_seq);
+    }
 
     template <class T>
     DDS_ReturnCode_t take_impl(
@@ -132,6 +165,20 @@ namespace reflex {
             params.listener_statusmask(),
             params.dynamicdata_type_property(),
             "DynamicDataReader");
+      }
+
+      connext::LoanedSamples<DDS_DynamicData> take(
+        int max_samples = DDS_LENGTH_UNLIMITED,
+        DDS_SampleStateMask sample_states = DDS_ANY_SAMPLE_STATE,
+        DDS_ViewStateMask view_states = DDS_ANY_VIEW_STATE,
+        DDS_InstanceStateMask instance_states = DDS_ANY_INSTANCE_STATE)
+      {
+        return detail::take_loan_impl<T>(
+                    safe_datareader_,
+                    max_samples,
+                    sample_states,
+                    view_states,
+                    instance_states);
       }
 
       DDS_ReturnCode_t take(

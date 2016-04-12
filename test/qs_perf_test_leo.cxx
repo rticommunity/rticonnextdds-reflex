@@ -220,14 +220,17 @@ struct PerfReaderListener : public DDSDataReaderListener
     DDS_AckResponseData_t responseData;
     if(dr.underlying())
     {
-      std::vector<reflex::sub::Sample<PerfHelloWorld>> samples;
-      dr.take(samples);
+      connext::LoanedSamples<DDS_DynamicData> loan = dr.take();
       responseData.value.ensure_length(1,1);
       responseData.value[0] = 1;
-      for (auto &ss : samples)
+
+      for (const connext::SampleRef<DDS_DynamicData> &sref : loan)
       {
-        if (ss.info().valid_data)
+        if (sref.info().valid_data)
         {
+          PerfHelloWorld sample;
+          reflex::read_dynamicdata(sample, sref.data());
+
           count++;
           if(count == WARMUP)
           {
@@ -238,14 +241,14 @@ struct PerfReaderListener : public DDSDataReaderListener
           {
             struct timeval recv_ts;
             gettimeofday(&recv_ts, NULL);
-            long diff = (recv_ts.tv_sec*1000*1000 + recv_ts.tv_usec) - ss->timestamp;
+            long diff = (recv_ts.tv_sec*1000*1000 + recv_ts.tv_usec) - sample.timestamp;
             latency_hist.insert(diff);
 
             if ((count % MOD) == 0)
             {
               struct timeval current;
               gettimeofday(&current,NULL);
-              std::cout << "messageId = " << ss->messageId
+              std::cout << "messageId = " << sample.messageId
                         << ". Current throughput is " 
                         << 1000.0*1000.0*MOD/(current-prev) << "\n";
               prev = current;
@@ -401,10 +404,12 @@ void qs_perf_subscriber(int domain_id, int samples, int id)
             << reader_listener.latency_hist.percentile(0.90) << std::endl;
   std::cout << "latency 99 percentile = " 
             << reader_listener.latency_hist.percentile(0.99) << std::endl;
-  std::cout << "latency 99.99 percentile = " 
+  std::cout << "latency 99.9 percentile = " 
             << reader_listener.latency_hist.percentile(0.999) << std::endl;
-  std::cout << "latency 99.999 percentile = " 
+  std::cout << "latency 99.99 percentile = " 
             << reader_listener.latency_hist.percentile(0.9999) << std::endl;
+  std::cout << "latency 99.999 percentile = " 
+            << reader_listener.latency_hist.percentile(0.99999) << std::endl;
   std::cout << "latency max = " 
             << reader_listener.latency_hist.get_max() << std::endl;
   std::cout << "Throughput = " 
