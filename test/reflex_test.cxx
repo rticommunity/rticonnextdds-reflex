@@ -49,7 +49,8 @@ void usage()
   std::cout << "Please specify one of the following.\n"
             << "domainId shapes [pub|sub|pubex]\n"
             << "domainId qs     [pub|sub]\n"
-            << "domainId qsperf [pub|sub]. Enter sample size and unique ID after pub\n"
+            << "domainId qsperf pub sample_count num_readers hertz\n"
+            << "domainId qsperf sub sample_count datareader_id\n"
             << "domainId large, darkart, many, one, all, pointers\n";
 }
 
@@ -89,7 +90,7 @@ int main(int argc, const char **argv)
       else
         usage();
     }
-    if (std::string(argv[2]) == "qs")
+    else if (std::string(argv[2]) == "qs")
     {   
       if (argc <= 3)
       {   
@@ -104,26 +105,42 @@ int main(int argc, const char **argv)
       else
         usage();
     }
-    if (std::string(argv[2]) == "qsperf")
+    else if (std::string(argv[2]) == "qsperf")
     {   
-      if (argc <= 3)
-      {   
+      if (argc <= 3) {   
         usage();
         return 0;
       }   
 
       if (std::string(argv[3]) == "pub")
       {
-        if(atoi(argv[4]) >=1 && atoi(argv[5]) && atoi(argv[6]))
-          qs_perf_publisher(domain_id, atoi(argv[4]),atoi(argv[5]),atoi(argv[6]));
+        if (argc <= 6) {
+          usage();
+          return 0;
+        }
+
+        int sample_count = atoi(argv[4]);  
+        int num_readers = atoi(argv[5]);
+        int hertz = atoi(argv[6]);
+
+        if(sample_count && num_readers && hertz)
+          qs_perf_publisher(domain_id, sample_count, num_readers, hertz);
         else
           usage();
 
       }
       else if (std::string(argv[3]) == "sub")
       {
-        if(atoi(argv[4]) >= 1 && atoi(argv[5]))
-          qs_perf_subscriber(domain_id, atoi(argv[4]), atoi(argv[5]));
+        if (argc <= 5) {
+          usage();
+          return 0;
+        }
+
+        int sample_count = atoi(argv[4]);  
+        int id = atoi(argv[5]);
+
+        if(sample_count)
+          qs_perf_subscriber(domain_id, sample_count, id);
         else
           usage();
       }

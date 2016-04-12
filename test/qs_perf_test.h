@@ -1,17 +1,22 @@
-#ifndef QS_PERF_TEST_H
-#define QS_PERF_TEST_H 
+#ifndef QS_PERF_TEST_LEO_H
+#define QS_PERF_TEST_LEO_H 
 
-#include <vector>
 #include "reflex.h"
 
 struct PerfHelloWorld {
   unsigned int messageId;
-  std::vector<reflex::match::octet_t> payload;
+  long timestamp;
+
+  PerfHelloWorld()
+  {
+    timestamp = 0;
+    messageId = 0;
+  }
 };
 
 REFLEX_ADAPT_STRUCT(PerfHelloWorld,
-    (unsigned int, messageId)
-    (std::vector<reflex::match::octet_t>,payload));
+    (unsigned int, messageId) 
+    (long ,timestamp));
 
-#endif // QS_PERF_TEST_H
+#endif // QS_PERF_TEST_LEO_H
 

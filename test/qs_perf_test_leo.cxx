@@ -1,17 +1,156 @@
-
 #include "qs_perf_test_leo.h"
 #include "ndds_namespace_cpp.h"
+
 #include <cstdio>
+#include <cstdlib>
 #include <sys/time.h>
-#include <stdlib.h>
 
-#define MOD 10000
-
-int EXTRA = 100;
-
+const int MOD = 10000;
+const int WRITE_BURST = 5;
+int WARMUP = 100;
 int SAMPLE = 0;
-timeval  begin, end;
-std::vector<long> Time;
+
+size_t operator - (const timeval & end, const timeval & begin)
+{
+  size_t end_usec = end.tv_sec * (size_t) 1000 * 1000 + end.tv_usec;
+  size_t begin_usec = begin.tv_sec * (size_t) 1000 * 1000 + begin.tv_usec;
+  return end_usec - begin_usec; 
+}
+
+class Stats
+{
+  std::map<int, int> histogram;
+  std::vector<int> keys;
+  int total;
+  int max;
+  double avg;
+  double standard_dev;
+  bool avg_done;
+  bool stddev_done;
+
+  public:
+
+  Stats()
+  {
+    total = 0;
+    max = -1;
+    avg = -1;
+    standard_dev = -1;
+    avg_done = false;
+    stddev_done = false;
+  }
+
+  void insert(int val)
+  {
+    if(keys.empty())
+    {
+      histogram[val]++;
+      total++;
+      if(max < val)
+        max = val;
+    }
+    else
+      throw std::runtime_error("Stats::insert Can't change the histogram anymore");
+  }
+
+  void sort_keys()
+  {
+    if(keys.empty())
+    {
+      keys.reserve(histogram.size());
+
+      for(std::map<int, int>::iterator iter = histogram.begin();
+          iter != histogram.end();
+          ++iter)
+      {
+        keys.push_back(iter->first);  
+      }
+      std::sort(keys.begin(), keys.end());
+    }
+  }
+
+  void print_histogram(const char *filename) 
+  {
+    FILE * file = fopen(filename, "w");
+    sort_keys();
+    
+    //printf("#keys = %d, histsize = %d\n", keys.size(), histogram.size());
+    for(std::vector<int>::const_iterator iter = keys.begin();
+        iter != keys.end();
+        ++iter)
+    {
+      fprintf(file, "[%d] = %d\n", *iter, histogram[*iter]);
+    }
+    //printf("#keys = %d, histsize = %d\n", keys.size(), histogram.size());
+
+    fclose(file);
+  }
+
+  int percentile(double ptile)
+  {
+    if(ptile <= 0.0 || ptile > 1.0)
+      return -1;
+
+    sort_keys();
+    
+    long count = 0;
+    for(std::vector<int>::reverse_iterator iter = keys.rbegin();
+        iter != keys.rend();
+        ++iter)
+    {
+      count += histogram[*iter];
+      if((double) count/total >= (1.0-ptile))
+        return *iter;
+    }
+    return -1;
+  }
+
+  double average()
+  {
+    if(!avg_done)
+    {
+      sort_keys();
+      
+      double sum = 0;
+      int count = 0;
+      for(std::vector<int>::iterator iter = keys.begin();
+          iter != keys.end();
+          ++iter)
+      {
+        sum += (*iter * histogram[*iter]);
+        count += histogram[*iter];
+      }
+      std::cout << "count = " << count << ", total = " << total << "\n";
+      avg = sum/total;
+      avg_done = true;
+    }
+    return avg;
+  }
+
+  double stddev() 
+  {
+    if(!stddev_done)
+    {
+      double avg = average();
+      double sum_of_sqr = 0;
+      for(std::vector<int>::iterator iter = keys.begin();
+          iter != keys.end();
+          ++iter)
+      {
+        double diff = *iter - avg;
+        sum_of_sqr += diff*diff*histogram[*iter];
+      }
+      standard_dev = sqrt(sum_of_sqr/total);
+      stddev_done = true;
+    }
+    return standard_dev;
+  }
+
+  int get_max() const
+  {
+    return max;
+  }
+};
 
 class PerfHelloWorldPubListener : public DDS::DataWriterListener {
     int accept_count;
@@ -64,7 +203,8 @@ class PerfHelloWorldPubListener : public DDS::DataWriterListener {
         reject_count = 0;
     }
 };
-class PerfReaderListener : public DDSDataReaderListener
+
+struct PerfReaderListener : public DDSDataReaderListener
 {
   reflex::sub::DataReader<PerfHelloWorld> dr;
   int count;
@@ -72,7 +212,8 @@ class PerfReaderListener : public DDSDataReaderListener
   public:
   bool foundQS;
   bool done;
-  long time_start, time_end;
+  struct timeval time_start, time_end, prev;
+  Stats latency_hist;
 
   void on_data_available(DDSDataReader * reader) override
   {
@@ -88,29 +229,31 @@ class PerfReaderListener : public DDSDataReaderListener
         if (ss.info().valid_data)
         {
           count++;
-          if((count % MOD) == 0)
-            std::cout << "\nmessageId = " << ss->messageId;
-          if(count > EXTRA) 
+          if(count == WARMUP)
           {
-            gettimeofday(&end, NULL);
-            long time = (end.tv_sec*1000000 + end.tv_usec) - ss->timestamp;
-            Time.push_back(time);
-            if(count == EXTRA + 1)
-            {
-              time_start = (end.tv_sec*1000 + end.tv_usec/1000); //time in milliseconds
-            }
-            if (count % MOD ==0 )
-            {
+            gettimeofday(&time_start, NULL);
+            prev = time_start;
+          }
+          if(count > WARMUP) 
+          {
+            struct timeval recv_ts;
+            gettimeofday(&recv_ts, NULL);
+            long diff = (recv_ts.tv_sec*1000*1000 + recv_ts.tv_usec) - ss->timestamp;
+            latency_hist.insert(diff);
 
-              gettimeofday(&begin,NULL);
-              time_end = begin.tv_sec*1000 + begin.tv_usec/1000;
-              std::cout <<"\n Throughput is "<< (count)*1000.0 / (time_end - time_start);
+            if ((count % MOD) == 0)
+            {
+              struct timeval current;
+              gettimeofday(&current,NULL);
+              std::cout << "messageId = " << ss->messageId
+                        << ". Current throughput is " 
+                        << 1000.0*1000.0*MOD/(current-prev) << "\n";
+              prev = current;
             }
           }
-          if(count == SAMPLE+EXTRA)  //last message.
+          if(count == SAMPLE+WARMUP)  //last message.
           {
-            gettimeofday(&begin,NULL);
-            time_end = begin.tv_sec*1000 + begin.tv_usec/1000;
+            gettimeofday(&time_end,NULL);
             done = true;
           }
         }
@@ -137,37 +280,37 @@ class PerfReaderListener : public DDSDataReaderListener
       }   
     }   
   }
+
   void set_reflex_datareader(reflex::sub::DataReader<PerfHelloWorld> reader)
   {
     dr = reader;
   }
+
   PerfReaderListener()
+    : time_start{0}, 
+      time_end{0}
   {
     foundQS= false;
-    time_start = 0;
-    time_end = 0;
     count = 0;
     done = false;
   }
 };
 
-
-void getReaderGuidExpr(char * readerGuidExpr)
+void getReaderGuidExpr(char * readerGuidExpr, int id)
 {
-    char * ptr = readerGuidExpr;
-
-    snprintf(ptr, 255, "%s%032llx)", "@related_reader_guid.value = &hex(", (long long) readerGuidExpr);
+  snprintf(readerGuidExpr, 255, "%s%030x%02x)",
+           "@related_reader_guid.value = &hex(", getpid(), id);
 }
 
-void qs_perf_subscriber(int domain_id,int samples, int id)
+void qs_perf_subscriber(int domain_id, int samples, int id)
 {
-  char topicName[255],readerGuidExpr[255];
+  char topicName[255], readerGuidExpr[255];
   SAMPLE = samples;
   DDS_DataReaderQos readerQos;
   DDS_StringSeq cftParams;
   DDSTopic *topic = NULL;
-  Time.reserve(SAMPLE);
   DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
+
   DDSDomainParticipant * participant = DDSDomainParticipantFactory::get_instance()->
     create_participant(
         domain_id, DDS_PARTICIPANT_QOS_DEFAULT,
@@ -211,8 +354,7 @@ void qs_perf_subscriber(int domain_id,int samples, int id)
     std::cout <<"\n topic error! \n";
     return;
   } 
-  readerGuidExpr[254] = id; //unique filter
-  getReaderGuidExpr(readerGuidExpr);
+  getReaderGuidExpr(readerGuidExpr, id);
 
   DDSContentFilteredTopic * cftTopic = participant->create_contentfilteredtopic(
       topicName,
@@ -224,6 +366,7 @@ void qs_perf_subscriber(int domain_id,int samples, int id)
     std::cout <<"\n cft error\n";
     return;
   }
+
   reflex::sub::DataReader<PerfHelloWorld>
     datareader(reflex::sub::DataReaderParams(participant)
         .topic_name(topicName)
@@ -234,46 +377,61 @@ void qs_perf_subscriber(int domain_id,int samples, int id)
 
   printf("Waiting to discover SharedReaderQueue ...\n");
 
-  DDS_Duration_t period{ 0, 100 * 1000 * 1000 };
-  while (!reader_listener.foundQS) {
+  while (!reader_listener.foundQS) 
+  {
+    DDS_Duration_t period { 0, 100 * 1000 * 1000 };
     NDDSUtility::sleep(period);
   }
-  DDS_Duration_t poll_period = { 2, 0 };
+
   std::cout <<"Found SharedReaderQueue!\n";
-  while(!reader_listener.done){
-    std::cout << "Polling\n";
+  while(!reader_listener.done)
+  {
+    DDS_Duration_t poll_period = { 2, 0 };
     NDDSUtility::sleep(poll_period);
   }
-  Stats latency_hist(SAMPLE);
-  for(int i= 0; i< SAMPLE; i++)
-  {
-    latency_hist.insert(Time[i]);
-  }
-  latency_hist.sort_keys();
-  //latency_hist.print_histogram();
-  std::cout << "\naverage latency = " << latency_hist.average() << std::endl;
-  std::cout << "90 percentile = " << latency_hist.percentile(0.90) << std::endl;
-  std::cout << "95 percentile = " << latency_hist.percentile(0.95) << std::endl;
-  std::cout << "99 percentile = " << latency_hist.percentile(0.99) << std::endl;
-  std::cout << "99.99 percentile = " << latency_hist.percentile(0.9999) << std::endl;
-  std::cout << " Throughput details: " << (SAMPLE*1000.0)/(reader_listener.time_end - reader_listener.time_start);
-  NDDSUtility::sleep(poll_period);
+  
+  std::cout << "Reader Id = " << id << std::endl;
+  reader_listener.latency_hist.sort_keys();
+  //reader_listener.latency_hist.print_histogram();
+  std::cout << "latency average = " 
+            << reader_listener.latency_hist.average() << std::endl;
+  std::cout << "latency stddev = " 
+            << reader_listener.latency_hist.stddev() << std::endl;
+  std::cout << "latency 90 percentile = " 
+            << reader_listener.latency_hist.percentile(0.90) << std::endl;
+  std::cout << "latency 99 percentile = " 
+            << reader_listener.latency_hist.percentile(0.99) << std::endl;
+  std::cout << "latency 99.99 percentile = " 
+            << reader_listener.latency_hist.percentile(0.999) << std::endl;
+  std::cout << "latency 99.999 percentile = " 
+            << reader_listener.latency_hist.percentile(0.9999) << std::endl;
+  std::cout << "latency max = " 
+            << reader_listener.latency_hist.get_max() << std::endl;
+  std::cout << "Throughput = " 
+            << 1000.0*1000.9*reader_listener.count/(reader_listener.time_end - reader_listener.time_start)
+            << std::endl;
 }
 
-void qs_perf_publisher(int domain_id,int samples, int no_readers, int hertz)
+double scale_sleep_period_usec(int hz) 
+{
+  double scale_factor = 1.30;
+  scale_factor /= WRITE_BURST;
+  return 1000.0/(hz*scale_factor)*1000;
+}
+
+void qs_perf_publisher(int domain_id, int samples, int no_readers, int hertz)
 {
   DDS_ReturnCode_t         rc = DDS_RETCODE_OK;
   DDSDomainParticipant *   participant = NULL;
   DDS_DynamicDataTypeProperty_t props;
- // int hertz = 100000;
-  double sleep_for = sleep_period(hertz) * 1000 * 1000 *1000; //nanoseconds
-  DDS_Duration_t loop_period{ 0, (DDS_UnsignedLong)(10*sleep_for)};
-  DDS_Duration_t end_wait{ 3,0  };
+  double expected_sleep_period_usec = scale_sleep_period_usec(hertz);
+  DDS_Duration_t loop_period { 0, (unsigned int) expected_sleep_period_usec * 1000 };
+  DDS_Duration_t end_wait{ 3, 0 };
   const char *topic_name = "PerfHelloWorldTopic";
   SAMPLE = samples * no_readers;
-  EXTRA = EXTRA * no_readers;
-  long start_time=0 ,  end_time = 0;
-  Stats sleep_time(SAMPLE);
+  WARMUP = WARMUP * no_readers;
+  Stats sleep_hist;
+  struct timeval begin = {0}, end = {0};
 
   PerfHelloWorldPubListener writerListener;
   participant = DDSDomainParticipantFactory::get_instance()->
@@ -296,63 +454,69 @@ void qs_perf_publisher(int domain_id,int samples, int no_readers, int hertz)
              .listener(&listener));
 
    //Wait for Queuing Service discovery 
-     std::cout <<"\nWaiting to discover SharedReaderQueue ...\n";
+   std::cout <<"\nWaiting to discover SharedReaderQueue ...\n";
 
-     while (!listener.foundQS) {
-       NDDSUtility::sleep(loop_period);
+  while (!listener.foundQS) {
+     NDDSUtility::sleep(loop_period);
+  }
+
+  std::cout<<"\nSharedReaderQueue discovered...\n";
+
+  struct timeval prev = {0};
+  gettimeofday(&prev, NULL);
+
+  for(int i = 1;i <= (SAMPLE+WARMUP); i++)
+  {
+     PerfHelloWorld obj;
+     obj.messageId = i;
+     if (i == WARMUP) {
+       gettimeofday(&begin, NULL);
      }
 
-     std::cout<<"\nSharedReaderQueue discovered...\n";
-    int i = 0;
-    while(i < (SAMPLE+EXTRA))
+     struct timeval ts;
+     gettimeofday(&ts, NULL);
+     obj.timestamp = ts.tv_sec*1000*1000 + ts.tv_usec;
+
+     rc = writer.write(obj);
+
+     if((i % MOD) == 0)
      {
-       ++i;
-       PerfHelloWorld obj;
-       obj.messageId = i;
-       if(i > EXTRA)
-       {
-         gettimeofday(&begin,NULL);
-         obj.timestamp = begin.tv_sec *1000000 + begin.tv_usec;
-       }
-      if ( i == (EXTRA +1))
-      {
-        gettimeofday(&begin,NULL);
-        start_time = begin.tv_sec*1000 + begin.tv_usec/1000;
-
-      }
-      if( i == (SAMPLE+EXTRA) )
-      {
-        gettimeofday(&end,NULL);
-        end_time = end.tv_sec*1000 + end.tv_usec/1000;
-
-      }
-       rc = writer.write(obj);
-       if((i % 100000) == 0)
-         std::cout <<"Wrote "<< i << "\n";
-       if (rc != DDS_RETCODE_OK) {
-         std::cerr << "Write error = "
-           << reflex::detail::get_readable_retcode(rc)
-           << std::endl;
-       }
-       if( i % 10 == 0)
-       {
-         struct timeval start, end;
-         gettimeofday(&start, NULL);
-         NDDSUtility::sleep(loop_period);
-         gettimeofday(&end,NULL);
-         sleep_time.insert(end-start); // seconds
-       }
+       double elapsed_time_usec = ts-prev;
+       prev = ts;
+       std::cout << "Wrote " << i 
+                 << ". tput = " << 1000.0*1000.0*MOD/elapsed_time_usec << "\n";
      }
 
-    NDDSUtility::sleep(end_wait);
-    std::cout << "Throughput is "<< ((SAMPLE/no_readers)*1000.0) / ( end_time - start_time);
-    std::cout<<"\n sleep histogram is as follows:"<< std::endl;
-    sleep_time.sort_keys();
-    std::cout << "expected sleep period in usec = " << (10*sleep_for)/( 1000)<< std::endl;
-    std::cout << "average = " << sleep_time.average() << std::endl;
-    std::cout << "90 percentile = " << sleep_time.percentile(0.90) << std::endl;
-    std::cout << "95 percentile = " << sleep_time.percentile(0.95) << std::endl;
-    std::cout << "99 percentile = " << sleep_time.percentile(0.99) << std::endl;
+     if (rc != DDS_RETCODE_OK) 
+     {
+       std::cerr << "Write error = "
+                 << reflex::detail::get_readable_retcode(rc)
+                 << std::endl;
+     }
+
+     if(i % WRITE_BURST == 0)
+     {
+       struct timeval start_sleep, end_sleep;
+       gettimeofday(&start_sleep, NULL);
+       NDDSUtility::sleep(loop_period);
+       gettimeofday(&end_sleep,NULL);
+       sleep_hist.insert(end_sleep-start_sleep); 
+     }
+  }
+  
+  gettimeofday(&end,NULL);
+
+  NDDSUtility::sleep(end_wait);
+  sleep_hist.sort_keys();
+
+  std::cout << "Throughput is "<< 1000.0*1000.0*SAMPLE / (end - begin) << std::endl;
+  std::cout << "sleep expected period in usec = " << expected_sleep_period_usec << std::endl;
+  std::cout << "sleep average = " << sleep_hist.average() 
+            << " stddev = " << sleep_hist.stddev() << std::endl;
+  std::cout << "sleep 90 percentile = " << sleep_hist.percentile(0.90) << std::endl;
+  std::cout << "sleep 99 percentile = " << sleep_hist.percentile(0.99) << std::endl;
+  std::cout << "sleep 99.9 percentile = " << sleep_hist.percentile(0.999) << std::endl;
+  std::cout << "sleep max = " << sleep_hist.get_max() << std::endl;
 
 }
 

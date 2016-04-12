@@ -21,7 +21,7 @@ RTI Connext user manual.
              A QoS profile groups a set of related QoS.
         -->
     <qos_profile name="ReflexQs_Profile"
-        base_name="BuiltinQosLibExp::Generic.StrictReliable.HighThroughput"
+        base_name="BuiltinQosLibExp::Generic.AutoTuning"
         is_default_qos="true">
       <!-- uncomment the following for debugging purpose -->
       <!--
@@ -39,10 +39,32 @@ RTI Connext user manual.
 
       <datawriter_qos>
         <reliability>
+          <kind>RELIABLE_RELIABILITY_QOS</kind>
+          <max_blocking_time>
+            <sec>0</sec>
+            <nanosec>50000000</nanosec>
+          </max_blocking_time>
           <acknowledgment_kind>
-              APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE
+          APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE 
           </acknowledgment_kind>
         </reliability>
+        <resource_limits>
+          <max_samples>512</max_samples>
+        </resource_limits>
+
+        <protocol>
+          <rtps_reliable_writer>
+            <max_heartbeat_retries>LENGTH_UNLIMITED</max_heartbeat_retries>
+            <min_nack_response_delay>
+              <sec>DURATION_ZERO_SEC</sec>
+              <nanosec>DURATION_ZERO_NSEC</nanosec>
+            </min_nack_response_delay>
+            <max_nack_response_delay>
+              <sec>DURATION_ZERO_SEC</sec>
+              <nanosec>DURATION_ZERO_NSEC</nanosec>
+            </max_nack_response_delay>
+          </rtps_reliable_writer>
+        </protocol>
         <property>
           <value>
             <element>
@@ -51,6 +73,9 @@ RTI Connext user manual.
             </element>
           </value>
         </property>
+        <batch>
+          <enable>false</enable>
+        </batch>
       </datawriter_qos>
 
       <datareader_qos>
@@ -59,6 +84,9 @@ RTI Connext user manual.
               APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE
           </acknowledgment_kind>
         </reliability>
+        <resource_limits>
+          <max_samples>512</max_samples>
+        </resource_limits>
         <reader_resource_limits>
           <max_app_ack_response_length>1</max_app_ack_response_length>
         </reader_resource_limits>
