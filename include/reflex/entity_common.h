@@ -166,6 +166,8 @@ namespace reflex {
 
 } // namespace reflex
 
+#undef METHOD_NAME
+
 #ifndef REFLEX_NO_HEADER_ONLY
 #include "reflex/../../src/entity_common.cxx"
 #endif 

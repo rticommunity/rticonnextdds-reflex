@@ -110,10 +110,8 @@ LIBS = -L$(NDDSHOME)/lib/$(ARCH) -Lobjs/$(ARCH) $(NDDSLIBS) $(SYSLIBS)
 
 SOURCES = src/auto_dd.cxx                  \
           src/typecode_manip.cxx           \
-          src/datareader.cxx               \
           src/datareader_params.cxx        \
           src/datawriter_params.cxx        \
-          src/datawriter.cxx               \
           src/dd_extra.cxx                 \
           src/dd_manip.cxx                 \
           src/reflex.cxx                   \
@@ -239,6 +237,7 @@ objs/$(ARCH)/$(REFLEXLIBRARY)_prop_test: $(PROPTESTOBJS)
 	$(CXXLD) $(CXXLDFLAGS) -o $@ $(PROPTESTOBJS) $(LIBS)
 
 objs/$(ARCH)/reflex_prop_test.o: test/reflex_prop_test.cxx  
+	echo $(RANDOM) >> RANDOM_SEEDS.txt
 	$(CXX) $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -DRANDOM_SEED=$(RANDOM) -c $< 
 
 

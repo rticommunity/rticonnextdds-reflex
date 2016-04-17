@@ -181,6 +181,25 @@ namespace reflex {
                     instance_states);
       }
 
+      connext::LoanedSamples<DDS_DynamicData> take_w_condition(
+        int max_samples,
+        DDSReadCondition * cond)
+      {
+        if (!cond)
+        {
+          DDS_ReturnCode_t rc = DDS_RETCODE_PRECONDITION_NOT_MET;
+          detail::check_retcode("reflex::sub::DataReader::take_w_condition: NULL Condition: ", rc);
+        }
+
+        return detail::take_loan_impl<T>(
+                    safe_datareader_,
+                    max_samples,
+                    DDS_ANY_SAMPLE_STATE,
+                    DDS_ANY_VIEW_STATE,
+                    DDS_ANY_INSTANCE_STATE,
+                    cond);
+      }
+
       DDS_ReturnCode_t take(
         std::vector<Sample<T>> & data,
         int max_samples = DDS_LENGTH_UNLIMITED,
@@ -271,12 +290,6 @@ namespace reflex {
 
   } // namespace sub
 } // namespace reflex
-
-#ifndef REFLEX_NO_HEADER_ONLY
-#include "reflex/../../src/datareader.cxx"
-#endif
-
-
 
 #endif // RTIREFLEX_DATAREADER_H
 

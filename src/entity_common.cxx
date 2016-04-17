@@ -10,6 +10,12 @@ damages arising out of the use or inability to use the software.
 
 #include "reflex/entity_common.h"
 
+#ifdef WIN32
+#define METHOD_NAME __FUNCTION__
+#else
+#define METHOD_NAME __PRETTY_FUNCTION__
+#endif 
+
 namespace reflex {
 
   namespace detail {
@@ -80,3 +86,4 @@ namespace reflex {
 
 } // namespace reflex
 
+#undef METHOD_NAME

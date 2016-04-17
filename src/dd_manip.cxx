@@ -127,6 +127,16 @@ namespace reflex {
         return reinterpret_cast<DDS_Char *>(ptr);
       }
 
+      REFLEX_INLINE DDS_UnsignedLongLong * primitive_ptr_cast(long unsigned int *ptr)
+      {
+        return reinterpret_cast<DDS_UnsignedLongLong *>(ptr);
+      }
+
+      REFLEX_INLINE DDS_LongLong * primitive_ptr_cast(long int *ptr)
+      {
+        return reinterpret_cast<DDS_LongLong *>(ptr);
+      }
+
       REFLEX_INLINE void set_member_overload_resolution_helper::set_member_value(      
             DDS_DynamicData & instance,                                                
             const MemberAccess &ma,                                                    

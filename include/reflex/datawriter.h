@@ -153,8 +153,4 @@ namespace reflex {
   } // namespace pub
 } // namespace reflex
 
-#ifndef REFLEX_NO_HEADER_ONLY
-#include "reflex/../../src/datawriter.cxx"
-#endif
-
 #endif // RTIREFLEX_DATAWRITER_H

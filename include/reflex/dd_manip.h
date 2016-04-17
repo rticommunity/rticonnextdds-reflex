@@ -65,15 +65,27 @@ namespace reflex {
     // This signed char overload is needed because DDS does not natively
     // support signed char. It supports char and octet, which in C++
     // are char and unsigned char but signed char is a third kind of char
-    // and is separate from first two. It must be explicitly casted 
+    // and is separate from the first two. It must be explicitly casted 
     // to char. Hence the overload.
     REFLEX_DLL_EXPORT DDS_Char * primitive_ptr_cast(signed char * ptr);
+    
+    // long unsigned int* is casted to DDS_UnsignedLongLong* (long long unsigned int *).
+    // This cast must be done explicitly. 
+    REFLEX_DLL_EXPORT DDS_UnsignedLongLong * primitive_ptr_cast(long unsigned int * ptr);
+
+    // long int* is casted to DDS_LongLong* (long long int *).
+    // This cast must be done explicitly. 
+    REFLEX_DLL_EXPORT DDS_LongLong * primitive_ptr_cast(long int * ptr);
 
     template <class T>
     T * primitive_ptr_cast(T * t,
                            typename
-                            reflex::meta::enable_if<reflex::type_traits::is_primitive_and_not_bool<T>::value &&
-                                      !std::is_same<signed char, T>::value>::type * = 0)
+                            reflex::meta::enable_if<
+                              reflex::type_traits::is_primitive_and_not_bool<T>::value &&
+                              !std::is_same<signed char, T>::value &&
+                              !std::is_same<long int, T>::value    &&
+                              !std::is_same<long unsigned int, T>::value
+                            >::type * = 0)
     {
       // see the signed char overload.
       return t;
@@ -272,21 +284,27 @@ namespace reflex {
                 const std::vector<long double> & val,
                 void * = 0);
 
-      template <class T>
+      template <class Vec>
       static void set_member_value(
         DDS_DynamicData & instance,
         const MemberAccess &ma,
-        const std::vector<T> & val,
-        typename reflex::meta::enable_if<reflex::type_traits::is_primitive_and_not_bool<T>::value>::type * = 0)
+        const Vec & val,
+        typename reflex::meta::enable_if<
+          reflex::type_traits::is_vector<Vec>::value &&
+          reflex::type_traits::is_primitive_and_not_bool<
+            typename reflex::type_traits::container_traits<Vec>::value_type
+          >::value
+        >::type * = 0)
       {
+        using value_type = typename reflex::type_traits::container_traits<Vec>::value_type;
         // Sequences of primitive types are loaned and unloaned as an optimization.
         // bools and enums don't use this optimization because vector<bool> storage is
         // 8 bools-per-byte and sizeof enums is not standarized and it is compiler dependent.
 
         if (!val.empty())
         {
-          typename DynamicDataSeqTraits<T>::type seq;
-          std::vector<T> & nc_val = const_cast<std::vector<T> &>(val);
+          typename DynamicDataSeqTraits<value_type>::type seq;
+          Vec & nc_val = const_cast<Vec &>(val);
           int seq_size = static_cast<int>(val.size()); // FIXME: loss of precision on x64
           int seq_capacity = static_cast<int>(val.capacity()); // FIXME: loss of precision on x64
           if (seq.loan_contiguous(primitive_ptr_cast(&nc_val[0]), seq_size, seq_capacity) != true)
@@ -699,16 +717,20 @@ namespace reflex {
 
     private:
       template <class C>
-      static void right_size(C &c, size_t size)
+      static void right_size(
+          C &c, size_t size,
+          typename reflex::meta::disable_if<reflex::type_traits::is_vector<C>::value>::type * = 0)
       {
         C temp(size, typename reflex::type_traits::container_traits<C>::value_type());
         c = temp;
       }
 
-      template <class T, class Alloc>
-      static void right_size(std::vector<T, Alloc> & v, size_t size)
+      template <class C>
+      static void right_size(
+          C& c, size_t size,
+          typename reflex::meta::enable_if<reflex::type_traits::is_vector<C>::value>::type * = 0)
       {
-        v.resize(size);
+        c.resize(size);
       }
 
       template <class T, class Alloc>
@@ -922,17 +944,23 @@ namespace reflex {
           std::vector<long double> & val,
           void * = 0);
 
-      template <class T>
+      template <class Vec>
       static void get_member_value(
           const DDS_DynamicData & instance,
           const MemberAccess &ma,
-          std::vector<T> & val,
-          typename reflex::meta::enable_if<reflex::type_traits::is_primitive_and_not_bool<T>::value>::type * = 0)
+          Vec & val,
+          typename reflex::meta::enable_if<
+            reflex::type_traits::is_vector<Vec>::value &&
+            reflex::type_traits::is_primitive_and_not_bool<
+              typename reflex::type_traits::container_traits<Vec>::value_type
+            >::value
+          >::type * = 0)
       {
         // Sequences of primitive types are loaned and unloaned as an optimization.
         // bools and enums don;t use this optimization because vector<bool> storage is
         // 8 bools-per-byte and sizeof enums is not standarized and it is compiler dependent.
 
+        using value_type = typename reflex::type_traits::container_traits<Vec>::value_type;
         DDS_DynamicDataMemberInfo seq_info;
 
         const char * member_name =
@@ -945,7 +973,7 @@ namespace reflex {
 
         if (seq_info.element_count > 0)
         {
-          typename DynamicDataSeqTraits<T>::type seq;
+          typename DynamicDataSeqTraits<value_type>::type seq;
           if (seq.loan_contiguous(primitive_ptr_cast(&val[0]), val.size(), val.capacity()) != true)
           {
             throw std::runtime_error("get_member_value: sequence loaning failed");
