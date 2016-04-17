@@ -1,4 +1,5 @@
 #include <iostream>
+#include <boost/core/demangle.hpp>
 
 #include "generator.h"
 #include "type_generator.h"
@@ -9,7 +10,7 @@
   #define RANDOM_SEED 0xAC0
 #endif 
 
-// Clang requires forward declarations for overloaded < operators.
+// Clang requires forward declarations for overloaded << operators.
 // g++5 does not. Who's correct?
 
 template <class... Args>
@@ -183,21 +184,160 @@ void test_generators(void)
   // std::cout << "All assertions satisfied\n";
 }
 
+template <class Tuple, size_t I>
+struct tuple_iterator;
+
+template <class... Args, class ActionFunc>
+static void recurse(std::tuple<Args...> & tuple, ActionFunc act)
+{
+  tuple_iterator<std::tuple<Args...>, 
+                 std::tuple_size<std::tuple<Args...>>::value-1>
+                   ::iterate(tuple, act);
+}
+
+template <class NonTuple, class ActionFunc>
+static void recurse(NonTuple &, ActionFunc, 
+  typename reflex::meta::disable_if<reflex::type_traits::is_tuple<NonTuple>::value>::type * = 0)
+{ 
+ // No-op
+}
+
+template <class... Args, class Comparator>
+static bool recurse_compare(
+    std::tuple<Args...> & t1, 
+    std::tuple<Args...> & t2, 
+    Comparator comp)
+{
+  return tuple_iterator<std::tuple<Args...>, 
+                        std::tuple_size<std::tuple<Args...>>::value-1>
+                         ::compare(t1, t2, comp);
+}
+
+template <class NonTuple, class Comparator>
+static bool recurse_compare(NonTuple &, NonTuple &, Comparator, 
+  typename reflex::meta::disable_if<reflex::type_traits::is_tuple<NonTuple>::value>::type * = 0)
+{ 
+  return true;
+}
+
+template <class Tuple, size_t I>
+struct tuple_iterator
+{
+  template <class ActionFunc>
+  static void iterate(Tuple &t, ActionFunc act)
+  {
+    act(std::get<I>(t));
+    recurse(std::get<I>(t), act);
+    tuple_iterator<Tuple, I-1>::iterate(t, act);
+  }
+
+  template <class Comparator>
+  static bool compare(Tuple &t1, Tuple &t2, Comparator comp)
+  {
+    bool result = true;
+    result &= comp(std::get<I>(t1), std::get<I>(t2));
+    result &= recurse_compare(std::get<I>(t1), std::get<I>(t2), comp);
+    result &= tuple_iterator<Tuple, I-1>::compare(t1, t2, comp);
+    return result;
+  }
+};
+
+template <class Tuple>
+struct tuple_iterator<Tuple, 0>
+{
+  template <class ActionFunc>
+  static void iterate(Tuple &t, ActionFunc act)
+  {
+    act(std::get<0>(t));
+    recurse(std::get<0>(t), act);
+  }
+
+  template <class Comparator>
+  static bool compare(Tuple &t1, Tuple &t2, Comparator comp)
+  {
+    bool result = true;
+    result &= comp(std::get<0>(t1), std::get<0>(t2));
+    result &= recurse_compare(std::get<0>(t1), std::get<0>(t2), comp);
+    return result;
+  }
+};
+
+struct allocator
+{
+  template <class T>
+  void operator () (T &) const {}
+
+  template <class T>
+  void operator () (T* &t) const { t = new T(); }
+};
+
+struct deallocator
+{
+  template <class T>
+  void operator () (T &) const {}
+
+  template <class T>
+  void operator () (T* &t) const { delete t; }
+};
+
+struct comparator 
+{
+  template <class T>
+  bool operator () (T &, T &) const { return true; }
+
+  template <class T>
+  bool operator () (
+      T* &t1, T* &t2, 
+      typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const 
+  { 
+    return *t1 == *t2; 
+  }
+};
+
+template <class Tuple>
+void allocate_pointers(Tuple &t)
+{
+  recurse(t, allocator());
+}
+
+template <class Tuple>
+void deallocate_pointers(Tuple &t)
+{
+  recurse(t, deallocator());
+}
+
+template <class Tuple>
+bool compare_tuples(Tuple &t1, Tuple &t2)
+{
+  return recurse_compare(t1, t2, comparator());
+}
+
+
 template <class Tuple>
 bool test_roundtrip_property()
 {
-  auto gen = gen::make_tuple_gen<Tuple>();
+  std::cout << "Tuple = \n" << boost::core::demangle(typeid(Tuple).name()) << "\n";
   std::cout << "Size of tuple = " << sizeof(Tuple) << "\n";
-  Tuple d1 = gen.generate();
+
+  auto generator = gen::make_tuple_gen<Tuple>();
+  Tuple d1 = generator.generate(); // allocates raw pointers.
+
   reflex::TypeManager<Tuple> tm;
-  // std::cout << d1 << "\n";
   reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(d1);
   reflex::detail::print_IDL(safedd.get()->get_type(), 2);
   safedd.get()->print(stdout, 2);
+
   Tuple d2;
+  allocate_pointers(d2);
   reflex::read_dynamicdata(d2, safedd);
-  //std::cout << std::boolalpha << (d1 == d2) << "\n";
-  //assert(d1 == d2);
+
+  bool is_same = compare_tuples(d1, d2);
+  std::cout << "roundtrip successful = " << std::boolalpha << is_same << "\n";
+  //assert(is_same);
+
+  deallocate_pointers(d1);
+  deallocate_pointers(d2);
+
   return true;
 }
 
@@ -208,5 +348,4 @@ int main(void)
   std::cout << "RANDOM SEED = " << RANDOM_SEED << std::endl;
   test_roundtrip_property<typegen::RandomTuple<RANDOM_SEED>::type>();
   
-  //getchar();
 }

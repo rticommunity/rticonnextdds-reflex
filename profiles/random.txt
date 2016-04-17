@@ -1,13 +1,11 @@
+Property-based testing for RefleX
 Interesting random numbers for property-based testing of RefleX.
 
-The random numbers in this file result in to deeply nested generated
+The random numbers in this file result in to deeply nested structured 
 types due to compile-time type-generators. 
 
-For the implementation of compile-time type generators, please see the
-following files.
-
-$REFLEXHOME/test/generator/type_generator.h
-$REFLEXHOME/test/reflex_prop_test.cxx
+For more information please see
+http://www.slideshare.net/SumantTambe/c-generators-and-propertybased-testing
 
 Build command
 ============
@@ -15,27 +13,16 @@ make -f make/Makefile.i86Linux-gcc CXX=g++5 CXXSTD=c++14 RANDOM=$RANDOM prop_tes
 
 Good numbers
 ===========
-
-31415  ( 3 nested)
-32415  (51 nested)
-2626   (12 nested)
-10295  (15 nested)
-21525  (41 nested)
-7937   ( 5 nested)
+2626   (1 struct)
+23636  (2 structs)
+21525  (2 structs)
+3245   (4 structs)
+7937   (6 structs)
+5014   (6 structs)
 
 Bad Numbers
 ===========
 
 2152 (test seg-faults)
-sizeof(tuple) > 2750 KB! Can't create even a single instance of the std::tuple.
-Fails on 64 bit machines as well.
-
-20163 (run-time error)
-Size of tuple = 9728
-DDS_DynamicData_set_long_array:type mismatch for field m1 (id=2)
-terminate called after throwing an instance of 'std::runtime_error'
-  what():  set_member_value: Error setting array, error = DDS_RETCODE_ILLEGAL_OPERATION
-Aborted (core dumped)
-== Can't start debugging because gdb fails to load all the symbols.
-
+sizeof(tuple) == 14496 
 
