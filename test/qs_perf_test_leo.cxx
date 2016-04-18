@@ -415,6 +415,14 @@ void qs_perf_subscriber(int domain_id, int samples, int id)
   std::cout << "Throughput = " 
             << 1000.0*1000.9*reader_listener.count/(reader_listener.time_end - reader_listener.time_start)
             << std::endl;
+  std::cout << reader_listener.latency_hist.average() << " "  
+            << reader_listener.latency_hist.stddev() << " " 
+            << reader_listener.latency_hist.percentile(0.90) << " "
+            << reader_listener.latency_hist.percentile(0.99) << " "
+            << reader_listener.latency_hist.percentile(0.999) << " "
+            << reader_listener.latency_hist.percentile(0.9999) << " "
+            << reader_listener.latency_hist.percentile(0.99999) << " "
+            << reader_listener.latency_hist.get_max() << "\n";
 }
 
 double scale_sleep_period_usec(int hz) 
