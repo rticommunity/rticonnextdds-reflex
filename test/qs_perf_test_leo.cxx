@@ -6,6 +6,7 @@
 #include <sys/time.h>
 
 const int MOD = 10000;
+const int CALC_MOD = 1;
 const int WRITE_BURST = 5;
 int WARMUP = 100;
 int SAMPLE = 0;
@@ -229,30 +230,29 @@ struct PerfReaderListener : public DDSDataReaderListener
         if (sref.info().valid_data)
         {
           PerfHelloWorld sample;
-          reflex::read_dynamicdata(sample, sref.data());
-
           count++;
           if(count == WARMUP)
           {
             gettimeofday(&time_start, NULL);
             prev = time_start;
           }
-          if(count > WARMUP) 
+          if((count > WARMUP) && (count % CALC_MOD == 0)) 
           {
+            reflex::read_dynamicdata(sample, sref.data());
+
             struct timeval recv_ts;
             gettimeofday(&recv_ts, NULL);
             long diff = (recv_ts.tv_sec*1000*1000 + recv_ts.tv_usec) - sample.timestamp;
             latency_hist.insert(diff);
-
-            if ((count % MOD) == 0)
-            {
-              struct timeval current;
-              gettimeofday(&current,NULL);
-              std::cout << "messageId = " << sample.messageId
-                        << ". Current throughput is " 
-                        << 1000.0*1000.0*MOD/(current-prev) << "\n";
-              prev = current;
-            }
+          }
+          if ((count % MOD == 0) && (count % CALC_MOD == 0))
+          {
+            struct timeval current;
+            gettimeofday(&current,NULL);
+            std::cout << "messageId = " << sample.messageId
+                      << ". Current throughput is " 
+                      << 1000.0*1000.0*MOD/(current-prev) << "\n";
+            prev = current;
           }
           if(count == SAMPLE+WARMUP)  //last message.
           {
