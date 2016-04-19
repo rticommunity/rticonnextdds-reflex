@@ -95,7 +95,8 @@ namespace gen {
   auto GenFactory<double>::make()
   {
     return make_gen_from([]() {
-      return  static_cast<double>((random_int32()) /
+      return  static_cast<double>(
+        ((double) random_int32()) /
         std::numeric_limits<int32_t>::max() *
         std::numeric_limits<double>::max());
     });
@@ -105,7 +106,8 @@ namespace gen {
   auto GenFactory<long double>::make()
   {
     return make_gen_from([]() {
-      return  static_cast<long double>(random_int32()) /
+      return  static_cast<long double>(
+        (long double) random_int32()) /
         std::numeric_limits<int32_t>::max() *
         std::numeric_limits<long double>::max();
     });

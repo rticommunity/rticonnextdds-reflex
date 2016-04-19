@@ -187,38 +187,137 @@ void test_generators(void)
 template <class Tuple, size_t I>
 struct tuple_iterator;
 
-template <class... Args, class ActionFunc>
-static void recurse(std::tuple<Args...> & tuple, ActionFunc act)
+struct iterate_overload_helper
 {
-  tuple_iterator<std::tuple<Args...>, 
-                 std::tuple_size<std::tuple<Args...>>::value-1>
-                   ::iterate(tuple, act);
-}
+  template <class... Args, class ActionFunc>
+  static void recurse(std::tuple<Args...> & tuple, ActionFunc act)
+  {
+    tuple_iterator<std::tuple<Args...>, 
+                   std::tuple_size<std::tuple<Args...>>::value-1>
+                     ::iterate(tuple, act);
+  }
 
-template <class NonTuple, class ActionFunc>
-static void recurse(NonTuple &, ActionFunc, 
-  typename reflex::meta::disable_if<reflex::type_traits::is_tuple<NonTuple>::value>::type * = 0)
-{ 
- // No-op
-}
+  template <class T, class ActionFunc>
+  static void recurse(std::vector<T> & vec, ActionFunc act) 
+  { 
+    for(auto & elm: vec)
+      recurse(elm, act);
+  }
 
-template <class... Args, class Comparator>
-static bool recurse_compare(
-    std::tuple<Args...> & t1, 
-    std::tuple<Args...> & t2, 
-    Comparator comp)
+  template <class ActionFunc>
+  static void recurse(std::vector<bool> & vec, ActionFunc act) 
+  { 
+    // No-op
+  }
+
+  template <class T, size_t N, class ActionFunc>
+  static void recurse(std::array<T, N> & arr, ActionFunc act) 
+  { 
+    for(auto & elm: arr)
+      recurse(elm, act);
+  }
+
+  template <class T, class ActionFunc>
+  static void recurse(std::shared_ptr<T> & sh_ptr, ActionFunc act) 
+  { 
+    if(sh_ptr)
+      recurse(*sh_ptr, act);
+  }
+
+  template <class T, class ActionFunc>
+  static void recurse(boost::optional<T> & op, ActionFunc act) 
+  { 
+    if(op)
+      recurse(*op, act);
+  }
+
+  template <class T, class ActionFunc>
+  static void recurse(T *t, ActionFunc act,
+      typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) 
+  { 
+    if(t)
+      recurse(*t, act);
+  }
+
+  template <class T, class ActionFunc>
+  static void recurse(T *, ActionFunc,
+      typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) 
+  { 
+    // No-op
+  }
+
+  template <class T, class ActionFunc>
+  static void recurse(T, ActionFunc,
+      typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) 
+  { 
+    // No-op
+  }
+};
+
+struct compare_overload_helper
 {
-  return tuple_iterator<std::tuple<Args...>, 
-                        std::tuple_size<std::tuple<Args...>>::value-1>
-                         ::compare(t1, t2, comp);
-}
+  template <class... Args>
+  static bool recurse_compare(
+      const std::tuple<Args...> & t1, 
+      const std::tuple<Args...> & t2)
+  {
+    return tuple_iterator<std::tuple<Args...>, 
+                          std::tuple_size<std::tuple<Args...>>::value-1>
+                           ::compare(t1, t2);
+  }
 
-template <class NonTuple, class Comparator>
-static bool recurse_compare(NonTuple &, NonTuple &, Comparator, 
-  typename reflex::meta::disable_if<reflex::type_traits::is_tuple<NonTuple>::value>::type * = 0)
-{ 
-  return true;
-}
+  template <class T>
+  static bool recurse_compare(const std::vector<T> & v1, const std::vector<T> & v2) 
+  { 
+    if(v1.size() == v2.size())
+    {
+      bool result = true;
+      for(unsigned int i = 0;(i < v1.size()) && result; i++)
+        result = result && recurse_compare(v1[i], v2[i]);
+      
+      return result;
+    }
+    else
+      return false;
+  }
+
+  static bool recurse_compare(const std::vector<bool> & v1, const std::vector<bool> & v2) 
+  { 
+    return v1==v2;
+  }
+
+  template <class T, size_t N>
+  static bool recurse_compare(const std::array<T, N> & a1, const std::array<T, N> & a2) 
+  { 
+    bool result = true;
+    for(unsigned int i = 0;(i < N) && result; i++)
+      result = result && recurse_compare(a1[i], a2[i]);
+      
+    return result;
+  }
+
+  template <class T>
+  static bool recurse_compare(const T &t1, const T &t2,
+      typename reflex::meta::enable_if<
+        reflex::type_traits::is_smart_ptr<T>::value ||
+        reflex::type_traits::is_optional<T>::value  ||
+        reflex::type_traits::is_pointer<T>::value>::type * = 0)
+  { 
+    if(t1 && t2)
+      return recurse_compare(*t1, *t2);
+    else if(!t1 && !t2)
+      return true;
+    else
+      return false;
+  }
+
+  template <class T>
+  static bool recurse_compare(T t1, T t2,
+      typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) 
+  { 
+    return t1==t2;
+  }
+};
 
 template <class Tuple, size_t I>
 struct tuple_iterator
@@ -227,18 +326,14 @@ struct tuple_iterator
   static void iterate(Tuple &t, ActionFunc act)
   {
     act(std::get<I>(t));
-    recurse(std::get<I>(t), act);
+    iterate_overload_helper::recurse(std::get<I>(t), act);
     tuple_iterator<Tuple, I-1>::iterate(t, act);
   }
 
-  template <class Comparator>
-  static bool compare(Tuple &t1, Tuple &t2, Comparator comp)
+  static bool compare(const Tuple &t1, const Tuple &t2)
   {
-    bool result = true;
-    result &= comp(std::get<I>(t1), std::get<I>(t2));
-    result &= recurse_compare(std::get<I>(t1), std::get<I>(t2), comp);
-    result &= tuple_iterator<Tuple, I-1>::compare(t1, t2, comp);
-    return result;
+    return compare_overload_helper::recurse_compare(std::get<I>(t1), std::get<I>(t2)) && 
+           tuple_iterator<Tuple, I-1>::compare(t1, t2);
   }
 };
 
@@ -249,16 +344,12 @@ struct tuple_iterator<Tuple, 0>
   static void iterate(Tuple &t, ActionFunc act)
   {
     act(std::get<0>(t));
-    recurse(std::get<0>(t), act);
+    iterate_overload_helper::recurse(std::get<0>(t), act);
   }
 
-  template <class Comparator>
-  static bool compare(Tuple &t1, Tuple &t2, Comparator comp)
+  static bool compare(const Tuple &t1, const Tuple &t2)
   {
-    bool result = true;
-    result &= comp(std::get<0>(t1), std::get<0>(t2));
-    result &= recurse_compare(std::get<0>(t1), std::get<0>(t2), comp);
-    return result;
+    return compare_overload_helper::recurse_compare(std::get<0>(t1), std::get<0>(t2));
   }
 };
 
@@ -280,38 +371,23 @@ struct deallocator
   void operator () (T* &t) const { delete t; }
 };
 
-struct comparator 
-{
-  template <class T>
-  bool operator () (T &, T &) const { return true; }
-
-  template <class T>
-  bool operator () (
-      T* &t1, T* &t2, 
-      typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const 
-  { 
-    return *t1 == *t2; 
-  }
-};
-
 template <class Tuple>
 void allocate_pointers(Tuple &t)
 {
-  recurse(t, allocator());
+  iterate_overload_helper::recurse(t, allocator());
 }
 
 template <class Tuple>
 void deallocate_pointers(Tuple &t)
 {
-  recurse(t, deallocator());
+  iterate_overload_helper::recurse(t, deallocator());
 }
 
 template <class Tuple>
 bool compare_tuples(Tuple &t1, Tuple &t2)
 {
-  return recurse_compare(t1, t2, comparator());
+  return compare_overload_helper::recurse_compare(t1, t2);
 }
-
 
 template <class Tuple>
 bool test_roundtrip_property()
