@@ -7,7 +7,7 @@
 #include "reflex.h"
 
 #ifndef RANDOM_SEED
-  #define RANDOM_SEED 0xAC0
+  #define RANDOM_SEED 2626
 #endif 
 
 // Clang requires forward declarations for overloaded << operators.
@@ -408,8 +408,8 @@ bool test_roundtrip_property()
   reflex::read_dynamicdata(d2, safedd);
 
   bool is_same = compare_tuples(d1, d2);
-  std::cout << "roundtrip successful = " << std::boolalpha << is_same << "\n";
-  //assert(is_same);
+  std::cout << "roundtrip successful = " << std::boolalpha << is_same << std::endl;
+  assert(is_same);
 
   deallocate_pointers(d1);
   deallocate_pointers(d2);

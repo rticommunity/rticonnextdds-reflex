@@ -10,12 +10,6 @@
     <ClCompile Include="..\src\dd_manip.cxx">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\datareader.cxx">
-      <Filter>sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\datawriter.cxx">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\reflex.cxx">
       <Filter>sources</Filter>
     </ClCompile>
