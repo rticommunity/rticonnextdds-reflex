@@ -401,7 +401,7 @@ bool test_roundtrip_property()
   reflex::TypeManager<Tuple> tm;
   reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(d1);
   reflex::detail::print_IDL(safedd.get()->get_type(), 2);
-  safedd.get()->print(stdout, 2);
+  //safedd.get()->print(stdout, 2);
 
   Tuple d2;
   allocate_pointers(d2);
@@ -417,11 +417,60 @@ bool test_roundtrip_property()
   return true;
 }
 
-int main(void)
+template <class Tuple>
+void write_samples(int domain_id)
 {
+  DDS_Duration_t period { 5,0 };
+
+  DDSDomainParticipant * participant = 
+    DDSDomainParticipantFactory::get_instance()->
+      create_participant(domain_id,
+                         DDS_PARTICIPANT_QOS_DEFAULT,
+                         NULL,   // Listener
+                         DDS_STATUS_MASK_NONE);
+
+  if (participant == NULL) {
+    std::cerr << "! Unable to create DDS domain participant" << std::endl;
+    return;
+  }
+  
+  reflex::pub::DataWriter<Tuple>
+    writer(reflex::pub::DataWriterParams(participant)
+             .topic_name("ReflexPropertyTest")
+             .type_name("DefaultTupleName0"));
+
+  auto generator = gen::make_tuple_gen<Tuple>();
+
+  std::cout << "Now writing....\n";
+  for(;;)
+  {
+    Tuple t = generator.generate(); // allocates raw pointers.
+    DDS_ReturnCode_t rc = writer.write(t);
+
+    if (rc != DDS_RETCODE_OK) {
+      std::cerr << "Write error = " 
+                << reflex::detail::get_readable_retcode(rc) 
+                << std::endl;
+      break;
+    }
+    deallocate_pointers(t);
+    NDDSUtility::sleep(period);
+  }
+}
+
+int main(int argc, char * argv[])
+{
+  int domain_id = 65;
+  if(argc==2)
+  {
+    domain_id = atoi(argv[1]);
+  }
+
   test_generators();
   
   std::cout << "RANDOM SEED = " << RANDOM_SEED << std::endl;
-  test_roundtrip_property<typegen::RandomTuple<RANDOM_SEED>::type>();
-  
+  typedef typegen::RandomTuple<RANDOM_SEED>::type RandomTuple;
+
+  test_roundtrip_property<RandomTuple>();
+  write_samples<RandomTuple>(domain_id);
 }
