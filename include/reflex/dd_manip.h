@@ -227,9 +227,10 @@ namespace reflex {
         if (do_serialize(val))
         {
           typename DynamicDataSeqTraits<typename reflex::type_traits::container_traits<C>::value_type>::type seq;
-          seq.ensure_length(val.size(), val.size());
+          // Possible loss of data on x64 due to size_t  to DDS_Long casting.
+          seq.ensure_length(static_cast<DDS_Long>(val.size()), static_cast<DDS_Long>(val.size()));
 
-          size_t i = 0;
+          uint32_t i = 0;
           for (auto const &elem : val) {
             seq[i] = elem;
             ++i;
@@ -780,12 +781,12 @@ namespace reflex {
       template <class Seq, class C>
       static void copy_primitive_seq(
           const Seq & seq,
-          size_t count,
+          uint32_t count,
           C & c,
           typename reflex::meta::disable_if<reflex::type_traits::is_stdset<C>::value>::type * = 0)
       {
         typename reflex::type_traits::container_traits<C>::iterator iter = begin(c);
-        for (size_t i = 0; i < count; ++i, ++iter)
+        for (uint32_t i = 0; i < count; ++i, ++iter)
         {
           // Cast required for enums
           // Possible extra copy of primitives due 
@@ -797,10 +798,10 @@ namespace reflex {
       template <class Seq, class T, class Key, class Alloc>
       static void copy_primitive_seq(
         const Seq & seq,
-        size_t count,
+        uint32_t count,
         std::set<T, Key, Alloc> & s)
       {
-        for (size_t i = 0; i < count; ++i)
+        for (uint32_t i = 0; i < count; ++i)
         {
           // Cast required for enums
           // Possible extra copy of primitives due 
@@ -975,6 +976,7 @@ namespace reflex {
 
         if (seq_info.element_count > 0)
         {
+          // Possible loss of data on x64 due to size_t  to DDS_Long casting.
           typename DynamicDataSeqTraits<value_type>::type seq;
           if (seq.loan_contiguous(primitive_ptr_cast(&val[0]), 
              static_cast<DDS_Long>(val.size()), 

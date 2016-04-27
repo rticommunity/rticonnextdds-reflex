@@ -161,9 +161,11 @@ struct PerfReaderListener : public DDSDataReaderListener
   }
 
   PerfReaderListener()
-    : time_start{0}, 
-      time_end{0}
   {
+    time_start.tv_sec = 0;
+    time_start.tv_usec = 0;
+    time_end.tv_sec = 0;
+    time_end.tv_usec = 0;
     foundQS= false;
     count = 0;
     done = false;

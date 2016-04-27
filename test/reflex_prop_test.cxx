@@ -7,7 +7,7 @@
 #include "reflex.h"
 
 #ifndef RANDOM_SEED
-  #define RANDOM_SEED 2626
+  #define RANDOM_SEED 17715
 #endif 
 
 // Clang requires forward declarations for overloaded << operators.
@@ -319,14 +319,17 @@ struct compare_overload_helper
   }
 };
 
+enum TraversalState { PRE, POST };
+
 template <class Tuple, size_t I>
 struct tuple_iterator
 {
   template <class ActionFunc>
   static void iterate(Tuple &t, ActionFunc act)
   {
-    act(std::get<I>(t));
+    act(std::get<I>(t), PRE);
     iterate_overload_helper::recurse(std::get<I>(t), act);
+    act(std::get<I>(t), POST);
     tuple_iterator<Tuple, I-1>::iterate(t, act);
   }
 
@@ -343,8 +346,9 @@ struct tuple_iterator<Tuple, 0>
   template <class ActionFunc>
   static void iterate(Tuple &t, ActionFunc act)
   {
-    act(std::get<0>(t));
+    act(std::get<0>(t), PRE);
     iterate_overload_helper::recurse(std::get<0>(t), act);
+    act(std::get<0>(t), POST);
   }
 
   static bool compare(const Tuple &t1, const Tuple &t2)
@@ -356,19 +360,27 @@ struct tuple_iterator<Tuple, 0>
 struct allocator
 {
   template <class T>
-  void operator () (T &) const {}
+  void operator () (T &, TraversalState) const {}
 
   template <class T>
-  void operator () (T* &t) const { t = new T(); }
+  void operator () (T* &t, TraversalState state) const 
+  { 
+    if(state == PRE)
+      t = new T(); 
+  }
 };
 
 struct deallocator
 {
   template <class T>
-  void operator () (T &) const {}
+  void operator () (T &, TraversalState) const {}
 
   template <class T>
-  void operator () (T* &t) const { delete t; }
+  void operator () (T* &t, TraversalState state) const 
+  { 
+    if(state == POST)
+      delete t; 
+  }
 };
 
 template <class Tuple>
@@ -390,29 +402,41 @@ bool compare_tuples(Tuple &t1, Tuple &t2)
 }
 
 template <class Tuple>
-bool test_roundtrip_property()
+bool test_roundtrip_property(int iter)
 {
   std::cout << "Tuple = \n" << boost::core::demangle(typeid(Tuple).name()) << "\n";
   std::cout << "Size of tuple = " << sizeof(Tuple) << "\n";
 
   auto generator = gen::make_tuple_gen<Tuple>();
-  Tuple d1 = generator.generate(); // allocates raw pointers.
+  bool is_same = true;
 
-  reflex::TypeManager<Tuple> tm;
-  reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(d1);
-  reflex::detail::print_IDL(safedd.get()->get_type(), 2);
-  //safedd.get()->print(stdout, 2);
+  for (int i = 0; (i < iter) && is_same; i++)
+  {
+    Tuple d1 = generator.generate(); // allocates raw pointers.
 
-  Tuple d2;
-  allocate_pointers(d2);
-  reflex::read_dynamicdata(d2, safedd);
+    reflex::TypeManager<Tuple> tm;
+    reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(d1);
+    if (i == 0)
+    {
+      reflex::detail::print_IDL(safedd.get()->get_type(), 2);
+      //safedd.get()->print(stdout, 2);
+    }
 
-  bool is_same = compare_tuples(d1, d2);
+    Tuple d2;
+    allocate_pointers(d2);
+    reflex::read_dynamicdata(d2, safedd);
+
+    is_same = is_same && compare_tuples(d1, d2);
+
+    deallocate_pointers(d1);
+    deallocate_pointers(d2);
+    
+    if((i % 10000) == 0) 
+      std::cout << ".";
+  }
+
   std::cout << "roundtrip successful = " << std::boolalpha << is_same << std::endl;
   assert(is_same);
-
-  deallocate_pointers(d1);
-  deallocate_pointers(d2);
 
   return true;
 }
@@ -460,6 +484,7 @@ void write_samples(int domain_id)
 
 int main(int argc, char * argv[])
 {
+  int iterations = 100000;
   int domain_id = 65;
   if(argc==2)
   {
@@ -471,6 +496,6 @@ int main(int argc, char * argv[])
   std::cout << "RANDOM SEED = " << RANDOM_SEED << std::endl;
   typedef typegen::RandomTuple<RANDOM_SEED>::type RandomTuple;
 
-  test_roundtrip_property<RandomTuple>();
+  test_roundtrip_property<RandomTuple>(iterations);
   write_samples<RandomTuple>(domain_id);
 }

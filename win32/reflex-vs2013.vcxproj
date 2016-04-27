@@ -140,8 +140,6 @@
     <ClCompile Include="..\src\datareader_params.cxx" />
     <ClCompile Include="..\src\datawriter_params.cxx" />
     <ClCompile Include="..\src\dd_manip.cxx" />
-    <ClCompile Include="..\src\datareader.cxx" />
-    <ClCompile Include="..\src\datawriter.cxx" />
     <ClCompile Include="..\src\dd_extra.cxx" />
     <ClCompile Include="..\src\entity_common.cxx" />
     <ClCompile Include="..\src\member_names.cxx" />

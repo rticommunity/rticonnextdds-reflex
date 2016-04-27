@@ -69,7 +69,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>rticonnextmsgcpp.lib;nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2013;$(NDDSHOME)\lib\i86Win32VS2013</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
@@ -82,7 +82,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>rticonnextmsgcpp.lib;nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\x64Win64VS2013;$(NDDSHOME)\lib\x64Win64VS2013</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
@@ -99,7 +99,7 @@
       <PreprocessorDefinitions>REFLEX_HAS_RVALUE_REF;NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;_CONSOLE;</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>nddscpp.lib;nddsc.lib;nddscore.lib</AdditionalDependencies>
+      <AdditionalDependencies>rticonnextmsgcpp.lib;nddscpp.lib;nddsc.lib;nddscore.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2013;$(NDDSHOME)\lib\i86Win32VS2013</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -109,28 +109,36 @@
       <PreprocessorDefinitions>REFLEX_HAS_RVALUE_REF;NDDS_DLL_VARIABLE;WIN32;RTI_WIN32;_CONSOLE;</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>nddscpp.lib;nddsc.lib;nddscore.lib</AdditionalDependencies>
+      <AdditionalDependencies>rticonnextmsgcpp.lib;nddscpp.lib;nddsc.lib;nddscore.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\x64Win64VS2013;$(NDDSHOME)\lib\x64Win64VS2013</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\test\darkart.h" />
     <ClInclude Include="..\..\test\all_types.h" />
+    <ClInclude Include="..\..\test\gettimeofday.h" />
     <ClInclude Include="..\..\test\large_type.h" />
     <ClInclude Include="..\..\test\many_members.h" />
     <ClInclude Include="..\..\test\one_member.h" />
     <ClInclude Include="..\..\test\pointers.h" />
+    <ClInclude Include="..\..\test\qs_hello_test.h" />
+    <ClInclude Include="..\..\test\qs_perf_test.h" />
     <ClInclude Include="..\..\test\shape_type.h" />
+    <ClInclude Include="..\..\test\stats.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\darkart.cxx" />
     <ClCompile Include="..\..\test\all_types.cxx" />
+    <ClCompile Include="..\..\test\gettimeofday.cxx" />
     <ClCompile Include="..\..\test\large_type.cxx" />
     <ClCompile Include="..\..\test\many_members.cxx" />
     <ClCompile Include="..\..\test\one_member.cxx" />
     <ClCompile Include="..\..\test\pointers.cxx" />
+    <ClCompile Include="..\..\test\qs_hello_test.cxx" />
+    <ClCompile Include="..\..\test\qs_perf_test.cxx" />
     <ClCompile Include="..\..\test\reflex_test.cxx" />
     <ClCompile Include="..\..\test\shape_type.cxx" />
+    <ClCompile Include="..\..\test\stats.cxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
