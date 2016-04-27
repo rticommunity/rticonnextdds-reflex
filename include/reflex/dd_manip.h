@@ -865,7 +865,7 @@ namespace reflex {
 #ifdef _DEBUG
           assert(c.size() == count); // size() is O(1) even for std::list in C++11
 #endif
-          size_t i = 0;
+          int i = 0;
           for (auto &elem : c) // runs from 0 to count-1
           {
             get_member_value(seq, MemberAccess::BY_ID(i + 1), elem);

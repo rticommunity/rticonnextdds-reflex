@@ -172,7 +172,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(NDDSHOME)\lib\x64Win64VS2015;$(REFLEXHOME)\objs\x64Win64VS2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>reflex.lib;nddscppz.lib;nddscz.lib;nddscorez.lib;netapi32.lib;advapi32.lib;user32.lib;WS2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>reflex.lib;nddscpp.lib;nddsc.lib;nddscore.lib;netapi32.lib;advapi32.lib;user32.lib;WS2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
