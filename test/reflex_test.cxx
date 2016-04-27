@@ -47,11 +47,11 @@ void qs_perf_subscriber(int domainid,int samples, int id);// id serves as no. of
 void usage()
 {
   std::cout << "Please specify one of the following.\n"
-            << "domainId shapes [pub|sub|pubex]\n"
-            << "domainId qs     [pub|sub]\n"
-            << "domainId qsperf pub sample_count num_readers hertz\n"
-            << "domainId qsperf sub sample_count datareader_id\n"
-            << "domainId large, darkart, many, one, all, pointers\n";
+            << "1. domainId shapes  [pub|sub|pubex]\n"
+            << "2. domainId qshello [pub|sub]\n"
+            << "3. domainId qsperf  pub sample_count num_readers hertz\n"
+            << "4. domainId qsperf  sub sample_count datareader_id\n"
+            << "5. domainId large,  darkart, many, one, all, pointers\n";
 }
 
 int main(int argc, const char **argv) 
@@ -90,7 +90,7 @@ int main(int argc, const char **argv)
       else
         usage();
     }
-    else if (std::string(argv[2]) == "qs")
+    else if (std::string(argv[2]) == "qshello")
     {   
       if (argc <= 3)
       {   

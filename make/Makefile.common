@@ -143,39 +143,39 @@ HEADERS = include/reflex/reflex_fwd.h           \
           include/reflex.h
 
 
-TESTSRCS = test/reflex_test.cxx  \
-           test/one_member.cxx   \
-           test/all_types.cxx    \
-           test/many_members.cxx \
-           test/shape_type.cxx   \
-           test/darkart.cxx      \
-           test/pointers.cxx     \
-           test/large_type.cxx   \
-	   test/qs_hello_test.cxx\
-	   test/qs_perf_test_leo.cxx 
+TESTSRCS = test/reflex_test.cxx   \
+           test/one_member.cxx    \
+           test/all_types.cxx     \
+           test/many_members.cxx  \
+           test/shape_type.cxx    \
+           test/darkart.cxx       \
+           test/pointers.cxx      \
+           test/large_type.cxx    \
+	         test/qs_hello_test.cxx \
+	         test/qs_perf_test.cxx 
 
 #test/qs_perf_test.cxx 
 
-TESTHEADERS = test/shape_type.h   \
-              test/one_member.h   \
-              test/all_types.h    \
-              test/many_members.h \
-              test/darkart.h      \
-              test/pointers.h     \
-              test/large_type.h	  \
-	      test/qs_hello_test.h\
-	      test/qs_perf_test_leo.h	      
+TESTHEADERS = test/shape_type.h    \
+              test/one_member.h    \
+              test/all_types.h     \
+              test/many_members.h  \
+              test/darkart.h       \
+              test/pointers.h      \
+              test/large_type.h	   \
+	            test/qs_hello_test.h \
+	            test/qs_perf_test.h	      
 	      
 #test/qs_perf_test.h
 
 PERFSRCS = test/reflex_perf.cxx \
            test/complex.cxx \
            test/complexSupport.cxx \
-	   test/complexPlugin.cxx
+	         test/complexPlugin.cxx
 
 PERFHEADERS = test/complex.h \
               test/complexSupport.h \
-	      test/complexPlugin.h
+	            test/complexPlugin.h
 
 PROPTESTSRCS = test/reflex_prop_test.cxx 
 

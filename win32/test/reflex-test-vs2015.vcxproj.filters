@@ -28,6 +28,12 @@
     <ClCompile Include="..\..\test\qs_hello_test.cxx">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\qs_perf_test.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\gettimeofday.cxx">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\test\darkart.h">
@@ -52,6 +58,12 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\test\qs_hello_test.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\qs_perf_test.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\gettimeofday.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

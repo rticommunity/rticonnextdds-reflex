@@ -225,6 +225,7 @@ namespace reflex {
     template <> struct is_primitive<uint32_t>       : true_type{};
     template <> struct is_primitive<int64_t>        : true_type{};
     template <> struct is_primitive<uint64_t>       : true_type{};
+    template <> struct is_primitive<long>           : true_type{};
     template <> struct is_primitive<float>          : true_type{};
     template <> struct is_primitive<double>         : true_type{};
     template <> struct is_primitive<long double>    : true_type{};

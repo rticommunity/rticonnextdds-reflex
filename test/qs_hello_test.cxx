@@ -149,7 +149,7 @@ void hello_qs_subscriber(int domain_id)
       return;
     }
 
-    sprintf(topicName,"%s@%s", "HelloWorldTopic", "SharedSubscriber");
+    snprintf(topicName,255,"%s@%s", "HelloWorldTopic", "SharedSubscriber");
 
     topic = participant->create_topic(
         topicName,

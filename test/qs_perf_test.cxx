@@ -1,14 +1,21 @@
-#include "qs_perf_test_leo.h"
-#include "ndds_namespace_cpp.h"
-
 #include <cstdio>
 #include <cstdlib>
-#include <sys/time.h>
+#include <ctime>
+#include <fstream>
+
+#include "gettimeofday.h"
+#include "qs_perf_test.h"
+#include "ndds_namespace_cpp.h"
 
 const int MOD = 10000;
+const int CALC_MOD = 1;
 const int WRITE_BURST = 5;
 int WARMUP = 100;
 int SAMPLE = 0;
+
+#ifdef WIN32
+#define getpid GetCurrentProcessId
+#endif
 
 size_t operator - (const timeval & end, const timeval & begin)
 {
@@ -71,7 +78,7 @@ class Stats
 
   void print_histogram(const char *filename) 
   {
-    FILE * file = fopen(filename, "w");
+    std::ofstream file(filename);
     sort_keys();
     
     //printf("#keys = %d, histsize = %d\n", keys.size(), histogram.size());
@@ -79,11 +86,8 @@ class Stats
         iter != keys.end();
         ++iter)
     {
-      fprintf(file, "[%d] = %d\n", *iter, histogram[*iter]);
+      file << "[" << *iter << "] = " << histogram[*iter] << "\n";
     }
-    //printf("#keys = %d, histsize = %d\n", keys.size(), histogram.size());
-
-    fclose(file);
   }
 
   int percentile(double ptile)
@@ -229,30 +233,29 @@ struct PerfReaderListener : public DDSDataReaderListener
         if (sref.info().valid_data)
         {
           PerfHelloWorld sample;
-          reflex::read_dynamicdata(sample, sref.data());
-
           count++;
           if(count == WARMUP)
           {
             gettimeofday(&time_start, NULL);
             prev = time_start;
           }
-          if(count > WARMUP) 
+          if((count > WARMUP) && (count % CALC_MOD == 0)) 
           {
+            reflex::read_dynamicdata(sample, sref.data());
+
             struct timeval recv_ts;
             gettimeofday(&recv_ts, NULL);
             long diff = (recv_ts.tv_sec*1000*1000 + recv_ts.tv_usec) - sample.timestamp;
             latency_hist.insert(diff);
-
-            if ((count % MOD) == 0)
-            {
-              struct timeval current;
-              gettimeofday(&current,NULL);
-              std::cout << "messageId = " << sample.messageId
-                        << ". Current throughput is " 
-                        << 1000.0*1000.0*MOD/(current-prev) << "\n";
-              prev = current;
-            }
+          }
+          if ((count % MOD == 0) && (count % CALC_MOD == 0))
+          {
+            struct timeval current;
+            gettimeofday(&current,NULL);
+            std::cout << "messageId = " << sample.messageId
+                      << ". Current throughput is " 
+                      << 1000.0*1000.0*MOD/(current-prev) << "\n";
+            prev = current;
           }
           if(count == SAMPLE+WARMUP)  //last message.
           {
@@ -346,7 +349,7 @@ void qs_perf_subscriber(int domain_id, int samples, int id)
     return;
   }
 
-  sprintf(topicName,"%s@%s", "PerfHelloWorldTopic", "SharedSubscriber");
+  snprintf(topicName,255,"%s@%s", "PerfHelloWorldTopic", "SharedSubscriber");
 
   topic = participant->create_topic(
       topicName,
@@ -415,6 +418,14 @@ void qs_perf_subscriber(int domain_id, int samples, int id)
   std::cout << "Throughput = " 
             << 1000.0*1000.9*reader_listener.count/(reader_listener.time_end - reader_listener.time_start)
             << std::endl;
+  std::cout << reader_listener.latency_hist.average() << " "  
+            << reader_listener.latency_hist.stddev() << " " 
+            << reader_listener.latency_hist.percentile(0.90) << " "
+            << reader_listener.latency_hist.percentile(0.99) << " "
+            << reader_listener.latency_hist.percentile(0.999) << " "
+            << reader_listener.latency_hist.percentile(0.9999) << " "
+            << reader_listener.latency_hist.percentile(0.99999) << " "
+            << reader_listener.latency_hist.get_max() << "\n";
 }
 
 double scale_sleep_period_usec(int hz) 

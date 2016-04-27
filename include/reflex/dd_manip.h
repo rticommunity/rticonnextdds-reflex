@@ -118,6 +118,7 @@ namespace reflex {
       SET_MEMBER_VALUE_DECL(uint32_t);
       SET_MEMBER_VALUE_DECL(int64_t);
       SET_MEMBER_VALUE_DECL(uint64_t);
+      SET_MEMBER_VALUE_DECL(long);
       SET_MEMBER_VALUE_DECL(float);
       SET_MEMBER_VALUE_DECL(double);
       SET_MEMBER_VALUE_DECL(long double);
@@ -599,6 +600,7 @@ namespace reflex {
       GET_MEMBER_VALUE_DECL(uint32_t);
       GET_MEMBER_VALUE_DECL(int64_t);
       GET_MEMBER_VALUE_DECL(uint64_t);
+      GET_MEMBER_VALUE_DECL(long);
       GET_MEMBER_VALUE_DECL(float);
       GET_MEMBER_VALUE_DECL(double);
       GET_MEMBER_VALUE_DECL(long double);

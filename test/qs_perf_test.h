@@ -1,9 +1,10 @@
-#ifndef QS_PERF_TEST_LEO_H
-#define QS_PERF_TEST_LEO_H 
+#ifndef QS_PERF_TEST_H
+#define QS_PERF_TEST_H 
 
 #include "reflex.h"
 
-struct PerfHelloWorld {
+struct PerfHelloWorld 
+{
   unsigned int messageId;
   long timestamp;
 
@@ -14,9 +15,11 @@ struct PerfHelloWorld {
   }
 };
 
-REFLEX_ADAPT_STRUCT(PerfHelloWorld,
+REFLEX_ADAPT_STRUCT(
+    PerfHelloWorld,
     (unsigned int, messageId) 
-    (long ,timestamp));
+    (long, timestamp)
+    );
 
-#endif // QS_PERF_TEST_LEO_H
+#endif // QS_PERF_TEST_H
 

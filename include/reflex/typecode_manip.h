@@ -125,6 +125,7 @@ namespace reflex {
       GET_PRIMITIVE_TC_DEF(uint32_t,       DDS_TK_ULONG)
       GET_PRIMITIVE_TC_DEF(int64_t,        DDS_TK_LONGLONG)
       GET_PRIMITIVE_TC_DEF(uint64_t,       DDS_TK_ULONGLONG)
+      GET_PRIMITIVE_TC_DEF(long,           DDS_TK_LONG)
       GET_PRIMITIVE_TC_DEF(float,          DDS_TK_FLOAT)
       GET_PRIMITIVE_TC_DEF(double,         DDS_TK_DOUBLE)
       GET_PRIMITIVE_TC_DEF(long double,    DDS_TK_LONGDOUBLE)
