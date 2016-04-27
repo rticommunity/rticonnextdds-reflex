@@ -139,6 +139,7 @@
     <ClInclude Include="..\..\test\qs_hello_test.h" />
     <ClInclude Include="..\..\test\qs_perf_test.h" />
     <ClInclude Include="..\..\test\shape_type.h" />
+    <ClInclude Include="..\..\test\stats.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\darkart.cxx" />
@@ -152,6 +153,7 @@
     <ClCompile Include="..\..\test\qs_perf_test.cxx" />
     <ClCompile Include="..\..\test\reflex_test.cxx" />
     <ClCompile Include="..\..\test\shape_type.cxx" />
+    <ClCompile Include="..\..\test\stats.cxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

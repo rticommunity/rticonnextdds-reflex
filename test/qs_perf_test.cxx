@@ -1,10 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include <fstream>
 
 #include "gettimeofday.h"
 #include "qs_perf_test.h"
+#include "stats.h"
 #include "ndds_namespace_cpp.h"
 
 const int MOD = 10000;
@@ -17,144 +17,12 @@ int SAMPLE = 0;
 #define getpid GetCurrentProcessId
 #endif
 
-size_t operator - (const timeval & end, const timeval & begin)
+int operator - (const timeval & end, const timeval & begin)
 {
-  size_t end_usec = end.tv_sec * (size_t) 1000 * 1000 + end.tv_usec;
-  size_t begin_usec = begin.tv_sec * (size_t) 1000 * 1000 + begin.tv_usec;
+  int end_usec = end.tv_sec * (int) 1000 * 1000 + end.tv_usec;
+  int begin_usec = begin.tv_sec * (int) 1000 * 1000 + begin.tv_usec;
   return end_usec - begin_usec; 
 }
-
-class Stats
-{
-  std::map<int, int> histogram;
-  std::vector<int> keys;
-  int total;
-  int max;
-  double avg;
-  double standard_dev;
-  bool avg_done;
-  bool stddev_done;
-
-  public:
-
-  Stats()
-  {
-    total = 0;
-    max = -1;
-    avg = -1;
-    standard_dev = -1;
-    avg_done = false;
-    stddev_done = false;
-  }
-
-  void insert(int val)
-  {
-    if(keys.empty())
-    {
-      histogram[val]++;
-      total++;
-      if(max < val)
-        max = val;
-    }
-    else
-      throw std::runtime_error("Stats::insert Can't change the histogram anymore");
-  }
-
-  void sort_keys()
-  {
-    if(keys.empty())
-    {
-      keys.reserve(histogram.size());
-
-      for(std::map<int, int>::iterator iter = histogram.begin();
-          iter != histogram.end();
-          ++iter)
-      {
-        keys.push_back(iter->first);  
-      }
-      std::sort(keys.begin(), keys.end());
-    }
-  }
-
-  void print_histogram(const char *filename) 
-  {
-    std::ofstream file(filename);
-    sort_keys();
-    
-    //printf("#keys = %d, histsize = %d\n", keys.size(), histogram.size());
-    for(std::vector<int>::const_iterator iter = keys.begin();
-        iter != keys.end();
-        ++iter)
-    {
-      file << "[" << *iter << "] = " << histogram[*iter] << "\n";
-    }
-  }
-
-  int percentile(double ptile)
-  {
-    if(ptile <= 0.0 || ptile > 1.0)
-      return -1;
-
-    sort_keys();
-    
-    long count = 0;
-    for(std::vector<int>::reverse_iterator iter = keys.rbegin();
-        iter != keys.rend();
-        ++iter)
-    {
-      count += histogram[*iter];
-      if((double) count/total >= (1.0-ptile))
-        return *iter;
-    }
-    return -1;
-  }
-
-  double average()
-  {
-    if(!avg_done)
-    {
-      sort_keys();
-      
-      double sum = 0;
-      int count = 0;
-      for(std::vector<int>::iterator iter = keys.begin();
-          iter != keys.end();
-          ++iter)
-      {
-        sum += (*iter * histogram[*iter]);
-        count += histogram[*iter];
-      }
-      std::cout << "count = " << count << ", total = " << total << "\n";
-      avg = sum/total;
-      avg_done = true;
-    }
-    return avg;
-  }
-
-  double stddev() 
-  {
-    if(!stddev_done)
-    {
-      double avg = average();
-      double sum_of_sqr = 0;
-      for(std::vector<int>::iterator iter = keys.begin();
-          iter != keys.end();
-          ++iter)
-      {
-        double diff = *iter - avg;
-        sum_of_sqr += diff*diff*histogram[*iter];
-      }
-      standard_dev = sqrt(sum_of_sqr/total);
-      stddev_done = true;
-    }
-    return standard_dev;
-  }
-
-  int get_max() const
-  {
-    return max;
-  }
-};
 
 class PerfHelloWorldPubListener : public DDS::DataWriterListener {
     int accept_count;
@@ -497,7 +365,7 @@ void qs_perf_publisher(int domain_id, int samples, int no_readers, int hertz)
 
      if((i % MOD) == 0)
      {
-       double elapsed_time_usec = ts-prev;
+       double elapsed_time_usec = (double) (ts-prev);
        prev = ts;
        std::cout << "Wrote " << i 
                  << ". tput = " << 1000.0*1000.0*MOD/elapsed_time_usec << "\n";

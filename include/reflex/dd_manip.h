@@ -976,7 +976,9 @@ namespace reflex {
         if (seq_info.element_count > 0)
         {
           typename DynamicDataSeqTraits<value_type>::type seq;
-          if (seq.loan_contiguous(primitive_ptr_cast(&val[0]), val.size(), val.capacity()) != true)
+          if (seq.loan_contiguous(primitive_ptr_cast(&val[0]), 
+             static_cast<DDS_Long>(val.size()), 
+             static_cast<DDS_Long>(val.capacity())) != true)
           {
             throw std::runtime_error("get_member_value: sequence loaning failed");
           }

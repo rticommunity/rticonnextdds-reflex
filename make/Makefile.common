@@ -152,7 +152,8 @@ TESTSRCS = test/reflex_test.cxx   \
            test/pointers.cxx      \
            test/large_type.cxx    \
 	         test/qs_hello_test.cxx \
-	         test/qs_perf_test.cxx 
+	         test/qs_perf_test.cxx  \
+           test/stats.cxx
 
 #test/qs_perf_test.cxx 
 
@@ -164,7 +165,8 @@ TESTHEADERS = test/shape_type.h    \
               test/pointers.h      \
               test/large_type.h	   \
 	            test/qs_hello_test.h \
-	            test/qs_perf_test.h	      
+	            test/qs_perf_test.h  \
+              test/stats.h
 	      
 #test/qs_perf_test.h
 

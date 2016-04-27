@@ -441,7 +441,7 @@ void write_samples(int domain_id)
 
   auto generator = gen::make_tuple_gen<Tuple>();
 
-  std::cout << "Now writing....\n";
+  std::cout << "Now writing on domain " << domain_id << "....\n";
   for(;;)
   {
     Tuple t = generator.generate(); // allocates raw pointers.
