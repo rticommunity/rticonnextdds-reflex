@@ -1,11 +1,16 @@
 #include <cstdio>
 #include <cstdlib>
-#include <ctime>
 
-#include "gettimeofday.h"
 #include "qs_perf_test.h"
 #include "stats.h"
 #include "ndds_namespace_cpp.h"
+
+#ifdef RTI_WIN32
+  #include <ctime>
+  #include "gettimeofday.h"
+#else
+  #include <sys/time.h>
+#endif
 
 const int MOD = 10000;
 const int CALC_MOD = 1;

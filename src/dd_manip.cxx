@@ -63,12 +63,15 @@ namespace reflex {
       SET_MEMBER_VALUE_DEF(uint32_t,       set_ulong)
       SET_MEMBER_VALUE_DEF(int64_t,        set_longlong)
       SET_MEMBER_VALUE_DEF(uint64_t,       set_ulonglong)
-      SET_MEMBER_VALUE_DEF(long,           set_long)
-      SET_MEMBER_VALUE_DEF(float, set_float)
+      SET_MEMBER_VALUE_DEF(float,          set_float)
       SET_MEMBER_VALUE_DEF(double,         set_double)
 #ifndef RTI_WIN32
       SET_MEMBER_VALUE_DEF(char32_t, set_wchar)
+#ifndef __x86_64__
+      SET_MEMBER_VALUE_DEF(long,           set_long)
 #endif
+#endif
+
 #ifdef __x86_64__
       SET_MEMBER_VALUE_DEF(long long int, set_longlong)
 #endif
@@ -85,12 +88,15 @@ namespace reflex {
       GET_MEMBER_VALUE_DEF(DDS_UnsignedLong,     uint32_t,       get_ulong)
       GET_MEMBER_VALUE_DEF(DDS_LongLong,         int64_t,        get_longlong)
       GET_MEMBER_VALUE_DEF(DDS_UnsignedLongLong, uint64_t,       get_ulonglong)
-      GET_MEMBER_VALUE_DEF(DDS_Long,             long,           get_long)
       GET_MEMBER_VALUE_DEF(DDS_Float,            float,          get_float)
       GET_MEMBER_VALUE_DEF(DDS_Double,           double,         get_double)
 #ifndef RTI_WIN32
       GET_MEMBER_VALUE_DEF(DDS_Wchar, char32_t, get_wchar)
+#ifndef __x86_64__
+      GET_MEMBER_VALUE_DEF(DDS_Long,             long,           get_long)
 #endif
+#endif
+
 #ifdef __x86_64__
       GET_MEMBER_VALUE_DEF(DDS_LongLong, long long, get_longlong)
 #endif

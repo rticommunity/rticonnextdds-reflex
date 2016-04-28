@@ -13,7 +13,7 @@ damages arising out of the use or inability to use the software.
 
 bool operator == (const one_member & lhs, const one_member & rhs)
 {
-  return *lhs.member == *rhs.member;
+  return lhs.member == rhs.member;
 }
 
 void write_one_member(int) 
@@ -32,15 +32,15 @@ void write_one_member(int)
     reflex::AutoDynamicData d2(safe_typeSupport.get());
 
     one_member x;
-    x.member = std::make_shared<int>(12);
+    x.member = 10000000000000000L;
 
     one_member y;
-    y.member = std::make_shared<int>();
+    y.member = 10000000000000000L;
 
     reflex::write_dynamicdata(d1, x);
     reflex::read_dynamicdata(y, d1);
-    std::cout << "one_member same = " << std::boolalpha << (x == y);
+    std::cout << "one_member same = " << std::boolalpha << (x == y) << "\n";
 
-    //d1.get()->print(stdout, 2);
+    d1.get()->print(stdout, 2);
 }
 

@@ -25,12 +25,12 @@ damages arising out of the use or inability to use the software.
 
 struct one_member
 {
-  std::shared_ptr<int> member;
+  unsigned long long member;
 };
 
 REFLEX_ADAPT_STRUCT(
     one_member,
-    (std::shared_ptr<int>, member))
+    (unsigned long long, member))
 
 #endif // MANY_MEMBERS_H
 

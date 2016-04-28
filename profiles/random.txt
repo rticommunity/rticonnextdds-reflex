@@ -24,13 +24,13 @@ Good numbers
 5014   (6 structs)
 12414  (7 structs)
 17715  (8 structs)
+5071  (17 structs)
 
 Bad Numbers
 ===========
 
-2152 (test seg-faults)
-sizeof(tuple) == 14496 
-
+2152 (test seg-faults) sizeof(tuple) == 14496 
 12758 (4 structs but unstable)
-
 16808 (evil)
+11817 Size of tuple = 533444
+

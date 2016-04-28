@@ -225,14 +225,18 @@ namespace reflex {
     template <> struct is_primitive<uint32_t>       : true_type{};
     template <> struct is_primitive<int64_t>        : true_type{};
     template <> struct is_primitive<uint64_t>       : true_type{};
-    template <> struct is_primitive<long>           : true_type{};
     template <> struct is_primitive<float>          : true_type{};
     template <> struct is_primitive<double>         : true_type{};
     template <> struct is_primitive<long double>    : true_type{};
+
 #ifndef RTI_WIN32
     template <> struct is_primitive<char32_t>       : true_type{};
+#ifndef __x86_64__
+    template <> struct is_primitive<long>           : true_type{};
+#endif 
 #endif
-#if __x86_64__
+
+#ifdef __x86_64__
     template <> struct is_primitive<long long>          : true_type{};
     template <> struct is_primitive<unsigned long long> : true_type{};
 #endif 

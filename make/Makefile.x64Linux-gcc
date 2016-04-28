@@ -35,7 +35,7 @@ CXXSTD = c++11
 CXXFLAGS = --std=$(CXXSTD) -DRTI_UNIX -DRTI_LINUX -m64 -D HAVE_CXA_DEMANGLE=1 \
            -fPIC  -ftemplate-backtrace-limit=0 \
            -Wall -Wno-unused-local-typedefs
-CXXLDFLAGS = -m64 -fPIC 
+CXXLDFLAGS = -m64 -fPIC -Wl,--no-as-needed
 SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
 
 # The rest of the rules are in the 'Makefile.common'

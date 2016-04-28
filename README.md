@@ -19,15 +19,15 @@ More reading:
 - [Reflex API docs](http://rticommunity.github.io/rticonnextdds-reflex/docs/html/index.html)
 
 ### Windows Build
-1. Use Visual Studio 2013 
-2. Set REFLEXHOME, BOOSTHOME (1.46+), and NDDSHOME (5.1.0+)
+1. Use Visual Studio 2013 (recommeded VS2015) 
+2. Set REFLEXHOME, BOOSTHOME (1.59+), and NDDSHOME (5.1.0+)
 3. Set PATH=%PATH%;%REFLEXHOME%\objs\i86Win32VS2013;%NDDSHOME%\lib\i86Win32VS2012
 4. Run %NDDSHOME%\scripts\rtiddsgen -language C++ -namespace -d test idl\complex.idl
 5. Open win32\reflex-vs2013.sln
 
 ### Linux Build
-1. Recommended compilers: g++ 4.8, clang 3.3 or better
-2. export REFLEXHOME, BOOSTHOME (1.46+) and NDDSHOME (5.0.0+)
+1. Recommended compilers: g++ (4.9+), clang 3.3+
+2. export REFLEXHOME, BOOSTHOME (1.59+) and NDDSHOME (5.0.0+)
 3. export ARCH=i86Linux2.6gcc4.8.2, for example.
 4. See make/Makefile* for details
 5. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NDDSHOME/lib/$ARCH:$REFLEXHOME/objs/$ARCH

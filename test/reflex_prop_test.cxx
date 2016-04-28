@@ -6,6 +6,8 @@
 
 #include "reflex.h"
 
+#define MOD 100
+
 #ifndef RANDOM_SEED
   #define RANDOM_SEED 17715
 #endif 
@@ -431,10 +433,14 @@ bool test_roundtrip_property(int iter)
     deallocate_pointers(d1);
     deallocate_pointers(d2);
     
-    if((i % 10000) == 0) 
+    if((i % MOD) == 0) 
+    {
       std::cout << ".";
+      std::cout.flush();
+    }
   }
 
+  std::cout << "\n";
   std::cout << "roundtrip successful = " << std::boolalpha << is_same << std::endl;
   assert(is_same);
 
@@ -484,11 +490,17 @@ void write_samples(int domain_id)
 
 int main(int argc, char * argv[])
 {
-  int iterations = 100000;
-  int domain_id = 65;
+  int iterations = 1000;
+  int domain_id = 0;
+
   if(argc==2)
   {
-    domain_id = atoi(argv[1]);
+    iterations = atoi(argv[1]);
+  }
+
+  if(argc==3)
+  {
+    domain_id = atoi(argv[2]);
   }
 
   test_generators();
@@ -497,5 +509,7 @@ int main(int argc, char * argv[])
   typedef typegen::RandomTuple<RANDOM_SEED>::type RandomTuple;
 
   test_roundtrip_property<RandomTuple>(iterations);
-  write_samples<RandomTuple>(domain_id);
+  
+  if(argc==3)
+    write_samples<RandomTuple>(domain_id);
 }

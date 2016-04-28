@@ -43,12 +43,14 @@ namespace reflex {
       DYNAMIC_DATA_SEQ_TRAITS(uint32_t,       DDS_UnsignedLongSeq)
       DYNAMIC_DATA_SEQ_TRAITS(int64_t,        DDS_LongLongSeq)
       DYNAMIC_DATA_SEQ_TRAITS(uint64_t,       DDS_UnsignedLongLongSeq)
-      DYNAMIC_DATA_SEQ_TRAITS(long,           DDS_LongSeq)
       DYNAMIC_DATA_SEQ_TRAITS(float,          DDS_FloatSeq)
       DYNAMIC_DATA_SEQ_TRAITS(double,         DDS_DoubleSeq)
       DYNAMIC_DATA_SEQ_TRAITS(long double,    DDS_LongDoubleSeq)
 #ifndef RTI_WIN32
       DYNAMIC_DATA_SEQ_TRAITS(char32_t,       DDS_WcharSeq)
+#ifndef __x86_64__
+      DYNAMIC_DATA_SEQ_TRAITS(long,           DDS_LongSeq)
+#endif
 #endif
 
   } // namespace detail
