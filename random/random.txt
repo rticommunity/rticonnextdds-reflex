@@ -13,23 +13,23 @@ make -f make/Makefile.i86Linux-gcc CXX=g++5 CXXSTD=c++14 RANDOM=$RANDOM prop_tes
 
 Good numbers
 ===========
-2626   (1 struct)
-18008  (2 structs)
-18911  (2 structs)
-23636  (2 structs)
-21525  (2 structs)
-15034  (3 structs)
-3245   (4 structs)
-7937   (6 structs)
-5014   (6 structs)
-12414  (7 structs)
-17715  (8 structs)
-5071  (17 structs)
+2626    (1 struct)
+18008   (2 structs)
+18911   (2 structs)
+23636   (2 structs)
+21525   (2 structs)
+15034   (3 structs)
+3245    (4 structs)
+7937    (6 structs)
+5014    (6 structs)
+12414   (7 structs)
+17715   (8 structs)
+5071   (17 structs)
+2152  (667 structs) See random\tuple_2152.txt
 
 Bad Numbers
 ===========
 
-2152 (test seg-faults) sizeof(tuple) == 14496 
 12758 (4 structs but unstable)
 16808 (evil)
 11817 Size of tuple = 533444

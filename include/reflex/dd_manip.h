@@ -104,6 +104,33 @@ namespace reflex {
       return reflex::meta::dim_list_multiply<typename reflex::meta::make_dim_list<T>::type>::value;
     }
 
+    template <class Opt>
+    static void initialize_optional(Opt & opt)
+    {
+      typename reflex::type_traits::optional_traits<Opt>::value_type temp;
+      opt = temp;
+    }
+
+    template <class T>
+    static void initialize_optional(std::shared_ptr<T> & sh_ptr)
+    {
+      sh_ptr = std::make_shared<T>();
+    }
+
+#ifdef RTI_WIN32
+    template <class... T>
+    static void initialize_optional(boost::optional<T...> & opt)
+    {
+      opt = boost::in_place<T...>();
+    }
+#else
+    template <class T>
+    static void initialize_optional(boost::optional<T> & opt)
+    {
+      opt = boost::in_place<T>();
+    }
+#endif
+
     struct set_member_overload_resolution_helper
     {
     public:
@@ -126,6 +153,8 @@ namespace reflex {
 #ifndef __x86_64__
       SET_MEMBER_VALUE_DECL(long);
 #endif
+#else
+      SET_MEMBER_VALUE_DECL(long);
 #endif
 
 #ifdef __x86_64__
@@ -612,6 +641,8 @@ namespace reflex {
 #ifndef __x86_64__
       GET_MEMBER_VALUE_DECL(long);
 #endif
+#else
+      GET_MEMBER_VALUE_DECL(long);
 #endif
 
 #ifdef __x86_64__
@@ -670,6 +701,9 @@ namespace reflex {
         T & ptr,
         typename reflex::meta::enable_if<reflex::type_traits::is_pointer<T>::value, void>::type * = 0)
       {
+        if (!ptr)
+          ptr = new typename reflex::meta::remove_pointer<T>::type();
+
         get_member_value(instance, ma, *ptr);
       }
 
@@ -1016,6 +1050,7 @@ namespace reflex {
       {
         if (!val)
           val = SmartPtr(new typename SmartPtr::element_type());
+
         get_member_value(instance, ma, *val);
       }
 
@@ -1244,33 +1279,6 @@ namespace reflex {
           val);
       }
 
-      private :
-        template <class Opt>
-        static void initialize_optional(Opt & opt)
-        {
-          typename reflex::type_traits::optional_traits<Opt>::value_type temp;
-          opt = temp;
-        }
-
-        template <class T>
-        static void initialize_optional(std::shared_ptr<T> & sh_ptr)
-        {
-          sh_ptr = std::make_shared<T>();
-        }
-
-#ifdef RTI_WIN32
-        template <class... T>
-        static void initialize_optional(boost::optional<T...> & opt)
-        {
-          opt = boost::in_place<T...>();
-        }
-#else
-        template <class T>
-        static void initialize_optional(boost::optional<T> & opt)
-        {
-          opt = boost::in_place<T>();
-        }
-#endif
       public:
 
       template <typename Opt>
@@ -1289,11 +1297,20 @@ namespace reflex {
         if (instance.member_exists(member_name, id))
         {
           if (!opt) {
-            initialize_optional(opt); 
+            detail::initialize_optional(opt); 
           }
 
-          if(opt)
-              get_member_value(instance, ma, *opt);
+          if (opt)
+            get_member_value(instance, ma, *opt);
+          else
+            throw std::runtime_error("get_member_value: Could not initialize optional");
+        }
+        else
+        {
+          if (opt) {
+
+            opt = boost::none;
+          }
         }
       }
     }; // struct get_member_overload_resolution_helper
@@ -1333,7 +1350,7 @@ namespace reflex {
         return boost::make_iterator_range(
           match::make_bounded_view_iterator<Bound>(begin),
           match::make_bounded_view_iterator<Bound>(end));
-      }
+    }
 
     template <size_t Bound, class T>
     match::BoundedRange<typename T::reference, Bound> make_bounded_range(T &t)

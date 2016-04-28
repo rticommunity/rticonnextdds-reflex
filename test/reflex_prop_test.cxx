@@ -1,3 +1,9 @@
+#ifdef RTI_WIN32
+  #define _CRTDBG_MAP_ALLOC
+  #include <stdlib.h>
+  #include <crtdbg.h>
+#endif
+
 #include <iostream>
 #include <boost/core/demangle.hpp>
 
@@ -9,7 +15,7 @@
 #define MOD 100
 
 #ifndef RANDOM_SEED
-  #define RANDOM_SEED 17715
+  #define RANDOM_SEED 2152
 #endif 
 
 // Clang requires forward declarations for overloaded << operators.
@@ -380,8 +386,11 @@ struct deallocator
   template <class T>
   void operator () (T* &t, TraversalState state) const 
   { 
-    if(state == POST)
-      delete t; 
+    if (state == POST)
+    {
+      delete t;
+      t = 0;
+    }
   }
 };
 
@@ -406,9 +415,11 @@ bool compare_tuples(Tuple &t1, Tuple &t2)
 template <class Tuple>
 bool test_roundtrip_property(int iter)
 {
-  std::cout << "Tuple = \n" << boost::core::demangle(typeid(Tuple).name()) << "\n";
-  std::cout << "Size of tuple = " << sizeof(Tuple) << "\n";
+  printf("Tuple = %s\n", boost::core::demangle(typeid(Tuple).name()).c_str());
+  printf("Size of tuple = %d\n", sizeof(Tuple));
+  fflush(stdout);
 
+  reflex::TypeManager<Tuple> tm;
   auto generator = gen::make_tuple_gen<Tuple>();
   bool is_same = true;
 
@@ -416,7 +427,6 @@ bool test_roundtrip_property(int iter)
   {
     Tuple d1 = generator.generate(); // allocates raw pointers.
 
-    reflex::TypeManager<Tuple> tm;
     reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(d1);
     if (i == 0)
     {
@@ -425,7 +435,6 @@ bool test_roundtrip_property(int iter)
     }
 
     Tuple d2;
-    allocate_pointers(d2);
     reflex::read_dynamicdata(d2, safedd);
 
     is_same = is_same && compare_tuples(d1, d2);
@@ -435,13 +444,14 @@ bool test_roundtrip_property(int iter)
     
     if((i % MOD) == 0) 
     {
-      std::cout << ".";
-      std::cout.flush();
+      printf(".");
+      fflush(stdout);
     }
   }
+  
+  fflush(stdout);
+  printf("\nroundtrip successful = %s\n", is_same ? "true" : "false");
 
-  std::cout << "\n";
-  std::cout << "roundtrip successful = " << std::boolalpha << is_same << std::endl;
   assert(is_same);
 
   return true;
@@ -490,26 +500,46 @@ void write_samples(int domain_id)
 
 int main(int argc, char * argv[])
 {
-  int iterations = 1000;
-  int domain_id = 0;
+  try {
+#ifdef RTI_WIN32
+    new int; // a deleberate leak
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 
-  if(argc==2)
+    int iterations = 1000;
+    int domain_id = 0;
+
+    if (argc == 2)
+    {
+      iterations = atoi(argv[1]);
+    }
+
+    if (argc == 3)
+    {
+      domain_id = atoi(argv[2]);
+    }
+
+    test_generators();
+
+    printf("RANDOM SEED = %d\n", RANDOM_SEED);
+    typedef typegen::RandomTuple<RANDOM_SEED>::type RandomTuple;
+
+    test_roundtrip_property<RandomTuple>(iterations);
+
+    if (argc == 3)
+      write_samples<RandomTuple>(domain_id);
+  }
+  catch (std::exception & ex)
   {
-    iterations = atoi(argv[1]);
+    std::cout << ex.what() << "\n";
+  }
+  catch (...)
+  {
+    std::cout << "Unknown exception in main.\n";
   }
 
-  if(argc==3)
-  {
-    domain_id = atoi(argv[2]);
-  }
+#ifdef RTI_WIN32
+  _CrtDumpMemoryLeaks();
+#endif
 
-  test_generators();
-  
-  std::cout << "RANDOM SEED = " << RANDOM_SEED << std::endl;
-  typedef typegen::RandomTuple<RANDOM_SEED>::type RandomTuple;
-
-  test_roundtrip_property<RandomTuple>(iterations);
-  
-  if(argc==3)
-    write_samples<RandomTuple>(domain_id);
 }

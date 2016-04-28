@@ -133,7 +133,9 @@ namespace reflex {
       GET_PRIMITIVE_TC_DEF(char32_t,       DDS_TK_WCHAR)
 #ifndef __x86_64__
       GET_PRIMITIVE_TC_DEF(long,           DDS_TK_LONG)
-#endif      
+#endif
+#else
+      GET_PRIMITIVE_TC_DEF(long,           DDS_TK_LONG)
 #endif
 
 #ifdef __x86_64__

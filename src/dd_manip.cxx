@@ -66,10 +66,12 @@ namespace reflex {
       SET_MEMBER_VALUE_DEF(float,          set_float)
       SET_MEMBER_VALUE_DEF(double,         set_double)
 #ifndef RTI_WIN32
-      SET_MEMBER_VALUE_DEF(char32_t, set_wchar)
+      SET_MEMBER_VALUE_DEF(char32_t,       set_wchar)
 #ifndef __x86_64__
       SET_MEMBER_VALUE_DEF(long,           set_long)
 #endif
+#else
+      SET_MEMBER_VALUE_DEF(long,           set_long)
 #endif
 
 #ifdef __x86_64__
@@ -78,9 +80,9 @@ namespace reflex {
 
 
 
-      GET_MEMBER_VALUE_DEF(DDS_Octet, match::octet_t,  get_octet)    // also uint8_t
-      GET_MEMBER_VALUE_DEF(DDS_Char,  char,            get_char)
-      GET_MEMBER_VALUE_DEF(DDS_Char,  int8_t,          get_char)
+      GET_MEMBER_VALUE_DEF(DDS_Octet,            match::octet_t, get_octet)    // also uint8_t
+      GET_MEMBER_VALUE_DEF(DDS_Char,             char,           get_char)
+      GET_MEMBER_VALUE_DEF(DDS_Char,             int8_t,         get_char)
       // GET_MEMBER_VALUE_DEF DDS_Boolean defined below.
       GET_MEMBER_VALUE_DEF(DDS_Short,            int16_t,        get_short)
       GET_MEMBER_VALUE_DEF(DDS_UnsignedShort,    uint16_t,       get_ushort)
@@ -95,6 +97,8 @@ namespace reflex {
 #ifndef __x86_64__
       GET_MEMBER_VALUE_DEF(DDS_Long,             long,           get_long)
 #endif
+#else
+      GET_MEMBER_VALUE_DEF(DDS_Long,             long,           get_long)
 #endif
 
 #ifdef __x86_64__

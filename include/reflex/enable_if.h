@@ -233,7 +233,9 @@ namespace reflex {
     template <> struct is_primitive<char32_t>       : true_type{};
 #ifndef __x86_64__
     template <> struct is_primitive<long>           : true_type{};
-#endif 
+#endif
+#else
+    template <> struct is_primitive<long>           : true_type {};
 #endif
 
 #ifdef __x86_64__
