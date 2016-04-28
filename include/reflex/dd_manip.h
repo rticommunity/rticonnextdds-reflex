@@ -1308,8 +1308,11 @@ namespace reflex {
         else
         {
           if (opt) {
-
+#ifdef RTI_WIN32            
             opt = boost::none;
+#else
+            opt.reset();
+#endif            
           }
         }
       }
