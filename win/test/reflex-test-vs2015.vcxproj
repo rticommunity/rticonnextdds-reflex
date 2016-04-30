@@ -84,8 +84,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>rticonnextmsgcpp.lib;nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2015;$(NDDSHOME)\lib\i86Win32VS2013</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rticonnextmsgcppd.lib;nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2015;$(NDDSHOME)\lib\i86Win32VS2015</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ClCompile>
@@ -97,8 +97,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>rticonnextmsgcpp.lib;nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\x64Win64VS2015;$(NDDSHOME)\lib\x64Win64VS2013</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rticonnextmsgcppd.lib;nddscppd.lib;nddscd.lib;nddscored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\x64Win64VS2015;$(NDDSHOME)\lib\x64Win64VS2015</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ClCompile>
@@ -115,7 +115,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>rticonnextmsgcpp.lib;nddscpp.lib;nddsc.lib;nddscore.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2015;$(NDDSHOME)\lib\i86Win32VS2013</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(REFLEXHOME)\objs\i86Win32VS2015;$(NDDSHOME)\lib\i86Win32VS2015</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

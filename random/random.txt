@@ -32,5 +32,5 @@ Bad Numbers
 ===========
 
 16808 (evil)
-11817 Size of tuple = 533444
+11817 (24 structs) Somewhat unstable. sizeof(tuple) = 500KB+
 

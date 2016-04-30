@@ -81,6 +81,9 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
 
     namespace detail {
 
+      REFLEX_DLL_EXPORT DDS_LongDouble to_LongDouble(long double);
+      REFLEX_DLL_EXPORT long double  from_LongDouble(DDS_LongDouble);
+
         REFLEX_INLINE void check_retcode(
           const char * message,
           DDS_ReturnCode_t rc)
@@ -111,7 +114,7 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         SET_SEQUENCE_DEF(DDS_UnsignedShortSeq,    set_ushort_seq)
         SET_SEQUENCE_DEF(DDS_FloatSeq,            set_float_seq)
         SET_SEQUENCE_DEF(DDS_DoubleSeq,           set_double_seq)
-        SET_SEQUENCE_DEF(DDS_LongDoubleSeq,       set_longdouble_seq)
+        //SET_SEQUENCE_DEF(DDS_LongDoubleSeq,       set_longdouble_seq)
         SET_SEQUENCE_DEF(DDS_BooleanSeq,          set_boolean_seq)
         SET_SEQUENCE_DEF(DDS_CharSeq,             set_char_seq)
         SET_SEQUENCE_DEF(DDS_WcharSeq,            set_wchar_seq)
@@ -153,7 +156,7 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         GET_SEQUENCE_DEF(DDS_UnsignedLongLongSeq, get_ulonglong_seq)
         GET_SEQUENCE_DEF(DDS_FloatSeq,            get_float_seq)
         GET_SEQUENCE_DEF(DDS_DoubleSeq,           get_double_seq)
-        GET_SEQUENCE_DEF(DDS_LongDoubleSeq,       get_longdouble_seq)
+        //GET_SEQUENCE_DEF(DDS_LongDoubleSeq,       get_longdouble_seq)
 
         GET_ARRAY_DEF(match::octet_t, DDS_Octet,    get_octet_array)    // also uint8_t
         GET_ARRAY_DEF(bool,           DDS_Boolean,  get_boolean_array)
@@ -176,6 +179,81 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
 #ifdef __x86_64__
         GET_ARRAY_DEF(long long, DDS_LongLong,        get_longlong_array)
 #endif
+      
+       REFLEX_INLINE DDS_ReturnCode_t set_array(
+            DDS_DynamicData &instance,
+            const MemberAccess &ma, 
+            DDS_UnsignedLong length, 
+            const long double *src)                       
+        {
+          DDS_ReturnCode_t rc = DDS_RETCODE_OK;
+          DDS_LongDouble dest[256];
+          DDS_LongDouble *dest_ptr = 0;
+          
+          if (length > 256)
+            dest_ptr = new DDS_LongDouble[length];
+          else
+            dest_ptr = dest;
+
+          if (!dest_ptr)
+            return DDS_RETCODE_ERROR;
+
+          for (DDS_UnsignedLong i = 0; i < length; i++)
+            dest_ptr[i] = to_LongDouble(src[i]);
+
+          if (ma.access_by_id())
+          {
+            rc = instance.set_longdouble_array(NULL, ma.get_id(), length, dest_ptr);
+          }
+          else
+          {
+            rc = instance.set_longdouble_array(ma.get_name(),
+                  DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
+                  length, dest_ptr);
+          }
+          
+          if(dest_ptr != dest)
+            delete[] dest_ptr;
+
+          return rc;
+        }
+
+        REFLEX_INLINE DDS_ReturnCode_t get_array(
+          const DDS_DynamicData & instance, 
+          long double *dest, 
+          DDS_UnsignedLong *length, 
+          const MemberAccess &ma)
+        {
+          DDS_ReturnCode_t rc = DDS_RETCODE_OK;
+          DDS_LongDouble src[256];
+          DDS_LongDouble *src_ptr = 0;
+
+          if (*length > 256)
+            src_ptr = new DDS_LongDouble[*length];
+          else
+            src_ptr = src;
+
+          if (!src_ptr)
+            return DDS_RETCODE_ERROR;
+
+          if (ma.access_by_id())
+            rc = instance.get_longdouble_array(src_ptr, length, NULL, ma.get_id()); 
+          else
+            rc = instance.get_longdouble_array(src_ptr, length, ma.get_name(),
+                  DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED); 
+
+          if (rc == DDS_RETCODE_OK)
+          {
+            for (DDS_UnsignedLong i = 0; i < *length; i++)
+              dest[i] = from_LongDouble(src_ptr[i]);
+          }
+
+          if (src_ptr != src)
+            delete[] src_ptr;
+
+          return rc;
+        }
+
         
       REFLEX_INLINE SafeBinder::SafeBinder()
         : outer_(0), inner_(0)

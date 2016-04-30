@@ -145,6 +145,7 @@ namespace reflex {
       SET_ARRAY_DECL(uint64_t)
       SET_ARRAY_DECL(float)
       SET_ARRAY_DECL(double)
+      SET_ARRAY_DECL(long double)
 #ifdef __x86_64__
       SET_ARRAY_DECL(long long int)
 #endif
@@ -176,6 +177,7 @@ namespace reflex {
       GET_ARRAY_DECL(uint64_t)
       GET_ARRAY_DECL(float)
       GET_ARRAY_DECL(double)
+      GET_ARRAY_DECL(long double)
 #ifdef __x86_64__
       GET_ARRAY_DECL(long long int)
 #endif

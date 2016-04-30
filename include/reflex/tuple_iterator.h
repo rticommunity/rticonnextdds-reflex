@@ -170,6 +170,11 @@ namespace reflex {
         UNUSED_VAR(i);
         std::string member_name =
           reflex::codegen::MemberTraits<Typelist, I>::member_info().name;
+#ifdef VERBOSE
+        std::cout << "Writing I = " << I
+                  << ", member_name = " << member_name << std::endl;
+        std::cout.flush();
+#endif
 #endif
 
         if (ma.access_by_id())
@@ -201,8 +206,11 @@ namespace reflex {
         UNUSED_VAR(i);
         std::string member_name =
           reflex::codegen::MemberTraits<Typelist, I>::member_info().name;
+#ifdef VERBOSE
         std::cout << "Reading I = " << I 
                   << ", member_name = " << member_name << std::endl;
+        std::cout.flush();
+#endif
 #endif
         if (ma.access_by_id())
         {
@@ -317,6 +325,11 @@ namespace reflex {
         UNUSED_VAR(max);
         std::string member_name =
           reflex::codegen::MemberTraits<Typelist, MAX_INDEX>::member_info().name;
+#ifdef VERBOSE
+        std::cout << "Writing MAX_INDEX = " << MAX_INDEX
+                  << ", member_name = " << member_name << std::endl;
+        std::cout.flush();
+#endif
 #endif
 
         if (ma.access_by_id()) 
@@ -345,8 +358,11 @@ namespace reflex {
         UNUSED_VAR(max);
         std::string member_name =
           reflex::codegen::MemberTraits<Typelist, MAX_INDEX>::member_info().name;
+#ifdef VERBOSE
         std::cout << "Reading MAX_INDEX = " << MAX_INDEX 
                   << ", member_name = " << member_name << std::endl;
+        std::cout.flush();
+#endif
 #endif
 
         if (ma.access_by_id())

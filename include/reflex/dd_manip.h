@@ -547,27 +547,7 @@ namespace reflex {
 
         detail::check_retcode("set_member_value: Error setting array, error = ", rc);
       }
-/*
-#ifdef RTI_WIN32
-      template <typename... T>
-      static void set_member_value(
-        DDS_DynamicData & instance,
-        const MemberAccess &ma,
-        const boost::optional<T...> & opt)
-#else
-      template <typename T>
-      static void set_member_value(
-        DDS_DynamicData & instance,
-        const MemberAccess &ma,
-        const boost::optional<T> & opt)
-#endif
-      {
-        if (opt.is_initialized())
-        {
-          set_member_value(instance, ma, *opt.get_ptr());
-        }
-      }
-*/
+
       template <typename Opt>
       static void set_member_value(
         DDS_DynamicData & instance,
@@ -1308,11 +1288,7 @@ namespace reflex {
         else
         {
           if (opt) {
-#ifdef RTI_WIN32            
-            opt = boost::none;
-#else
             opt.reset();
-#endif            
           }
         }
       }

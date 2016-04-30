@@ -15,7 +15,7 @@
 #define MOD 100
 
 #ifndef RANDOM_SEED
-  #define RANDOM_SEED 2152
+  #define RANDOM_SEED 11817
 #endif 
 
 // Clang requires forward declarations for overloaded << operators.
@@ -417,7 +417,7 @@ bool test_roundtrip_property(int iter)
 {
   printf("Tuple = %s\n", boost::core::demangle(typeid(Tuple).name()).c_str());
   printf("Size of tuple = %d\n", sizeof(Tuple));
-  fflush(stdout);
+  //fflush(stdout);
 
   reflex::TypeManager<Tuple> tm;
   auto generator = gen::make_tuple_gen<Tuple>();
@@ -425,31 +425,34 @@ bool test_roundtrip_property(int iter)
 
   for (int i = 0; (i < iter) && is_same; i++)
   {
-    Tuple d1 = generator.generate(); // allocates raw pointers.
+    // Dynamic allocation because in some cases (RANDOM_SEED=11817) 
+    // the static size of the Tuple could be in Megabytes. 
+    // Also see custom stack size options in VS2015.
+    std::unique_ptr<Tuple> t1(new Tuple(generator.generate())); // allocates raw pointers.
 
-    reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(d1);
+    reflex::SafeDynamicData<Tuple> safedd = tm.create_dynamicdata(*t1);
     if (i == 0)
     {
       reflex::detail::print_IDL(safedd.get()->get_type(), 2);
       //safedd.get()->print(stdout, 2);
     }
 
-    Tuple d2;
-    reflex::read_dynamicdata(d2, safedd);
+    std::unique_ptr<Tuple> t2(new Tuple());
+    reflex::read_dynamicdata(*t2, safedd);
 
-    is_same = is_same && compare_tuples(d1, d2);
+    is_same = is_same && compare_tuples(*t1, *t2);
 
-    deallocate_pointers(d1);
-    deallocate_pointers(d2);
+    deallocate_pointers(*t1);
+    deallocate_pointers(*t2);
     
     if((i % MOD) == 0) 
     {
       printf(".");
-      fflush(stdout);
+      //fflush(stdout);
     }
   }
   
-  fflush(stdout);
+  //fflush(stdout);
   printf("\nroundtrip successful = %s\n", is_same ? "true" : "false");
 
   assert(is_same);
@@ -542,4 +545,5 @@ int main(int argc, char * argv[])
   _CrtDumpMemoryLeaks();
 #endif
 
+  return 0;
 }
