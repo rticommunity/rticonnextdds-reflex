@@ -7,9 +7,17 @@ types due to compile-time type-generators.
 For more information please see
 http://www.slideshare.net/SumantTambe/c-generators-and-propertybased-testing
 
-Build command
-============
-make -f make/Makefile.i86Linux-gcc CXX=g++5 CXXSTD=c++14 RANDOM=$RANDOM prop_test
+Linux build command
+===================
+make -f make/Makefile.x64Linux-gcc CXX=g++5 CXXSTD=c++14 RANDOM=$RANDOM prop_test
+
+Visual Studio build command
+===========================
+1. cd to rticonnextdds-reflex
+2. Make sure you have added "/D RANDOM_SEED=$(RANDOM_SEED)" as an additional  
+   compiler option in the "Release|x64" build configuration.
+3. Run random\vsrand.bat
+4. Check out (locally generated) RANDOM_SEEDS.txt 
 
 Good numbers
 ===========
@@ -25,11 +33,18 @@ Good numbers
 5014    (6 structs)
 12414   (7 structs)
 17715   (8 structs)
+4936   (15 structs)
 5071   (17 structs)
+9126   (28 structs)
 2152  (667 structs) See random\tuple_2152.txt 
 
 Bad Numbers
 ===========
+10338 (47 structs. DynamicData internal error)
+15212 (member size exceeds 65535 bytes)
+16808 (Evil. compilation does not finish on VS2015)
+11261 (24 structs. DynamicData internal error)
+
 
 10338 (47 structs) DynamicData internal error
 
@@ -91,3 +106,29 @@ DDS_DynamicData_unbind_complex_member:internal error trying to add required memb
 DDS_DynamicData_finalize:invalid operation, bound to member id 7
 DDS_DynamicData_delete:invalid operation, bound to member id 11
 set_octet error = DDS_RETCODE_PRECONDITION_NOT_MET
+
+
+15212 
+DDS_DynamicDataStream_assert_complex_member:!sparsely stored member exceeds 65535 bytes
+DDS_DynamicData_unbind_complex_member:internal error 1 trying to assert complex member
+DDS_DynamicData_finalize:WARNING: destructing object bound to a member, automatically unbinding now
+DDS_DynamicDataStream_assert_complex_member:!sparsely stored member exceeds 65535 bytes
+DDS_DynamicData_unbind_complex_member:internal error 1 trying to assert complex member
+DDS_DynamicData_bind_complex_member:invalid operation, bound to member id 2
+DDS_DynamicData_add_required_membersI:invalid operation, bound to member id 2
+DDS_DynamicData_unbind_complex_member:internal error trying to add required members
+DDS_DynamicData_finalize:invalid operation, bound to member id 2
+DDS_DynamicData_delete:invalid operation, bound to member id 9
+SafeBinder::bind_complex_member error = DDS_RETCODE_PRECONDITION_NOT_MET
+
+
+11261 
+DDS_DynamicData_unbind_complex_member:internal error 1 trying to to stream
+DDS_DynamicData_finalize:WARNING: destructing object bound to a member, automatically unbinding now
+DDS_DynamicData_unbind_complex_member:internal error 1 trying to to stream
+DDS_DynamicData_set_ulonglong:invalid operation, bound to member id 15
+DDS_DynamicData_add_required_membersI:invalid operation, bound to member id 15
+DDS_DynamicData_unbind_complex_member:internal error trying to add required members
+DDS_DynamicData_finalize:invalid operation, bound to member id 15
+DDS_DynamicData_delete:invalid operation, bound to member id 5
+set_ulonglong error = DDS_RETCODE_PRECONDITION_NOT_MET

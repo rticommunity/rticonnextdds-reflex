@@ -443,7 +443,7 @@ template <class Tuple>
 bool test_roundtrip_property(int iter)
 {
   printf("Tuple = %s\n", boost::core::demangle(typeid(Tuple).name()).c_str());
-  printf("Size of tuple = %d\n", sizeof(Tuple));
+  printf("Size of tuple = %d\n", (int) sizeof(Tuple));
   //fflush(stdout);
 
   reflex::TypeManager<Tuple> tm;
@@ -480,7 +480,7 @@ bool test_roundtrip_property(int iter)
   }
   
   //fflush(stdout);
-  printf("\nroundtrip successful = %s\n", is_same ? "true" : "false");
+  printf("\n%d roundtrips successful = %s\n", iter, is_same ? "true" : "false");
 
   assert(is_same);
 
