@@ -72,8 +72,8 @@ REFLEXLIBRARY = reflex
 # Modify build flags for debug/release
 ###############################################################################
 ifeq ($(DEBUG),1)
-  CXXFLAGS     += -g -pg -O0 -DREFLEX_DEBUG 
-  CXXLDFLAGS   += -g -pg -O0 
+  CXXFLAGS     += -g -O0 -DREFLEX_DEBUG 
+  CXXLDFLAGS   += -g -O0
   ifeq ($(STATICLIB),1)
     NDDSLIBS    = -lnddscppzd -lnddsczd -lnddscorezd -lrticonnextmsgcpp
     REFLEXLIB      = -l$(REFLEXLIBRARY)zd
@@ -89,7 +89,8 @@ ifeq ($(DEBUG),1)
     LIBEXT      = .so
   endif
 else
-  CXXFLAGS     += -O3 -DBOOST_MPL_LIMIT_LIST_SIZE=20 
+  CXXFLAGS     += -O3 -pg -DBOOST_MPL_LIMIT_LIST_SIZE=20 
+  CXXLDFLAGS   += -pg 
   ifeq ($(STATICLIB),1)
     NDDSLIBS    = -lnddscppz -lnddscz -lnddscorez -lrticonnextmsgcpp
     REFLEXLIB      = -l$(REFLEXLIBRARY)z

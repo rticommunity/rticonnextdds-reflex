@@ -2,6 +2,9 @@
   #define _CRTDBG_MAP_ALLOC
   #include <stdlib.h>
   #include <crtdbg.h>
+#else
+  // change stack size on Linux
+  #include <sys/resource.h>
 #endif
 
 #include <iostream>
@@ -15,8 +18,32 @@
 #define MOD 100
 
 #ifndef RANDOM_SEED
-  #define RANDOM_SEED 11817
+  #define RANDOM_SEED 2626
 #endif 
+
+#ifndef RTI_WIN32
+
+void increase_stack(unsigned int stack_size)
+{
+  const rlim_t kStackSize = stack_size;
+  struct rlimit rl;
+  int result;
+
+  result = getrlimit(RLIMIT_STACK, &rl);
+  if (result == 0)
+  {
+    if (rl.rlim_cur < kStackSize)
+    {
+        rl.rlim_cur = kStackSize;
+        result = setrlimit(RLIMIT_STACK, &rl);
+        if (result != 0)
+        {
+            fprintf(stderr, "setrlimit returned result = %d\n", result);
+        }
+    }
+  }
+}
+#endif
 
 // Clang requires forward declarations for overloaded << operators.
 // g++5 does not. Who's correct?
@@ -507,6 +534,8 @@ int main(int argc, char * argv[])
 #ifdef RTI_WIN32
     new int; // a deleberate leak
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#else
+    increase_stack(32*1024*1024);
 #endif
 
     int iterations = 1000;

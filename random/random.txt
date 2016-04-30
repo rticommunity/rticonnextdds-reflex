@@ -26,11 +26,68 @@ Good numbers
 12414   (7 structs)
 17715   (8 structs)
 5071   (17 structs)
-2152  (667 structs) See random\tuple_2152.txt
+2152  (667 structs) See random\tuple_2152.txt 
 
 Bad Numbers
 ===========
 
-16808 (evil)
-11817 (24 structs) Somewhat unstable. sizeof(tuple) = 500KB+
+10338 (47 structs) DynamicData internal error
 
+16808 (evil)
+DDS_DynamicData_unbind_complex_member:internal error 1 trying to to stream
+DDS_DynamicData_finalize:WARNING: destructing object bound to a member,
+  automatically unbinding now
+  DDS_DynamicData_unbind_complex_member:internal error 1 trying to to stream
+  
+
+11817 (24 structs) sizeof(tuple) = 530KB+ See tuple_11817.txt
+DDS_DynamicData_unbind_complex_member:internal error 1 trying to to stream
+See member DefaultTupleName16.m14 of type sequence<DefaultTupleName20[6],256>
+Valgrind output
+==15556== Invalid read of size 4
+==15556==    at 0x497A4D5: RTICdrStream_skipPrimitiveSequence (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddscore.so)
+==15556==    by 0x4426DFA: DDS_DynamicDataStream_get_size_member (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x44261B6: DDS_DynamicDataStream_get_size_subtype (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x44273EC: DDS_DynamicDataStream_get_size_member (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x44261B6: DDS_DynamicDataStream_get_size_subtype (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x442733C: DDS_DynamicDataStream_get_size_member (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x4427BDF:
+DDS_DynamicDataStream_get_serialized_size_with_align (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x44352A7: DDS_DynamicDataStream_assert_complex_member (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x43FD20F: DDS_DynamicData_unbind_complex_member (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddsc.so)
+==15556==    by 0x41311F8:
+DDS_DynamicData::unbind_complex_member(DDS_DynamicData&) (in
+    /project/rti520/rti_connext_dds-5.2.0/lib/i86Linux3gcc4.8.2/libnddscpp.so)
+==15556==    by 0x805987F: reflex::detail::SafeBinder::~SafeBinder() (in
+    /project/myOSS/rticonnextdds-reflex/objs/i86Linux3gcc4.8.2/reflex_prop_test)
+==15556==  Address 0x9ef5204 is not stack'd, malloc'd or (recently) free'd
+==15556== 
+==15556== Warning: silly arg (-10765300) to realloc()
+DDS_DynamicData_unbind_complex_member:internal error 5 trying to assert complex member
+DDS_DynamicData_finalize:WARNING: destructing object bound to a member, automatically unbinding now
+==15556== Warning: silly arg (-10765300) to realloc()
+DDS_DynamicData_unbind_complex_member:internal error 5 trying to assert complex member
+DDS_DynamicData_set_octet:invalid operation, bound to member id 15
+DDS_DynamicData_add_required_membersI:invalid operation, bound to member id 15
+DDS_DynamicData_unbind_complex_member:internal error trying to add required members
+DDS_DynamicData_finalize:invalid operation, bound to member id 15
+DDS_DynamicData_add_required_membersI:invalid operation, bound to member id 41
+DDS_DynamicData_unbind_complex_member:internal error trying to add required members
+DDS_DynamicData_finalize:invalid operation, bound to member id 41
+DDS_DynamicData_add_required_membersI:invalid operation, bound to member id 12
+DDS_DynamicData_unbind_complex_member:internal error trying to add required members
+DDS_DynamicData_finalize:invalid operation, bound to member id 12
+DDS_DynamicData_add_required_membersI:invalid operation, bound to member id 7
+DDS_DynamicData_unbind_complex_member:internal error trying to add required members
+DDS_DynamicData_finalize:invalid operation, bound to member id 7
+DDS_DynamicData_delete:invalid operation, bound to member id 11
+set_octet error = DDS_RETCODE_PRECONDITION_NOT_MET

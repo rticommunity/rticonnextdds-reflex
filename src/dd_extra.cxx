@@ -114,7 +114,7 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         SET_SEQUENCE_DEF(DDS_UnsignedShortSeq,    set_ushort_seq)
         SET_SEQUENCE_DEF(DDS_FloatSeq,            set_float_seq)
         SET_SEQUENCE_DEF(DDS_DoubleSeq,           set_double_seq)
-        //SET_SEQUENCE_DEF(DDS_LongDoubleSeq,       set_longdouble_seq)
+        SET_SEQUENCE_DEF(DDS_LongDoubleSeq,       set_longdouble_seq)
         SET_SEQUENCE_DEF(DDS_BooleanSeq,          set_boolean_seq)
         SET_SEQUENCE_DEF(DDS_CharSeq,             set_char_seq)
         SET_SEQUENCE_DEF(DDS_WcharSeq,            set_wchar_seq)
@@ -156,7 +156,7 @@ REFLEX_INLINE DDS_ReturnCode_t get_array(                             \
         GET_SEQUENCE_DEF(DDS_UnsignedLongLongSeq, get_ulonglong_seq)
         GET_SEQUENCE_DEF(DDS_FloatSeq,            get_float_seq)
         GET_SEQUENCE_DEF(DDS_DoubleSeq,           get_double_seq)
-        //GET_SEQUENCE_DEF(DDS_LongDoubleSeq,       get_longdouble_seq)
+        GET_SEQUENCE_DEF(DDS_LongDoubleSeq,       get_longdouble_seq)
 
         GET_ARRAY_DEF(match::octet_t, DDS_Octet,    get_octet_array)    // also uint8_t
         GET_ARRAY_DEF(bool,           DDS_Boolean,  get_boolean_array)
