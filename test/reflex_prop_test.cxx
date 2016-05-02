@@ -8,6 +8,8 @@
 #endif
 
 #include <iostream>
+#include <fstream>
+#include <stack>
 #include <boost/core/demangle.hpp>
 
 #include "generator.h"
@@ -47,89 +49,6 @@ void increase_stack(unsigned int stack_size)
 
 // Clang requires forward declarations for overloaded << operators.
 // g++5 does not. Who's correct?
-
-template <class... Args>
-std::ostream & operator << (std::ostream & o, const std::tuple<Args...> & tuple);
-
-template <class T>
-std::ostream & operator << (std::ostream & o, const std::vector<T> & vector);
-
-template <class T>
-std::ostream & operator << (std::ostream & o, const boost::optional<T> & opt);
-
-template <class T, class U>
-std::ostream & operator << (std::ostream & o, const std::pair<T, U> & pair);
-
-template <class T, size_t N>
-std::ostream & operator << (std::ostream & o, const std::array<T, N> & arr)
-{
-  for (auto & elem : arr)
-    o << elem;
-
-  return o << "\n";
-}
-
-template <class T>
-std::ostream & operator << (std::ostream & o, const std::vector<T> & vector)
-{
-  for (const auto & elem : vector)
-    o << elem << " ";
-
-  return o;
-}
-
-template <class T>
-std::ostream & operator << (std::ostream & o, const boost::optional<T> & opt)
-{
-  if (opt)
-    o << opt.get();
-
-  return o;
-}
-
-template <class T, class U>
-std::ostream & operator << (std::ostream & o, const std::pair<T, U> & pair)
-{
-  o << "pair.first = " << pair.first << "\n"
-    << "pair.second = " << pair.second;
-
-  return o;
-}
-
-template <class Tuple, size_t Size>
-struct TuplePrinter
-{
-  static void print(std::ostream & o, const Tuple & tuple)
-  {
-    TuplePrinter<Tuple, Size-1>::print(o, tuple);
-    o << std::get<Size-1>(tuple) << " ";
-  }
-};
-
-template <class Tuple>
-struct TuplePrinter<Tuple, 1>
-{
-  static void print(std::ostream & o, const Tuple & tuple)
-  {
-    o << std::get<0>(tuple) << " ";
-  }
-};
-
-template <class Tuple>
-struct TuplePrinter<Tuple, 0>
-{
-  static void print(std::ostream &, const Tuple &)
-  {
-    // no-op
-  }
-};
-
-template <class... Args>
-std::ostream & operator << (std::ostream & o, const std::tuple<Args...> & tuple)
-{
-  TuplePrinter<std::tuple<Args...>, sizeof...(Args)>::print(o, tuple);
-  return o;
-}
 
 struct ShapeType
 {
@@ -219,55 +138,56 @@ void test_generators(void)
   // std::cout << "All assertions satisfied\n";
 }
 
-template <class Tuple, size_t I>
+template <class Tuple, size_t I, size_t MAX_INDEX>
 struct tuple_iterator;
 
 struct iterate_overload_helper
 {
   template <class... Args, class ActionFunc>
-  static void recurse(std::tuple<Args...> & tuple, ActionFunc act)
+  static void recurse(std::tuple<Args...> & tuple, ActionFunc & act)
   {
     tuple_iterator<std::tuple<Args...>, 
+                   0,
                    std::tuple_size<std::tuple<Args...>>::value-1>
                      ::iterate(tuple, act);
   }
 
   template <class T, class ActionFunc>
-  static void recurse(std::vector<T> & vec, ActionFunc act) 
+  static void recurse(std::vector<T> & vec, ActionFunc & act) 
   { 
     for(auto & elm: vec)
       recurse(elm, act);
   }
 
   template <class ActionFunc>
-  static void recurse(std::vector<bool> & vec, ActionFunc act) 
+  static void recurse(std::vector<bool> & vec, ActionFunc & act) 
   { 
     // No-op
   }
 
   template <class T, size_t N, class ActionFunc>
-  static void recurse(std::array<T, N> & arr, ActionFunc act) 
+  static void recurse(std::array<T, N> & arr, ActionFunc & act) 
   { 
     for(auto & elm: arr)
       recurse(elm, act);
   }
 
   template <class T, class ActionFunc>
-  static void recurse(std::shared_ptr<T> & sh_ptr, ActionFunc act) 
+  static void recurse(std::shared_ptr<T> & sh_ptr, ActionFunc & act) 
   { 
     if(sh_ptr)
       recurse(*sh_ptr, act);
   }
 
   template <class T, class ActionFunc>
-  static void recurse(boost::optional<T> & op, ActionFunc act) 
+  static void recurse(boost::optional<T> & op, ActionFunc & act) 
   { 
     if(op)
       recurse(*op, act);
   }
 
   template <class T, class ActionFunc>
-  static void recurse(T *t, ActionFunc act,
+  static void recurse(T *&t, ActionFunc & act,
       typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) 
   { 
     if(t)
@@ -275,14 +195,14 @@ struct iterate_overload_helper
   }
 
   template <class T, class ActionFunc>
-  static void recurse(T *, ActionFunc,
+  static void recurse(T *&t, ActionFunc & act,
       typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) 
   { 
     // No-op
   }
 
   template <class T, class ActionFunc>
-  static void recurse(T, ActionFunc,
+  static void recurse(T &, ActionFunc &,
       typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) 
   { 
     // No-op
@@ -296,7 +216,8 @@ struct compare_overload_helper
       const std::tuple<Args...> & t1, 
       const std::tuple<Args...> & t2)
   {
-    return tuple_iterator<std::tuple<Args...>, 
+    return tuple_iterator<std::tuple<Args...>,
+                          0,
                           std::tuple_size<std::tuple<Args...>>::value-1>
                            ::compare(t1, t2);
   }
@@ -356,49 +277,50 @@ struct compare_overload_helper
 
 enum TraversalState { PRE, POST };
 
-template <class Tuple, size_t I>
+template <class Tuple, size_t I, size_t MAX_INDEX>
 struct tuple_iterator
 {
   template <class ActionFunc>
-  static void iterate(Tuple &t, ActionFunc act)
+  static void iterate(Tuple &t, ActionFunc & act)
   {
-    act(std::get<I>(t), PRE);
+    act(std::get<I>(t), PRE, I);
     iterate_overload_helper::recurse(std::get<I>(t), act);
-    act(std::get<I>(t), POST);
-    tuple_iterator<Tuple, I-1>::iterate(t, act);
+    act(std::get<I>(t), POST, I);
+    tuple_iterator<Tuple, I+1, MAX_INDEX>::iterate(t, act);
   }
 
   static bool compare(const Tuple &t1, const Tuple &t2)
   {
     return compare_overload_helper::recurse_compare(std::get<I>(t1), std::get<I>(t2)) && 
-           tuple_iterator<Tuple, I-1>::compare(t1, t2);
+           tuple_iterator<Tuple, I+1, MAX_INDEX>::compare(t1, t2);
   }
 };
 
-template <class Tuple>
-struct tuple_iterator<Tuple, 0>
+template <class Tuple, size_t MAX_INDEX>
+struct tuple_iterator<Tuple, MAX_INDEX, MAX_INDEX>
 {
   template <class ActionFunc>
-  static void iterate(Tuple &t, ActionFunc act)
+  static void iterate(Tuple &t, ActionFunc & act)
   {
-    act(std::get<0>(t), PRE);
-    iterate_overload_helper::recurse(std::get<0>(t), act);
-    act(std::get<0>(t), POST);
+    act(std::get<MAX_INDEX>(t), PRE, MAX_INDEX);
+    iterate_overload_helper::recurse(std::get<MAX_INDEX>(t), act);
+    act(std::get<MAX_INDEX>(t), POST, MAX_INDEX);
   }
 
   static bool compare(const Tuple &t1, const Tuple &t2)
   {
-    return compare_overload_helper::recurse_compare(std::get<0>(t1), std::get<0>(t2));
+    return compare_overload_helper::
+      recurse_compare(std::get<MAX_INDEX>(t1), std::get<MAX_INDEX>(t2));
   }
 };
 
 struct allocator
 {
   template <class T>
-  void operator () (T &, TraversalState) const {}
+  void operator () (T &, TraversalState, size_t) const {}
 
   template <class T>
-  void operator () (T* &t, TraversalState state) const 
+  void operator () (T* &t, TraversalState state, size_t) const
   { 
     if(state == PRE)
       t = new T(); 
@@ -408,10 +330,10 @@ struct allocator
 struct deallocator
 {
   template <class T>
-  void operator () (T &, TraversalState) const {}
+  void operator () (T &, TraversalState, size_t) const {}
 
   template <class T>
-  void operator () (T* &t, TraversalState state) const 
+  void operator () (T* &t, TraversalState state, size_t) const
   { 
     if (state == POST)
     {
@@ -421,16 +343,162 @@ struct deallocator
   }
 };
 
+class printer
+{
+  std::ostream & ofs;
+
+public:
+  explicit printer(std::ostream & file)
+     : ofs(file)
+  { }
+
+  template <class T, size_t N>
+  void operator () (const std::array<T, N> & arr, TraversalState state, size_t index,
+    typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+    {
+      ofs << "m" << index << ": ";
+      for (auto & elm : arr)
+      {
+        ofs << elm << " ";
+      }
+      ofs << "\n";
+    }
+  }
+
+  template <class T, size_t N>
+  void operator () (const std::array<T, N> & arr, TraversalState state, size_t index,
+    typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+      ofs << "m" << index << ": Begin std::array<Complex>\n";
+    if (state == POST)
+      ofs << "m" << index << ": End std::array<Complex>\n";
+  }
+
+  template <class T>
+  void operator () (const std::vector<T> & vec, TraversalState state, size_t index, 
+    typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+    {
+      ofs << "m" << index << ": ";
+      for (auto & elm : vec)
+      {
+        ofs << elm << " ";
+      }
+      ofs << "\n";
+    }
+  }
+
+  template <class T>
+  void operator () (const std::vector<T> & vec, TraversalState state, size_t index,
+    typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+      ofs << "m" << index << ": Begin std::vector<Complex>\n";
+    if (state == POST)
+      ofs << "m" << index << ": End std::vector<Complex>\n";
+  }
+
+  template <class T>
+  void operator () (const boost::optional<T> & opt, TraversalState state, size_t index,
+    typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+    {
+      if (opt)
+        ofs << "m" << index << ": " << *opt << "\n";
+      else
+        ofs << "m" << index << ": NULL\n";
+    }
+  }
+
+  template <class T>
+  void operator () (const boost::optional<T> & opt, TraversalState state, size_t index,
+    typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+      ofs << "m" << index << ": Begin optional<Complex>\n";
+    else
+      ofs << "m" << index << ": End optional<Complex>\n";
+  }
+
+  template <class... Args>
+  void operator () (const std::tuple<Args...> &, TraversalState state, size_t index)  const
+  { 
+    if (state == PRE)
+      ofs << "m" << index << ": Begin tuple\n";
+    else
+      ofs << "m" << index << ": End tuple\n";
+  }
+
+  template <class T>
+  void operator () (const std::shared_ptr<T> &sh_ptr, TraversalState state, size_t index,
+    typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+    {
+      ofs << "m" << index << ": " << *sh_ptr << "\n";
+    }
+  }
+
+  template <class T>
+  void operator () (const std::shared_ptr<T> &sh_ptr, TraversalState state, size_t index,
+    typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+      ofs << "m" << index << ": Begin shared_ptr<Complex>\n";
+    else
+      ofs << "m" << index << ": End shared_ptr<Complex>\n";
+  }
+
+  template <class T>
+  void operator () (const T &t, TraversalState state, size_t index,
+    typename reflex::meta::enable_if<reflex::type_traits::is_primitive<T>::value>::type * = 0) const
+  {
+    if (state == PRE)
+      ofs << "m" << index << ": " << t << "\n";
+  }
+
+  template <class T>
+  void operator () (const T * const &t, TraversalState state, size_t index) const
+  {
+    (*this)(*t, state, index);
+  }
+
+/*  template <class T>
+  void operator () (const T* &t, TraversalState state, size_t index,
+    typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value ||
+                                      reflex::type_traits::is_vector<T>::value>::type * = 0) const
+  {
+    if ((state == PRE) && t)
+      ofs << "m" << index << ": Begin pointer<Complex>\n";
+    if ((state == POST) && t)
+      ofs << "m" << index << ": End pointer<Complex>\n";
+  }*/
+};
+
 template <class Tuple>
 void allocate_pointers(Tuple &t)
 {
-  iterate_overload_helper::recurse(t, allocator());
+  allocator action;
+  iterate_overload_helper::recurse(t, action);
 }
 
 template <class Tuple>
 void deallocate_pointers(Tuple &t)
 {
-  iterate_overload_helper::recurse(t, deallocator());
+  deallocator action;
+  iterate_overload_helper::recurse(t, action);
+}
+
+template <class Tuple>
+void print_tuple(Tuple &t, std::ofstream & file)
+{
+  printer action(file);
+  iterate_overload_helper::recurse(t, action);
 }
 
 template <class Tuple>
@@ -449,8 +517,9 @@ bool test_roundtrip_property(int iter)
   reflex::TypeManager<Tuple> tm;
   auto generator = gen::make_tuple_gen<Tuple>();
   bool is_same = true;
-
-  for (int i = 0; (i < iter) && is_same; i++)
+  int i = 0;
+  
+  for (; (i < iter) && is_same; i++)
   {
     // Dynamic allocation because in some cases (RANDOM_SEED=11817) 
     // the static size of the Tuple could be in Megabytes. 
@@ -468,7 +537,14 @@ bool test_roundtrip_property(int iter)
     reflex::read_dynamicdata(*t2, safedd);
 
     is_same = is_same && compare_tuples(*t1, *t2);
-
+    if (!is_same)
+    {
+      std::cout << "roundtrip failed see t1.txt and t2.txt\n";
+      std::ofstream t1file("t1.txt");
+      std::ofstream t2file("t2.txt");
+      print_tuple(*t1, t1file);
+      print_tuple(*t2, t2file);
+    }
     deallocate_pointers(*t1);
     deallocate_pointers(*t2);
     
@@ -480,7 +556,7 @@ bool test_roundtrip_property(int iter)
   }
   
   //fflush(stdout);
-  printf("\n%d roundtrips successful = %s\n", iter, is_same ? "true" : "false");
+  printf("\n%d roundtrips successful = %s\n", i, is_same ? "true" : "false");
 
   assert(is_same);
 
@@ -576,3 +652,4 @@ int main(int argc, char * argv[])
 
   return 0;
 }
+

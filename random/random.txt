@@ -44,7 +44,7 @@ Bad Numbers
 15212 (member size exceeds 65535 bytes)
 16808 (Evil. compilation does not finish on VS2015)
 11261 (24 structs. DynamicData internal error)
-
+5887  (4 structs roundtrip false)
 
 10338 (47 structs) DynamicData internal error
 
