@@ -75,7 +75,8 @@ namespace reflex {
 #endif
 
 #ifdef __x86_64__
-      SET_MEMBER_VALUE_DEF(long long int, set_longlong)
+      SET_MEMBER_VALUE_DEF(long long,      set_longlong)
+      SET_MEMBER_VALUE_DEF(long long unsigned int, set_ulonglong)
 #endif
 
 
@@ -103,6 +104,7 @@ namespace reflex {
 
 #ifdef __x86_64__
       GET_MEMBER_VALUE_DEF(DDS_LongLong, long long, get_longlong)
+      GET_MEMBER_VALUE_DEF(DDS_UnsignedLongLong, long long unsigned int, get_ulonglong)
 #endif
 
       REFLEX_INLINE DDS_LongDouble to_LongDouble(long double src)

@@ -159,6 +159,7 @@ namespace reflex {
 
 #ifdef __x86_64__
       SET_MEMBER_VALUE_DECL(long long int);
+      SET_MEMBER_VALUE_DECL(long long unsigned int);
 #endif
 
       template <class Str>
@@ -627,6 +628,7 @@ namespace reflex {
 
 #ifdef __x86_64__
       GET_MEMBER_VALUE_DECL(long long int);
+      GET_MEMBER_VALUE_DECL(long long unsigned int);
 #endif
       //GET_MEMBER_VALUE_DECL(std::string);
       

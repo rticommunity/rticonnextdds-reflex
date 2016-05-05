@@ -33,9 +33,11 @@ Good numbers
 5014    (6 structs)
 12414   (7 structs)
 17715   (8 structs)
+21294   (8 structs)
 4936   (15 structs)
 5071   (17 structs)
 9126   (28 structs)
+19846  (44 structs)
 2152  (667 structs) See random\tuple_2152.txt 
 
 Bad Numbers
@@ -45,6 +47,7 @@ Bad Numbers
 16808 (Evil. compilation does not finish on VS2015)
 11261 (24 structs. DynamicData internal error)
 5887  (4 structs roundtrip false)
+7606  (very large)
 
 10338 (47 structs) DynamicData internal error
 

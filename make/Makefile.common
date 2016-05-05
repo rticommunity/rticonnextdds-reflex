@@ -240,7 +240,7 @@ objs/$(ARCH)/$(REFLEXLIBRARY)_prop_test: $(PROPTESTOBJS)
 	$(CXXLD) $(CXXLDFLAGS) -o $@ $(PROPTESTOBJS) $(LIBS)
 
 objs/$(ARCH)/reflex_prop_test.o: test/reflex_prop_test.cxx  
-	echo $(RANDOM) >> RANDOM_SEEDS.txt
+	@echo "RANDOM_SEED = $(RANDOM)"
 	$(CXX) $(CXXFLAGS) -o $@ $(DEFINES) $(INCLUDES) -DRANDOM_SEED=$(RANDOM) -c $< 
 
 

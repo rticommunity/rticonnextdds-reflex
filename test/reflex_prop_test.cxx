@@ -23,6 +23,8 @@
   #define RANDOM_SEED 2626
 #endif 
 
+#define SEEDS_FILE "RANDOM_SEEDS.txt"
+
 #ifndef RTI_WIN32
 
 void increase_stack(unsigned int stack_size)
@@ -384,7 +386,8 @@ public:
     if (state == PRE)
     {
       ofs << "m" << index << ": ";
-      for (auto & elm : vec)
+      // Note: const must be after the type in this case.
+      for (typename std::vector<T>::value_type const & elm : vec)
       {
         ofs << elm << " ";
       }
@@ -467,17 +470,6 @@ public:
   {
     (*this)(*t, state, index);
   }
-
-/*  template <class T>
-  void operator () (const T* &t, TraversalState state, size_t index,
-    typename reflex::meta::disable_if<reflex::type_traits::is_primitive<T>::value ||
-                                      reflex::type_traits::is_vector<T>::value>::type * = 0) const
-  {
-    if ((state == PRE) && t)
-      ofs << "m" << index << ": Begin pointer<Complex>\n";
-    if ((state == POST) && t)
-      ofs << "m" << index << ": End pointer<Complex>\n";
-  }*/
 };
 
 template <class Tuple>
@@ -512,7 +504,6 @@ bool test_roundtrip_property(int iter)
 {
   printf("Tuple = %s\n", boost::core::demangle(typeid(Tuple).name()).c_str());
   printf("Size of tuple = %d\n", (int) sizeof(Tuple));
-  //fflush(stdout);
 
   reflex::TypeManager<Tuple> tm;
   auto generator = gen::make_tuple_gen<Tuple>();
@@ -551,12 +542,18 @@ bool test_roundtrip_property(int iter)
     if((i % MOD) == 0) 
     {
       printf(".");
-      //fflush(stdout);
     }
   }
   
-  //fflush(stdout);
   printf("\n%d roundtrips successful = %s\n", i, is_same ? "true" : "false");
+
+  std::string next_tuple_name = reflex::detail::NameHelper::type_name("dummy");
+  int next_struct_num;
+  sscanf(next_tuple_name.c_str(), "dummy%d", &next_struct_num);
+  
+  std::ofstream seeds_file(SEEDS_FILE, std::fstream::out | std::fstream::app);
+  seeds_file << "RANDOM_SEED = " << RANDOM_SEED 
+             << " #structs = " << next_struct_num << std::endl;
 
   assert(is_same);
 
@@ -606,6 +603,8 @@ void write_samples(int domain_id)
 
 int main(int argc, char * argv[])
 {
+  int ret = 0;
+
   try {
 #ifdef RTI_WIN32
     new int; // a deleberate leak
@@ -640,16 +639,18 @@ int main(int argc, char * argv[])
   catch (std::exception & ex)
   {
     std::cout << ex.what() << "\n";
+    ret = 1;
   }
   catch (...)
   {
     std::cout << "Unknown exception in main.\n";
+    ret = 1;
   }
 
 #ifdef RTI_WIN32
   _CrtDumpMemoryLeaks();
 #endif
 
-  return 0;
+  return ret;
 }
 
