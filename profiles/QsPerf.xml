@@ -26,6 +26,15 @@
               <batch>
                 <enable>false</enable>
               </batch>
+              <reliability>
+                <max_blocking_time>
+                  <sec>1</sec>
+                  <nanosec>0</nanosec>
+                </max_blocking_time>
+              </reliability>
+              <writer_resource_limits>
+                <max_remote_reader_filters>100</max_remote_reader_filters>
+              </writer_resource_limits>
               <protocol>
                 <rtps_reliable_writer>
                   <max_heartbeat_retries>LENGTH_UNLIMITED</max_heartbeat_retries>
