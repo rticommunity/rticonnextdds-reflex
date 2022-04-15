@@ -97,3 +97,7 @@ namespace reflex {
   } // namespace codegen
 
 } // namespace reflex
+
+#if _MSC_VER
+#undef snprintf
+#endif
